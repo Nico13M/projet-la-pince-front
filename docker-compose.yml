@@ -1,0 +1,14 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    volumes:
+      - .:/frontend
+      - /frontend/.next
+      - /frontend/node_modules
+    environment:
+      - PORT=4000
+    command: npm start
