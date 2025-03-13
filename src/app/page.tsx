@@ -1,9 +1,20 @@
-import Image from 'next/image'
+'use client'
+
+import '../app/globals.css'
+import Hero from '../components/landing/Hero'
+import FeaturesSection from '../components/landing/FeaturesSection'
+import DiscoverSection from '../components/landing/DiscoverSection'
+import CommunityFeedback from '../components/landing/Feedbacks'
+import PricingSection from '../components/landing/PricingSection'
 
 export default function Home() {
   return (
-    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      jop
-    </div>
+    <main className="font-inter bg-background text-foreground min-h-screen antialiased">
+      <Hero />
+      <FeaturesSection />
+      <DiscoverSection />
+      <CommunityFeedback />
+      <PricingSection />
+    </main>
   )
 }
