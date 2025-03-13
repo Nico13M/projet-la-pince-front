@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Check } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const DiscoverLaPince = () => {
   const [activeTab, setActiveTab] = useState(0)
@@ -58,17 +59,18 @@ const DiscoverLaPince = () => {
             <div className="bg-muted/50 rounded-xl p-4">
               <div className="mb-6 flex space-x-2">
                 {['Suivi', 'Budget', 'Analyse'].map((tab, idx) => (
-                  <button
+                  <Button
+                    variant="default"
                     key={idx}
                     onClick={() => setActiveTab(idx)}
-                    className={`rounded-lg px-5 py-2 transition-all ${
+                    className={`px-5 py-2 transition-all ${
                       activeTab === idx
                         ? 'bg-primary text-white'
                         : 'text-muted-foreground hover:bg-muted/80 bg-white'
                     }`}
                   >
                     {tab}
-                  </button>
+                  </Button>
                 ))}
               </div>
 

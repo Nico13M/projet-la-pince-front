@@ -7,7 +7,7 @@ const testimonials = [
       "La Pince a transformé ma façon de gérer mon budget. Je comprends enfin où va mon argent et comment l'optimiser.",
     name: 'Sophie M.',
     role: 'Freelance',
-    image: '/Sophie.png',
+    image: '/Sophie.webp',
     delay: 100,
   },
   {
@@ -15,7 +15,7 @@ const testimonials = [
       "Interface élégante et fonctionnalités puissantes. J'ai économisé plus en 3 mois qu'en toute l'année dernière!",
     name: 'Marc D.',
     role: 'Entrepreneur',
-    image: '/Marc.png',
+    image: '/Marc.webp',
     delay: 300,
   },
   {
@@ -23,7 +23,7 @@ const testimonials = [
       'Enfin une app qui rend la gestion de budget accessible et même agréable. Je la recommande à tous mes amis.',
     name: 'Léa K.',
     role: 'Étudiante',
-    image: '/Lea.png',
+    image: '/Lea.webp',
     delay: 500,
   },
 ]

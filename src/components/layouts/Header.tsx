@@ -1,16 +1,10 @@
 import Link from 'next/link'
-import Logo from './logo'
+import Logo from '../../components/Logo'
 
-interface HeaderProps {
-  mode?: 'light' | 'dark'
-}
-
-export default function Header({ mode = 'dark' }: HeaderProps) {
+export default function Header() {
   return (
     <header
-      className={`absolute z-30 w-full ${
-        mode === 'light' ? 'bg-black/70' : 'dark bg-black/70'
-      } transition duration-300`}
+      className={`dark absolute z-30 w-full bg-black/70 transition duration-300`}
     >
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <div className="flex h-16 items-center justify-between md:h-20">

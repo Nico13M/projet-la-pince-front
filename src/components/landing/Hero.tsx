@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { ArrowRight, CreditCard, TrendingUp } from 'lucide-react'
 import Chat from '../../../public/chat.jpg'
+import Link from 'next/link'
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -20,28 +21,26 @@ const Hero = () => {
         <div className="flex flex-col items-center justify-between gap-10 md:flex-row">
           <div className="max-w-2xl">
             <h1 className="text-5xl leading-tight font-extrabold tracking-tight md:text-6xl">
-              <span className="block">
-                Simplifiez vos finances personnelles
-              </span>
+              Simplifiez vos finances personnelles
             </h1>
             <p className="mt-8 max-w-2xl text-xl leading-relaxed font-light">
               Une solution élégante pour gérer vos budgets, suivre vos dépenses
               et atteindre vos objectifs financiers en toute sérénité.
             </p>
             <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-              <a
+              <Link
                 href="/register"
                 className="group text-primary hover:bg-opacity-90 flex items-center justify-center rounded-full bg-white px-8 py-4 font-medium transition-all hover:scale-105 hover:shadow-lg"
               >
                 <span>Démarrer gratuitement</span>
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#features"
                 className="hover:bg-opacity-10 flex items-center justify-center rounded-full border border-white bg-transparent px-8 py-4 font-medium transition-all hover:bg-white hover:text-black"
               >
                 En savoir plus
-              </a>
+              </Link>
             </div>
           </div>
 
