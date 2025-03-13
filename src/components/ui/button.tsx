@@ -56,4 +56,8 @@ function Button({
   )
 }
 
+<<<<<<< HEAD
 export { Button, buttonVariants }
+=======
+export { Button, buttonVariants }
+>>>>>>> dev
