@@ -1,7 +1,25 @@
 import type { Metadata } from 'next'
-import { Poppins, Roboto } from 'next/font/google'
+import { Geist, Geist_Mono, Inter, Poppins, Roboto } from 'next/font/google'
+import Footer from '../components/layouts/Footer'
+import Header from '../components/layouts/Header'
 
 import './globals.css'
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -29,9 +47,10 @@ export default function RootLayout({
     <html lang="en">
       <body
         suppressHydrationWarning
-        className={`${poppins.variable} ${roboto.variable} antialiased`}
+        className={`${poppins.variable} ${roboto.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <Footer />
       </body>
     </html>
   )
