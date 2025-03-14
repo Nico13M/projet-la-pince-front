@@ -47,7 +47,7 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Exemple: jimmy@gmail.com" {...field} />
+                <Input placeholder="jimmy@gmail.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -60,17 +60,15 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Mot de passe</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Exemple: 91@a1b2c3d4"
-                  type="password"
-                  {...field}
-                />
+                <Input placeholder="91@a1b2c3d4" type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Se connecter</Button>
+        <Button className="w-full" type="submit">
+          Se connecter
+        </Button>
       </form>
     </Form>
   )
