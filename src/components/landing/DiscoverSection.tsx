@@ -55,8 +55,9 @@ const DiscoverLaPince = () => {
                 ))}
                 <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-2">
                   {[0, 1, 2].map((idx) => (
-                    <button
+                    <Button
                       key={idx}
+                      size="sm"
                       onClick={() => setActiveTab(idx)}
                       className={`h-3 w-3 rounded-full transition-all ${
                         activeTab === idx

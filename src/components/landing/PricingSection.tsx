@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowRight } from 'lucide-react'
 import plans from '../../app/data/pricing.json'
+import Link from 'next/link'
 
 export default function PricingSection() {
   const [isVisible, setIsVisible] = useState(false)
@@ -81,7 +82,7 @@ export default function PricingSection() {
                     </li>
                   ))}
                 </ul>
-                <a
+                <Link
                   href={plan.buttonLink}
                   className={`group flex w-full items-center justify-center rounded-lg px-6 py-3 font-medium transition-all ${
                     plan.isPremium
@@ -91,7 +92,7 @@ export default function PricingSection() {
                 >
                   <span>{plan.buttonText}</span>
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </a>
+                </Link>
               </div>
             ))}
           </div>

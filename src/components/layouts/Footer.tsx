@@ -43,12 +43,12 @@ export default function Footer() {
               <ul className="space-y-2 text-sm">
                 {section.links.map(({ label, href }, linkIndex) => (
                   <li key={linkIndex}>
-                    <a
+                    <Link
                       href={href}
                       className="text-slate-500 transition duration-150 ease-in-out hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-500"
                     >
                       {label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -62,7 +62,7 @@ export default function Footer() {
           <ul className="mb-4 flex space-x-6 md:order-1 md:mb-0 md:ml-4">
             {socialLinks.map(({ href, label, iconPath }, index) => (
               <li key={index}>
-                <a
+                <Link
                   href={href}
                   className="text-blue-500 transition duration-150 ease-in-out hover:text-blue-600"
                   aria-label={label}
@@ -74,7 +74,7 @@ export default function Footer() {
                   >
                     <path d={iconPath} />
                   </svg>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
