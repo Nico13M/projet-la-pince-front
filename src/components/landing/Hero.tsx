@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { ArrowRight, CreditCard, TrendingUp } from 'lucide-react'
-import Chat from '../../../public/chat.jpg'
+import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import Chat from '../../../public/chats.jpg'
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -91,8 +91,7 @@ const Hero = () => {
                 animationDelay: `${Math.random() * 10}s`,
                 animationIterationCount: 'infinite',
                 animationTimingFunction: 'ease-in-out',
-                '--random-x': `${Math.random() * 200 - 100}px`,
-                '--random-y': `${Math.random() * 200 - 100}px`,
+                transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`,
               }}
             ></div>
           ))}

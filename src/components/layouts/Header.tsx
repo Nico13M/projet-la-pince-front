@@ -37,8 +37,8 @@ export default function Header() {
             {/* Desktop sign-in links */}
             <ul className="flex grow flex-wrap items-center justify-end space-x-5 lg:space-x-8">
               {[
-                { label: 'Se connecter', href: '/signin' },
-                { label: 'Créer un compte', href: '/signup' },
+                { label: 'Se connecter', href: '/sign-in' },
+                { label: 'Créer un compte', href: '/sign-up' },
               ].map(({ label, href }, index) => (
                 <li key={index}>
                   <Link

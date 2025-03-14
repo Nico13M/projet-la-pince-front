@@ -1,7 +1,7 @@
-import { AppSidebar } from '@/components/app-sidebar'
-import { BudgetOverview } from '@/components/budget-overview'
-import { RecentTransactions } from '@/components/recent-transaction'
-import { StatCards } from '@/components/stat-cards'
+import { AppSidebar } from '@/components/AppSidebar'
+import { BudgetOverview } from '@/components/BudgetOverview'
+import { RecentTransactions } from '@/components/RecentTransactions'
+import { StatCards } from '@/components/StatCard'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { BellIcon } from 'lucide-react'
 //import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
