@@ -1,32 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-
-const testimonials = [
-  {
-    testimonial:
-      "La Pince a transformé ma façon de gérer mon budget. Je comprends enfin où va mon argent et comment l'optimiser.",
-    name: 'Sophie M.',
-    role: 'Freelance',
-    image: '/Sophie.webp',
-    delay: 100,
-  },
-  {
-    testimonial:
-      "Interface élégante et fonctionnalités puissantes. J'ai économisé plus en 3 mois qu'en toute l'année dernière!",
-    name: 'Marc D.',
-    role: 'Entrepreneur',
-    image: '/Marc.webp',
-    delay: 300,
-  },
-  {
-    testimonial:
-      'Enfin une app qui rend la gestion de budget accessible et même agréable. Je la recommande à tous mes amis.',
-    name: 'Léa K.',
-    role: 'Étudiante',
-    image: '/Lea.webp',
-    delay: 500,
-  },
-]
+import testimonials from '../../app/data/testimonials.json'
 
 const stats = [
   { number: '98%', label: 'Taux de satisfaction', delay: 200 },

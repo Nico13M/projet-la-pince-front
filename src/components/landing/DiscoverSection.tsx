@@ -1,46 +1,13 @@
+'use client'
+
 import { useState } from 'react'
 import Image from 'next/image'
 import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import features from '../../app/data/discovers_features.json'
 
 const DiscoverLaPince = () => {
   const [activeTab, setActiveTab] = useState(0)
-
-  const features = [
-    {
-      title: 'Suivez vos dépenses en temps réel',
-      description:
-        'Connectez vos comptes bancaires pour un suivi automatique ou ajoutez manuellement vos transactions. Catégorisation intelligente pour comprendre où va votre argent.',
-      items: [
-        'Synchronisation bancaire sécurisée',
-        'Catégorisation automatique',
-        'Notifications de dépenses inhabituelles',
-      ],
-      image: '/dashboard-expenses.png',
-    },
-    {
-      title: 'Créez des budgets qui fonctionnent',
-      description:
-        'Établissez des budgets mensuels adaptés à vos objectifs et à votre style de vie. Suivez votre progression et recevez des alertes avant de dépasser vos limites.',
-      items: [
-        'Budgets personnalisables par catégorie',
-        'Alertes de dépassement',
-        'Suivi visuel de progression',
-      ],
-      image: '/dashboard-budget.png',
-    },
-    {
-      title: 'Analysez et optimisez vos finances',
-      description:
-        'Visualisez vos tendances de dépenses, identifiez les opportunités d’économie et suivez votre progression vers vos objectifs financiers.',
-      items: [
-        'Graphiques interactifs et personnalisables',
-        'Comparaisons mensuelles et annuelles',
-        'Rapports détaillés exportables',
-      ],
-      image: '/dashboard-analytics.png',
-    },
-  ]
 
   return (
     <section className="bg-background py-24">
@@ -88,8 +55,9 @@ const DiscoverLaPince = () => {
                 ))}
                 <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-2">
                   {[0, 1, 2].map((idx) => (
-                    <button
+                    <Button
                       key={idx}
+                      size="sm"
                       onClick={() => setActiveTab(idx)}
                       className={`h-3 w-3 rounded-full transition-all ${
                         activeTab === idx

@@ -49,7 +49,6 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${poppins.variable} ${roboto.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
         {children}
         <Footer />
       </body>

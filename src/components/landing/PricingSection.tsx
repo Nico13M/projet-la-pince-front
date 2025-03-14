@@ -1,34 +1,9 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { ArrowRight } from 'lucide-react'
-
-const plans = [
-  {
-    title: 'Essai gratuit',
-    features: [
-      'Accès à toutes les fonctionnalités',
-      "14 jours d'essai",
-      'Pas de carte de crédit',
-    ],
-    buttonText: 'Commencer gratuitement',
-    buttonLink: '/register',
-    isPopular: false,
-    isPremium: false,
-  },
-  {
-    title: 'Abonnement Premium',
-    price: '€4.99/mois',
-    features: [
-      'Toutes les fonctionnalités standard',
-      'Synchronisation multi-comptes',
-      'Prévisions financières avancées',
-      'Support prioritaire',
-    ],
-    buttonText: "S'abonner maintenant",
-    buttonLink: '/premium',
-    isPopular: true,
-    isPremium: true,
-  },
-]
+import plans from '../../app/data/pricing.json'
+import Link from 'next/link'
 
 export default function PricingSection() {
   const [isVisible, setIsVisible] = useState(false)
@@ -107,7 +82,7 @@ export default function PricingSection() {
                     </li>
                   ))}
                 </ul>
-                <a
+                <Link
                   href={plan.buttonLink}
                   className={`group flex w-full items-center justify-center rounded-lg px-6 py-3 font-medium transition-all ${
                     plan.isPremium
@@ -117,7 +92,7 @@ export default function PricingSection() {
                 >
                   <span>{plan.buttonText}</span>
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </a>
+                </Link>
               </div>
             ))}
           </div>
