@@ -81,17 +81,17 @@ const Hero = () => {
               key={i}
               className="particle absolute rounded-full bg-white/30"
               style={{
-                width: `${Math.random() * 10 + 5}px`,
-                height: `${Math.random() * 10 + 5}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                opacity: Math.random() * 0.5 + 0.2,
+                width: '10px',
+                height: '10px',
+                left: `${(i * 5) % 100}%`,
+                top: `${(i * 7) % 100}%`,
+                opacity: 0.3,
                 animationName: 'floatParticle',
-                animationDuration: `${Math.random() * 30 + 20}s`,
-                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: '25s',
+                animationDelay: `${i}s`,
                 animationIterationCount: 'infinite',
                 animationTimingFunction: 'ease-in-out',
-                transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`,
+                transform: `translate(${(i % 10) * 10}px, ${(i % 10) * 10}px)`,
               }}
             ></div>
           ))}
