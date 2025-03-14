@@ -1,6 +1,6 @@
 import { AppSidebar } from '@/components/AppSidebar'
 import { BudgetOverview } from '@/components/BudgetOverview'
-import { RecentTransactions } from '@/components/RecentTransaction'
+import { RecentTransactions } from '@/components/RecentTransactions'
 import { StatCards } from '@/components/StatCard'
 import {
   SidebarInset,
