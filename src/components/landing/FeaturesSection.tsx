@@ -1,5 +1,14 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { Wallet, BarChart3, PieChart } from 'lucide-react'
+import features from '../../app/data/features_section.json'
+
+const iconMap: any = {
+  Wallet: <Wallet className="text-primary h-7 w-7" />,
+  BarChart3: <BarChart3 className="text-primary h-7 w-7" />,
+  PieChart: <PieChart className="text-primary h-7 w-7" />,
+}
 
 const FeaturesSection = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -7,30 +16,6 @@ const FeaturesSection = () => {
   useEffect(() => {
     setIsVisible(true)
   }, [])
-
-  const features = [
-    {
-      icon: <Wallet className="text-primary h-7 w-7" />,
-      title: 'Suivi des Dépenses',
-      description:
-        'Visualisez et catégorisez automatiquement vos transactions pour identifier facilement où va votre argent.',
-      delay: 100,
-    },
-    {
-      icon: <BarChart3 className="text-primary h-7 w-7" />,
-      title: 'Budgets Personnalisés',
-      description:
-        'Créez des budgets sur mesure pour chaque catégorie et recevez des alertes lorsque vous approchez de vos limites.',
-      delay: 200,
-    },
-    {
-      icon: <PieChart className="text-primary h-7 w-7" />,
-      title: 'Analyses Visuelles',
-      description:
-        'Obtenez des insights pertinents grâce à des graphiques interactifs et des rapports personnalisés.',
-      delay: 300,
-    },
-  ]
 
   return (
     <section id="features" className="bg-muted/30 py-24">
@@ -63,7 +48,7 @@ const FeaturesSection = () => {
               }}
             >
               <div className="bg-primary/10 mb-6 flex h-14 w-14 items-center justify-center rounded-xl">
-                {feature.icon}
+                {iconMap[feature.icon]}
               </div>
               <h3 className="text-xl font-semibold">{feature.title}</h3>
               <p className="text-muted-foreground mt-3">

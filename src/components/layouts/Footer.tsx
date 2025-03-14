@@ -1,47 +1,8 @@
 import Link from 'next/link'
+import footerData from '../../app/data/footer.json'
 
 export default function Footer() {
-  const footerLinks = [
-    {
-      title: 'Comment ça marche',
-      links: [
-        { label: 'Aperçu', href: '#' },
-        { label: 'Tarifs', href: '#' },
-        { label: 'Fonctionnalités', href: '#' },
-      ],
-    },
-    {
-      title: 'Ressources',
-      links: [
-        { label: 'Témoignages', href: '#' },
-        { label: "Centre d'aide", href: '#' },
-        { label: 'Contact', href: '#' },
-      ],
-    },
-    {
-      title: 'Produits',
-      links: [
-        { label: 'Partenaires', href: '#' },
-        { label: 'Sécurité', href: '#' },
-        { label: 'Assistance financière', href: '#' },
-      ],
-    },
-    {
-      title: 'À propos',
-      links: [
-        { label: 'Notre histoire', href: '#' },
-        { label: 'Carrières', href: '#' },
-        { label: "Conditions d'utilisation", href: '#' },
-      ],
-    },
-  ]
-
-  const socialLinks = [
-    { href: '#', label: 'Twitter', iconPath: 'M6.329 1l4.369 5...' },
-    { href: '#', label: 'Facebook', iconPath: 'M20 10.025C20 4.491...' },
-    { href: '#', label: 'Telegram', iconPath: 'M19.96 2.336a.421...' },
-    { href: '#', label: 'Github', iconPath: 'M10.041 0C4.52 0...' },
-  ]
+  const { footerLinks, socialLinks } = footerData
 
   return (
     <footer className="bg-slate-50 dark:bg-slate-900">

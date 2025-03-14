@@ -1,34 +1,8 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { ArrowRight } from 'lucide-react'
-
-const plans = [
-  {
-    title: 'Essai gratuit',
-    features: [
-      'Accès à toutes les fonctionnalités',
-      "14 jours d'essai",
-      'Pas de carte de crédit',
-    ],
-    buttonText: 'Commencer gratuitement',
-    buttonLink: '/register',
-    isPopular: false,
-    isPremium: false,
-  },
-  {
-    title: 'Abonnement Premium',
-    price: '€4.99/mois',
-    features: [
-      'Toutes les fonctionnalités standard',
-      'Synchronisation multi-comptes',
-      'Prévisions financières avancées',
-      'Support prioritaire',
-    ],
-    buttonText: "S'abonner maintenant",
-    buttonLink: '/premium',
-    isPopular: true,
-    isPremium: true,
-  },
-]
+import plans from '../../app/data/pricing.json'
 
 export default function PricingSection() {
   const [isVisible, setIsVisible] = useState(false)
