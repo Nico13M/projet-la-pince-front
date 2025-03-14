@@ -6,7 +6,9 @@ export function BudgetOverview() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle>Budget Overview</CardTitle>
-        <Button variant="link" className="h-auto p-0 text-sm">
+
+        <Button variant="link" className="h-auto cursor-pointer p-0 text-sm">
+
           Manage budgets
         </Button>
       </CardHeader>

@@ -16,6 +16,9 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import Link from 'next/link'
+import Image from 'next/image'
+
 
 export function AppSidebar() {
   return (
@@ -24,56 +27,62 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#" className="flex items-center gap-2">
+
+              <Link href="#" className="flex items-center gap-2">
+
                 <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-md">
                   <Wallet className="size-5" />
                 </div>
                 <span className="text-lg font-semibold">La Pince</span>
-              </a>
+
+              </Link>
+
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive>
-              <a href="#">
+
+          <SidebarMenuItem className="mx-3">
+            <SidebarMenuButton asChild isActive variant="default">
+              <Link href="#">
                 <Home className="size-5" />
                 <span>Dashboard</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="mx-3">
             <SidebarMenuButton asChild>
-              <a href="#">
+              <Link href="#">
                 <CreditCard className="size-5" />
                 <span>Transactions</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="mx-3">
             <SidebarMenuButton asChild>
-              <a href="#">
+              <Link href="#">
                 <PieChart className="size-5" />
                 <span>Budgets</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="mx-3">
             <SidebarMenuButton asChild>
-              <a href="#">
+              <Link href="#">
                 <BarChart2 className="size-5" />
                 <span>Analytics</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="mx-3">
             <SidebarMenuButton asChild>
-              <a href="#">
+              <Link href="#">
                 <Settings className="size-5" />
                 <span>Settings</span>
-              </a>
+              </Link>
+
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
