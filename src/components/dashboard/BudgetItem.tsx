@@ -1,14 +1,14 @@
-interface BudgetItemProps {
-  name: string
-  currentAmount: number
-  totalAmount: number
-}
+import { formatEuro } from '@/utils/formatEuro'
 
 export function BudgetItem({
   name,
   currentAmount,
   totalAmount,
-}: BudgetItemProps) {
+}: {
+  name: string
+  currentAmount: number
+  totalAmount: number
+}) {
   const percentage = (currentAmount / totalAmount) * 100
 
   return (
@@ -16,7 +16,7 @@ export function BudgetItem({
       <div className="mb-1 flex items-center justify-between">
         <p className="font-medium">{name}</p>
         <p className="text-muted-foreground text-sm">
-          {currentAmount}€ / {totalAmount}€
+          {formatEuro(currentAmount)} / {formatEuro(totalAmount)}
         </p>
       </div>
       <div className="bg-muted h-2 w-full rounded-full">

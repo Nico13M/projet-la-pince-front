@@ -6,10 +6,10 @@ export function BudgetOverview() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle>Budget Overview</CardTitle>
+        <CardTitle>Vue d'ensemble des budgets</CardTitle>
 
         <Button variant="link" className="h-auto cursor-pointer p-0 text-sm">
-          Manage budgets
+          Gérer les budgets
         </Button>
       </CardHeader>
       <CardContent>
