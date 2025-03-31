@@ -1,17 +1,15 @@
-import { AppSidebar } from '@/components/AppSidebar'
-import { BudgetOverview } from '@/components/BudgetOverview'
-import { RecentTransactions } from '@/components/RecentTransactions'
-import { StatCards } from '@/components/StatCard'
+import { AppSidebar } from '@/components/dashboard/AppSidebar'
+import { BudgetOverview } from '@/components/dashboard/BudgetOverview'
+import { RecentTransactions } from '@/components/dashboard/RecentTransactions'
+import { StatCards } from '@/components/dashboard/StatCard'
 import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
 } from '@/components/ui/sidebar'
 
-        
-import { BellIcon } from 'lucide-react'
-//import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from '@/components/ui/button'
+import { BellIcon } from 'lucide-react'
 
 export default function DashboardPage() {
   return (
@@ -27,10 +25,6 @@ export default function DashboardPage() {
                 <BellIcon className="h-5 w-5" />
                 <span className="sr-only">Notifications</span>
               </Button>
-              {/* <Avatar>
-                <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar> */}
             </div>
           </header>
           <main className="flex-1 p-4 md:p-6">
