@@ -6,23 +6,24 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { formatEuro } from '@/utils/formatEuro'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 const savingsData = [
-  { month: 'Jan', epargne: 200, objectif: 250 },
-  { month: 'Fév', epargne: 300, objectif: 300 },
-  { month: 'Mar', epargne: 250, objectif: 300 },
-  { month: 'Avr', epargne: 400, objectif: 350 },
-  { month: 'Mai', epargne: 350, objectif: 400 },
-  { month: 'Juin', epargne: 500, objectif: 450 },
+  { month: 'Jan', savings: 200, goal: 250 },
+  { month: 'Fév', savings: 300, goal: 300 },
+  { month: 'Mar', savings: 250, goal: 300 },
+  { month: 'Avr', savings: 400, goal: 350 },
+  { month: 'Mai', savings: 350, goal: 400 },
+  { month: 'Juin', savings: 500, goal: 450 },
 ]
 
 const chartConfig = {
-  epargne: {
+  savings: {
     label: 'Épargne Réelle',
     color: 'hsl(var(--chart-1))',
   },
-  objectif: {
+  goal: {
     label: 'Objectif',
     color: 'hsl(var(--chart-2))',
   },
@@ -38,15 +39,15 @@ export function SavingsProgress() {
         <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
           <AreaChart accessibilityLayer data={savingsData}>
             <defs>
-              <linearGradient id="colorEpargne" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="colorsavings" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-epargne)"
+                  stopColor="var(--color-savings)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-epargne)"
+                  stopColor="var(--color-savings)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -66,19 +67,29 @@ export function SavingsProgress() {
             />
             <Area
               type="monotone"
-              dataKey="epargne"
-              stroke="var(--color-epargne)"
+              dataKey="savings"
+              stroke="var(--color-savings)"
               fillOpacity={1}
-              fill="url(#colorEpargne)"
+              fill="url(#colorsavings)"
             />
             <Area
               type="monotone"
-              dataKey="objectif"
-              stroke="var(--color-objectif)"
+              dataKey="goal"
+              stroke="var(--color-goal)"
               fill="none"
               strokeDasharray="5 5"
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name) => {
+                    const label =
+                      chartConfig[name as keyof typeof chartConfig]?.label
+                    return `${label} : ${formatEuro(value as number)}`
+                  }}
+                />
+              }
+            />
           </AreaChart>
         </ChartContainer>
       </CardContent>

@@ -5,12 +5,12 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 
-import { Button } from '@/components/ui/button'
-import { PieChartIcon, BellIcon } from 'lucide-react'
-import { ExpenseTrend } from '@/components/analytics/ExpenseTrend'
 import { BudgetDistribution } from '@/components/analytics/BudgetDistribution'
 import { CategoryAnalysis } from '@/components/analytics/CategoryAnalysis'
+import { ExpenseTrend } from '@/components/analytics/ExpenseTrend'
 import { SavingsProgress } from '@/components/analytics/SavingsProgress'
+import { Button } from '@/components/ui/button'
+import { BellIcon } from 'lucide-react'
 
 export default function AnalyticsPage() {
   return (
@@ -44,4 +44,4 @@ export default function AnalyticsPage() {
       </SidebarInset>
     </SidebarProvider>
   )
-} 
+}

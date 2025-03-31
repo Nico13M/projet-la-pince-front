@@ -46,7 +46,7 @@ export function BudgetDistribution() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle>Distribution du Budget</CardTitle>
+        <CardTitle>Distribution des Dépenses</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
