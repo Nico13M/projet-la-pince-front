@@ -15,25 +15,28 @@ import { useToast } from "@/hooks/use-toast"
 import { DatePickerFormField } from "@/components/forms/DatePickerFormField"
 
 const formSchema = z.object({
-    item: z.string().min(2, { message: "Le nom du budget doit contenir au moins 2 caractères" }),
+    Budget: z.string().min(2, { message: "Le nom du budget doit contenir au moins 2 caractères" }),
     date: z.date(),
     category: z.string().min(1, { message: "Veuillez sélectionner une catégorie" }),
     amount: z.string().refine((val) => !isNaN(Number(val)), {
         message: "Le montant doit être un nombre",
     }),
+    Description: z.string().optional(),
+
 })
 
 export default function BudgetForm() {
     const { showToast } = useToast()
-    const [transactions, setTransactions] = useState<any[]>([])
+    const [Budgets, setBudgets] = useState<any[]>([])
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            item: "",
+            Budget: "",
             date: new Date(),
             category: "",
             amount: "",
+            Description: "",
         },
     })
 
@@ -44,26 +47,27 @@ export default function BudgetForm() {
             currency: "EUR",
         })
 
-        const newTransaction = {
+        const newBudget = {
             id: Date.now(),
-            item: values.item,
+            Budget: values.Budget,
             date: format(values.date, "dd/MM/yyyy"),
             category: values.category,
             amount: formattedAmount,
+            Description: values.Description,
         }
+        console.log(newBudget);
 
-
-        setTransactions([newTransaction, ...transactions])
+        setBudgets([newBudget, ...Budgets])
 
 
         form.reset()
 
         showToast({
-            title: "Transaction ajoutée",
-            description: "La transaction a été ajoutée avec succès",
+            title: "Budget ajoutée",
+            description: "La Budget a été ajoutée avec succès",
         })
 
-        window.dispatchEvent(new CustomEvent("transaction-added", { detail: newTransaction }))
+        window.dispatchEvent(new CustomEvent("Budget-added", { detail: newBudget }))
     }
 
     return (
@@ -72,7 +76,7 @@ export default function BudgetForm() {
                 <div className="grid gap-4 md:grid-cols-2">
                     <FormField
                         control={form.control}
-                        name="item"
+                        name="Budget"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Budget</FormLabel>
@@ -128,10 +132,26 @@ export default function BudgetForm() {
                             </FormItem>
                         )}
                     />
+                    <FormField
+                        control={form.control}
+                        name="Description"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Notes supplémentaires (optionnel)"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
 
                 <Button type="submit" className="w-full">
-                    Ajouter la transaction
+                    Ajouter la Budget
                 </Button>
             </form>
         </Form>

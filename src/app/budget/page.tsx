@@ -1,6 +1,7 @@
 import BudgetForm from "@/components/forms/budgetForm"
-import TransactionList from "@/components/transaction-list"
+
 import { Pagination } from "@/components/pagination"
+import BudgetList from "@/components/BudgetList"
 
 export default function BudgetPage() {
     return (
@@ -38,13 +39,13 @@ export default function BudgetPage() {
                 {/* Content */}
                 <main className="flex-1 p-4 md:p-6">
                     <div className="mx-auto max-w-3xl">
-                        <h2 className="mb-6 text-center text-xl font-semibold">Ajouter Transaction</h2>
+                        <h2 className="mb-6 text-center text-xl font-semibold">Ajouter Budget</h2>
                         <BudgetForm />
 
                         <div className="mt-8">
-                            <h3 className="mb-4 text-lg font-medium">Tableau des transactions</h3>
+                            <h3 className="mb-4 text-lg font-medium">Tableau des Budget</h3>
                             <div className="rounded-md border">
-                                <TransactionList />
+                                <BudgetList />
                             </div>
                             <Pagination />
                         </div>

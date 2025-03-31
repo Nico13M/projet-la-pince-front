@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 import { UseFormReturn } from "react-hook-form";
 
 interface DatePickerFormFieldProps {
-    form: UseFormReturn<{ date: Date; item: string; category: string; amount: string }>
+    form: UseFormReturn<{ date: Date; Budget: string; category: string; amount: string; Description: string }>
 }
 
 export function DatePickerFormField({ form }: DatePickerFormFieldProps) {
