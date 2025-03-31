@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Edit, Trash2 } from "lucide-react"
-
+import { Edit, Trash2, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
@@ -16,6 +15,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useToast } from "@/hooks/use-toast"
 
 // Sample initial data
@@ -23,7 +23,7 @@ const initialBudgets = [
     {
         id: 1,
         Budget: "lorem ipsum",
-        Description: "Description desc",
+        Description: "Description courte",
         date: "11/03/2025",
         category: "Logement",
         amount: "- XX,XX €",
@@ -31,7 +31,7 @@ const initialBudgets = [
     {
         id: 2,
         Budget: "lorem ipsum",
-        Description: "Description desc",
+        Description: "Cette description est beaucoup plus longue et nécessitera d'être tronquée dans le tableau avec un bouton pour voir l'intégralité du texte dans une popup",
         date: "11/03/2025",
         category: "Logement",
         amount: "- XX,XX €",
@@ -92,7 +92,32 @@ export default function BudgetList() {
                             Budgets.map((Budget) => (
                                 <TableRow key={Budget.id}>
                                     <TableCell className="font-medium">{Budget.Budget}</TableCell>
-                                    <TableCell className="font-medium">{Budget.Description}</TableCell>
+                                    <TableCell className="max-w-[200px]">
+                                        <div className="flex items-center gap-2">
+                                            <span className="line-clamp-1">
+                                                {Budget.Description || 'Aucune description'}
+                                            </span>
+                                            {Budget.Description && Budget.Description.length > 50 && (
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-6 w-6"
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                            <span className="sr-only">Voir description complète</span>
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-80">
+                                                        <p className="text-sm">
+                                                            {Budget.Description}
+                                                        </p>
+                                                    </PopoverContent>
+                                                </Popover>
+                                            )}
+                                        </div>
+                                    </TableCell>
                                     <TableCell>{Budget.date}</TableCell>
                                     <TableCell>{Budget.category}</TableCell>
                                     <TableCell>{Budget.amount}</TableCell>
@@ -117,7 +142,7 @@ export default function BudgetList() {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center">
+                                <TableCell colSpan={6} className="h-24 text-center">
                                     Aucune Budget disponible
                                 </TableCell>
                             </TableRow>
@@ -143,4 +168,3 @@ export default function BudgetList() {
         </>
     )
 }
-
