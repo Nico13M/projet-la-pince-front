@@ -3,9 +3,9 @@ import { BudgetOverview } from '@/components/BudgetOverview'
 import { RecentTransactions } from '@/components/RecentTransactions'
 import { StatCards } from '@/components/StatCard'
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
 } from '@/components/ui/sidebar'
 
         
@@ -13,7 +13,7 @@ import { BellIcon } from 'lucide-react'
 //import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from '@/components/ui/button'
 
-export function DashboardPage() {
+export default function DashboardPage() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -47,4 +47,3 @@ export function DashboardPage() {
     </SidebarProvider>
   )
 }
-export default DashboardPage
