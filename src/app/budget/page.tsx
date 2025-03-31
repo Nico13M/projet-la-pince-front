@@ -2,7 +2,7 @@ import BudgetForm from "@/components/forms/budgetForm"
 
 import { Pagination } from "@/components/pagination"
 import BudgetList from "@/components/BudgetList"
-
+import "./budget.css";
 export default function BudgetPage() {
     return (
         <div className="flex min-h-screen bg-background">
