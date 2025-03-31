@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { Edit, Trash2, Eye, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -227,6 +226,27 @@ export default function BudgetList() {
                                 <Input
                                     value={tempEdit?.Description || ''}
                                     onChange={(e) => handleEditChange('Description', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Date</label>
+                                <Input
+                                    value={tempEdit?.date || ''}
+                                    onChange={(e) => handleEditChange('date', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Catégories</label>
+                                <Input
+                                    value={tempEdit?.category || ''}
+                                    onChange={(e) => handleEditChange('category', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Montant</label>
+                                <Input
+                                    value={tempEdit?.amount || ''}
+                                    onChange={(e) => handleEditChange('amount', e.target.value)}
                                 />
                             </div>
                             <div className="flex justify-end space-x-2">
