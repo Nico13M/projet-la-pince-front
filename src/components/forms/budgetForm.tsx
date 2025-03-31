@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast"
 import { DatePickerFormField } from "@/components/forms/DatePickerFormField"
 
 const formSchema = z.object({
-    item: z.string().min(2, { message: "L'item doit contenir au moins 2 caractères" }),
+    item: z.string().min(2, { message: "Le nom du budget doit contenir au moins 2 caractères" }),
     date: z.date(),
     category: z.string().min(1, { message: "Veuillez sélectionner une catégorie" }),
     amount: z.string().refine((val) => !isNaN(Number(val)), {
@@ -75,9 +75,9 @@ export default function BudgetForm() {
                         name="item"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Item</FormLabel>
+                                <FormLabel>Budget</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Nom de l'item" {...field} />
+                                    <Input placeholder="Budget" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -117,7 +117,7 @@ export default function BudgetForm() {
                         name="amount"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Montant</FormLabel>
+                                <FormLabel>Objectif</FormLabel>
                                 <FormControl>
                                     <div className="relative">
                                         <Input type="text" placeholder="0.00" {...field} className="pr-8" />
