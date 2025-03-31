@@ -10,12 +10,22 @@ export function parseStringToDate(dateString: string): Date {
   return parse(dateString, DATE_FORMAT, new Date())
 }
 
-export const formatEuro = (amount: number) => {
+export const formatEuro = (amount: number, rounded: boolean = false) => {
+  if (rounded && Number.isInteger(amount)) {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
+
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
   }).format(amount)
 }
+
 
 export function parseCurrencyToNumber(currencyString: string): number {
   const cleaned = currencyString.replace(/[^0-9.,]/g, '')

@@ -1,4 +1,4 @@
-import { formatEuro } from '@/utils/formatEuro'
+import { formatEuro } from '@/utils/format'
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 
 export function StatCardContent({
