@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Edit, Trash2, Eye } from "lucide-react"
+import { Edit, Trash2, Eye, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -43,6 +44,8 @@ export default function BudgetList() {
     const [Budgets, setBudgets] = useState(initialBudgets)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [BudgetToDelete, setBudgetToDelete] = useState<number | null>(null)
+    const [editingBudget, setEditingBudget] = useState<number | null>(null) // Etat pour savoir quel budget est en édition
+    const [tempEdit, setTempEdit] = useState<any>(null) // Etat pour stocker les modifications temporaires
 
     // Listen for new Budgets
     useEffect(() => {
@@ -71,6 +74,32 @@ export default function BudgetList() {
             })
         }
         setDeleteDialogOpen(false)
+    }
+
+    const startEditing = (Budget: any) => {
+        setTempEdit(Budget)
+        setEditingBudget(Budget.id)
+    }
+
+    const cancelEdit = () => {
+        setTempEdit(null)
+        setEditingBudget(null)
+    }
+
+    const handleEditChange = (field: string, value: string) => {
+        setTempEdit((prev: any) => ({
+            ...prev,
+            [field]: value,
+        }))
+    }
+
+    const saveEdit = () => {
+        setBudgets(Budgets.map((budget) => (budget.id === tempEdit.id ? tempEdit : budget)))
+        setEditingBudget(null)
+        showToast({
+            title: "Budget modifié",
+            description: "Les modifications ont été enregistrées avec succès",
+        })
     }
 
     return (
@@ -123,19 +152,49 @@ export default function BudgetList() {
                                     <TableCell>{Budget.amount}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end space-x-1">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                <Edit className="h-4 w-4" />
-                                                <span className="sr-only">Modifier</span>
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                onClick={() => handleDelete(Budget.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                                <span className="sr-only">Supprimer</span>
-                                            </Button>
+                                            {editingBudget === Budget.id ? (
+                                                <>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 text-green-600 hover:text-green-700"
+                                                        onClick={saveEdit}
+                                                    >
+                                                        <Check className="h-4 w-4" />
+                                                        <span className="sr-only">Valider</span>
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 text-red-600 hover:text-red-700"
+                                                        onClick={cancelEdit}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                        <span className="sr-only">Annuler</span>
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        onClick={() => startEditing(Budget)}
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                        <span className="sr-only">Modifier</span>
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        onClick={() => handleDelete(Budget.id)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Supprimer</span>
+                                                    </Button>
+                                                </>
+                                            )}
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -150,6 +209,36 @@ export default function BudgetList() {
                     </TableBody>
                 </Table>
             </div>
+
+            {editingBudget && (
+                <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50">
+                    <div className="bg-white p-8 rounded-lg w-1/3">
+                        <h2 className="text-lg font-semibold mb-4">Modifier le Budget</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Budget</label>
+                                <Input
+                                    value={tempEdit?.Budget || ''}
+                                    onChange={(e) => handleEditChange('Budget', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Description</label>
+                                <Input
+                                    value={tempEdit?.Description || ''}
+                                    onChange={(e) => handleEditChange('Description', e.target.value)}
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <Button variant="outline" onClick={cancelEdit}>
+                                    Annuler
+                                </Button>
+                                <Button onClick={saveEdit}>Enregistrer</Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>
