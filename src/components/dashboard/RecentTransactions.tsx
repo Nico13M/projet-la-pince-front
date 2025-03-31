@@ -1,6 +1,6 @@
-import { Building, ShoppingBag, Utensils } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Building, ShoppingBag, Utensils } from 'lucide-react'
 
 export function RecentTransactions() {
   return (
@@ -9,7 +9,6 @@ export function RecentTransactions() {
         <CardTitle>Recent Transactions</CardTitle>
 
         <Button variant="link" className="h-auto cursor-pointer p-0 text-sm">
-
           See all
         </Button>
       </CardHeader>
