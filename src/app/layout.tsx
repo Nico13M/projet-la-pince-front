@@ -1,19 +1,12 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Inter, Poppins, Roboto } from 'next/font/google'
+import { Geist, Geist_Mono, Poppins, Roboto } from 'next/font/google'
 import Footer from '../components/layouts/Footer'
-import Header from '../components/layouts/Header'
 
 import './globals.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
-})
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
 })
 
 const geistMono = Geist_Mono({

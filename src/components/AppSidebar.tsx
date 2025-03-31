@@ -17,8 +17,6 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
-import Image from 'next/image'
-
 
 export function AppSidebar() {
   return (
@@ -27,23 +25,18 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-
               <Link href="#" className="flex items-center gap-2">
-
                 <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-md">
                   <Wallet className="size-5" />
                 </div>
                 <span className="text-lg font-semibold">La Pince</span>
-
               </Link>
-
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-
           <SidebarMenuItem className="mx-3">
             <SidebarMenuButton asChild isActive variant="default">
               <Link href="#">
@@ -82,7 +75,6 @@ export function AppSidebar() {
                 <Settings className="size-5" />
                 <span>Settings</span>
               </Link>
-
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

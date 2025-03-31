@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Wallet, BarChart3, PieChart } from 'lucide-react'
+import { BarChart3, PieChart, Wallet } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import features from '../../app/data/features_section.json'
 
-const iconMap: any = {
+const iconMap: Record<string, React.ReactNode> = {
   Wallet: <Wallet className="text-primary h-7 w-7" />,
   BarChart3: <BarChart3 className="text-primary h-7 w-7" />,
   PieChart: <PieChart className="text-primary h-7 w-7" />,
