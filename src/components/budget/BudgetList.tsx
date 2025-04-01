@@ -13,9 +13,10 @@ import { useToast } from '@/hooks/use-toast'
 import { SavedBudget } from '@/types/budget'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { BudgetEditor } from './budget/BudgetEditor'
-import { ConfirmDeleteDialog } from './budget/ConfirmDeleteDialog'
-import { DescriptionPopover } from './budget/DescriptionPopover'
+import { TableSkeleton } from '../ui/skeleton/skeleton-table'
+import { BudgetEditor } from './BudgetEditor'
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
+import { DescriptionPopover } from './DescriptionPopover'
 
 // Données initiales pour les tests
 const initialBudgets: SavedBudget[] = [
@@ -92,7 +93,11 @@ export default function BudgetList() {
       description: 'Le budget a été supprimé avec succès',
     })
   }
+  const [isLoading, setIsLoading] = useState(false)
 
+  if (isLoading) {
+    return <TableSkeleton />
+  }
   return (
     <>
       <div className="overflow-x-auto">
