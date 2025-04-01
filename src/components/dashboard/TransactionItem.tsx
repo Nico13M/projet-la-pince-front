@@ -1,5 +1,5 @@
 import { categoryIcons } from '@/utils/categoryIcons'
-import { formatEuro } from '@/utils/formatEuro'
+import { formatEuro } from '@/utils/format'
 
 export function TransactionItem({
   name,

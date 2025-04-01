@@ -1,4 +1,4 @@
-import { formatEuro } from '@/utils/formatEuro'
+import { formatEuro } from '@/utils/format'
 
 export function BudgetItem({
   name,
@@ -20,7 +20,10 @@ export function BudgetItem({
         </p>
       </div>
       <div className="bg-muted h-2 w-full rounded-full">
-        <div className={`bg-primary h-full rounded-full w-[${percentage}%]`} />
+        <div
+          className={`bg-primary h-full rounded-full`}
+          style={{ width: `${percentage}%` }}
+        />
       </div>
     </div>
   )
