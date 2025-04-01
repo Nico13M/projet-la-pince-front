@@ -1,11 +1,11 @@
 import { AppSidebar } from '@/components/dashboard/AppSidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
-interface DashboardLayoutProps {
+export default function DashboardLayout({
+  children,
+}: {
   children: React.ReactNode
-}
-
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+}) {
   return (
     <SidebarProvider>
       <AppSidebar />
