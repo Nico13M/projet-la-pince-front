@@ -1,8 +1,16 @@
+'use client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from 'react'
+import { TableSkeleton } from '../ui/skeleton/table'
 import { BudgetItem } from './BudgetItem'
 
 export function BudgetOverview() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  if (isLoading) {
+    return <TableSkeleton />
+  }
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
