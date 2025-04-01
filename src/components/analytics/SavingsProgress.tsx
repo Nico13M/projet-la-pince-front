@@ -6,7 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import { formatEuro } from '@/utils/formatEuro'
+import { formatEuro } from '@/utils/format'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 const savingsData = [
