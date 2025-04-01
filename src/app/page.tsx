@@ -1,11 +1,11 @@
-import '../app/globals.css'
-import Hero from '../components/landing/Hero'
-import FeaturesSection from '../components/landing/FeaturesSection'
-import DiscoverSection from '../components/landing/DiscoverSection'
-import CommunityFeedback from '../components/landing/Feedbacks'
-import PricingSection from '../components/landing/PricingSection'
+import FooterLanding from '@/components/landing/FooterLanding'
 import Header from '@/components/layouts/Header'
-
+import '../app/globals.css'
+import DiscoverSection from '../components/landing/DiscoverSection'
+import FeaturesSection from '../components/landing/FeaturesSection'
+import CommunityFeedback from '../components/landing/Feedbacks'
+import Hero from '../components/landing/Hero'
+import PricingSection from '../components/landing/PricingSection'
 export default function Home() {
   return (
     <main className="font-inter bg-background text-foreground min-h-screen antialiased">
@@ -15,6 +15,7 @@ export default function Home() {
       <DiscoverSection />
       <CommunityFeedback />
       <PricingSection />
+      <FooterLanding />
     </main>
   )
 }
