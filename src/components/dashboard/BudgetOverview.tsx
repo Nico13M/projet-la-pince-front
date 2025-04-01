@@ -2,11 +2,11 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useState } from 'react'
-import { TableSkeleton } from '../ui/skeleton/table'
+import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetItem } from './BudgetItem'
 
 export function BudgetOverview() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   if (isLoading) {
     return <TableSkeleton />

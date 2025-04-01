@@ -7,7 +7,9 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 import { formatEuro } from '@/utils/format'
+import { useState } from 'react'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
 
 const expenseData = [
   { month: 'Jan', expense: 1250, income: 2500 },
@@ -30,6 +32,11 @@ const chartConfig = {
 }
 
 export function ExpenseTrend() {
+  const [isLoading, setIsLoading] = useState(false)
+
+  if (isLoading) {
+    return <AnalyticsSkeleton />
+  }
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">

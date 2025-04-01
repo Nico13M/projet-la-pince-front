@@ -3,11 +3,11 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useState } from 'react'
-import { TableSkeleton } from '../ui/skeleton/table'
+import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { TransactionItem } from './TransactionItem'
 
 export function RecentTransactions() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   if (isLoading) {
     return <TableSkeleton />

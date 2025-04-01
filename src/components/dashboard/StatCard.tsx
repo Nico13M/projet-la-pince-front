@@ -2,11 +2,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CreditCard, DollarSign, PieChart, PiggyBank } from 'lucide-react'
 import { useState } from 'react'
-import { CardSkeleton } from '../ui/skeleton/card'
+import { CardSkeleton } from '../ui/skeleton/skeleton-card'
 import { StatCardContent } from './StatCardContent'
 
 export function StatCards() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
