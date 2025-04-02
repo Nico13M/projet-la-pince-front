@@ -2,10 +2,10 @@
 
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import TransactionForm from '@/components/forms/TransactionForm'
-import EditTransactionModal from '@/components/gestion/EditTransactionModal'
-import TransactionList from '@/components/gestion/TransactionList'
 import { useState } from 'react'
 import { Transaction } from '../../../types/transaction'
+import { Pagination } from '@/components/Pagination'
+import TransactionList from '@/components/gestion/TransactionList'
 
 export default function GestionPage() {
   const [transactions, setTransactions] = useState([
@@ -27,60 +27,28 @@ export default function GestionPage() {
     },
   ])
 
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [transactionToEdit, setTransactionToEdit] =
-    useState<Transaction | null>(null)
-
   const addTransaction = (transaction: Transaction) => {
     setTransactions([...transactions, transaction])
-  }
-
-  const updateTransaction = (updatedTransaction: Transaction) => {
-    setTransactions((prev) =>
-      prev.map((transaction) =>
-        transaction.id === updatedTransaction.id
-          ? updatedTransaction
-          : transaction,
-      ),
-    )
-    setIsEditMode(false)
-    setTransactionToEdit(null)
-  }
-
-  const removeTransaction = (id: number) => {
-    setTransactions(transactions.filter((transaction) => transaction.id !== id))
-  }
-
-  const onEditTransaction = (transaction: Transaction) => {
-    setTransactionToEdit(transaction)
-    setIsEditMode(true)
   }
 
   return (
     <>
       <DashboardHeader title="Gestion" />
 
-      <div className="space-y-8 py-6">
-        <TransactionForm onAddTransaction={addTransaction} />
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-6 text-xl font-semibold text-slate-800">
-            Transactions
-          </h2>
-          <TransactionList
-            transactions={transactions}
-            onEditTransaction={onEditTransaction}
-            onRemoveTransaction={removeTransaction}
-          />
+      <div className="p-4 md:p-6">
+        <div className="mx-auto max-w-3xl">
+          <TransactionForm onAddTransaction={addTransaction} />
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-lg font-medium">
+              Tableau des Transactions
+            </h3>
+            <div className="rounded-md">
+              <TransactionList />
+            </div>
+          </div>
         </div>
+        <Pagination />
       </div>
-
-      {isEditMode && transactionToEdit && (
-        <EditTransactionModal
-          transaction={transactionToEdit}
-          onSave={updateTransaction}
-          onClose={() => setIsEditMode(false)}
-        />
-      )}
     </>
   )
 }

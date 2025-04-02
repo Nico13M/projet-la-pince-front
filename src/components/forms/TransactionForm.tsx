@@ -52,7 +52,7 @@ function TransactionForm({
   }
   return (
     <div>
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:mb-6">
         <h2 className="mb-1 text-xl font-semibold text-slate-800">
           Gestion des Transactions
         </h2>
