@@ -37,7 +37,6 @@ const formSchema = z.object({
     .nonnegative({ message: 'Le montant doit être positif' }),
   description: z.string().optional(),
 })
-
 export default function BudgetForm() {
   const { showToast } = useToast()
 
@@ -77,13 +76,13 @@ export default function BudgetForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 rounded-lg border p-6"
       >
-        <div className="grid gap-4 md:grid-cols-2">
-          {/* Champ nom du budget */}
+
+        <div className="flex space-x-4">
           <FormField
             control={form.control}
             name="budget"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Budget</FormLabel>
                 <FormControl>
                   <Input placeholder="Nom du budget" {...field} />
@@ -93,26 +92,33 @@ export default function BudgetForm() {
             )}
           />
 
-          <DatePickerField form={form} name="date" label="Date" />
-          <CategorySelect form={form} name="category" />
-          <MoneyInput form={form} name="amount" label="Objectif" />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="md:col-span-2">
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Notes supplémentaires (optionnel)"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <DatePickerField form={form} name="date" label="Date" className="flex-1" />
         </div>
+
+
+        <div className="flex space-x-4">
+          <CategorySelect form={form} name="category" label="Catégorie" className="flex-1" />
+          <MoneyInput form={form} name="amount" label="Objectif" className="flex-1" />
+        </div>
+
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Notes supplémentaires (optionnel)"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
 
         <Button type="submit" className="w-full">
           Ajouter le budget

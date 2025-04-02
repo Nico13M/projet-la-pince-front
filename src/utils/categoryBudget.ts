@@ -4,4 +4,6 @@ export const BUDGET_CATEGORIES = [
   'Transport',
   'Loisirs',
   'Santé',
+  'études'
 ]
+
