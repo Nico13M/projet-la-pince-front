@@ -10,7 +10,13 @@ import {
 
 const types = ['Dépense', 'Revenu', 'Transfert']
 
-function TypeSelector({ type, setType }) {
+function TypeSelector({
+  type,
+  setType,
+}: {
+  type: string
+  setType: (type: string) => void
+}) {
   return (
     <div>
       <label

@@ -1,13 +1,13 @@
 'use client'
 
-import EditTransactionModal from '@/components/gestion/EditTransactionModal'
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import TransactionForm from '@/components/forms/TransactionForm'
+import EditTransactionModal from '@/components/gestion/EditTransactionModal'
 import TransactionList from '@/components/gestion/TransactionList'
 import { useState } from 'react'
 import { Transaction } from '../../../types/transaction'
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 
-export default function Gestion() {
+export default function GestionPage() {
   const [transactions, setTransactions] = useState([
     {
       id: 1,
@@ -28,7 +28,8 @@ export default function Gestion() {
   ])
 
   const [isEditMode, setIsEditMode] = useState(false)
-  const [transactionToEdit, setTransactionToEdit] = useState(null)
+  const [transactionToEdit, setTransactionToEdit] =
+    useState<Transaction | null>(null)
 
   const addTransaction = (transaction: Transaction) => {
     setTransactions([...transactions, transaction])
@@ -73,10 +74,9 @@ export default function Gestion() {
         </div>
       </div>
 
-      {isEditMode && (
+      {isEditMode && transactionToEdit && (
         <EditTransactionModal
           transaction={transactionToEdit}
-          onUpdateTransaction={updateTransaction}
           onSave={updateTransaction}
           onClose={() => setIsEditMode(false)}
         />

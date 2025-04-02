@@ -1,6 +1,12 @@
 import { Input } from '../ui/input'
 
-export default function MontantPage({ montant, setMontant }) {
+export default function AmountInput({
+  amount,
+  setAmount,
+}: {
+  amount: string
+  setAmount: (amount: string) => void
+}) {
   return (
     <div>
       <label
@@ -12,8 +18,8 @@ export default function MontantPage({ montant, setMontant }) {
       <div className="relative">
         <Input
           id="montant"
-          value={montant}
-          onChange={(e) => setMontant(e.target.value.replace(/[^0-9.,]/g, ''))}
+          value={amount}
+          onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ''))}
           placeholder="0,00"
           className="pr-8"
         />

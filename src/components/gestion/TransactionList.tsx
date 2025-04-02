@@ -1,9 +1,13 @@
-import React from 'react'
+import { Transaction } from '@/types/transaction'
 
 function TransactionList({
   transactions,
   onEditTransaction,
   onRemoveTransaction,
+}: {
+  transactions: Transaction[]
+  onEditTransaction: (transaction: Transaction) => void
+  onRemoveTransaction: (id: number) => void
 }) {
   if (transactions.length === 0) {
     return (

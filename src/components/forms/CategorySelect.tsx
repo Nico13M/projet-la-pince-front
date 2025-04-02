@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { BUDGET_CATEGORIES } from '@/types/budget'
+import { BUDGET_CATEGORIES } from '@/utils/categoryBudget'
 import { Path, UseFormReturn } from 'react-hook-form'
 
 interface CategorySelectProps<T extends Record<string, any>> {

@@ -1,17 +1,23 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Calendar as CalendarComponent } from '@/components/ui/calendar'
-import { Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { Calendar } from 'lucide-react'
 
-function DatePicker({ date, setDate }) {
+function DatePicker({
+  date,
+  setDate,
+}: {
+  date: Date
+  setDate: (date: Date) => void
+}) {
   return (
     <div>
       <label

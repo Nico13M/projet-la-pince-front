@@ -3,24 +3,42 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogFooter,
-  DialogTitle,
+  DialogHeader,
   DialogOverlay,
+  DialogTitle,
 } from '@/components/ui/dialog'
 
 import { Calendar } from 'lucide-react'
 
-import { useState, useEffect } from 'react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Button } from '../ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
+import { Transaction } from '@/types/transaction'
 import { format } from 'date-fns'
+import { useEffect, useState } from 'react'
 import { categories } from '../forms/TransactionForm'
+import { Button } from '../ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
-export default function EditTransactionModal({ transaction, onSave, onClose }) {
-  const [formData, setFormData] = useState(transaction || {})
-  const [date, setDate] = useState(
+export default function EditTransactionModal({
+  transaction,
+  onSave,
+  onClose,
+}: {
+  transaction: Transaction
+  onSave: (transaction: Transaction) => void
+  onClose: () => void
+}) {
+  const [formData, setFormData] = useState<Transaction>(
+    transaction || {
+      id: 0,
+      description: '',
+      montant: '',
+      date: '',
+      categorie: '',
+      type: '',
+    },
+  )
+  const [date, setDate] = useState<Date | null>(
     transaction?.date ? new Date(transaction.date) : null,
   )
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
@@ -31,12 +49,14 @@ export default function EditTransactionModal({ transaction, onSave, onClose }) {
     }
   }, [transaction])
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleDateChange = (selectedDate) => {
+  const handleDateChange = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       setDate(selectedDate)
       setFormData((prev) => ({
@@ -99,7 +119,7 @@ export default function EditTransactionModal({ transaction, onSave, onClose }) {
               <PopoverContent className="w-auto p-0" align="start">
                 <CalendarComponent
                   mode="single"
-                  selected={date}
+                  selected={date || undefined}
                   onSelect={handleDateChange}
                 />
               </PopoverContent>

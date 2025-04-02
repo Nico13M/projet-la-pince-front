@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Transaction } from '@/types/transaction'
 import { format } from 'date-fns'
-import Montant from '../gestion/Montant'
-import Description from '../gestion/Description'
-import DatePicker from '../gestion/DatePicker'
+import { Plus } from 'lucide-react'
+import { useState } from 'react'
+import AmountInput from '../gestion/AmountInput'
 import CategorySelector from '../gestion/CategorySelector'
-import TypeSelector from '../TypeSelector'
+import DatePicker from '../gestion/DatePicker'
+import Description from '../gestion/Description'
+import TypeSelector from '../gestion/TypeSelector'
 
 export const categories = [
   'Alimentation',
@@ -20,7 +21,11 @@ export const categories = [
   'Revenus',
 ]
 
-function TransactionForm({ onAddTransaction }) {
+function TransactionForm({
+  onAddTransaction,
+}: {
+  onAddTransaction: (transaction: Transaction) => void
+}) {
   const [date, setDate] = useState(new Date())
   const [description, setDescription] = useState('')
   const [montant, setMontant] = useState('')
@@ -60,12 +65,10 @@ function TransactionForm({ onAddTransaction }) {
             description={description}
             setDescription={setDescription}
           />
-          <Montant value={montant} setMontant={setMontant} />
 
+          <AmountInput amount={montant} setAmount={setMontant} />
           <DatePicker date={date} setDate={setDate} />
-
           <CategorySelector categorie={categorie} setCategorie={setCategorie} />
-
           <TypeSelector type={type} setType={setType} />
 
           <div className="md:col-span-2">

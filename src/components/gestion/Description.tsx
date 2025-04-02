@@ -1,7 +1,12 @@
-import React from 'react'
 import { Input } from '../ui/input'
 
-function Description({ description, setDescription }) {
+function Description({
+  description,
+  setDescription,
+}: {
+  description: string
+  setDescription: (description: string) => void
+}) {
   return (
     <div>
       <label

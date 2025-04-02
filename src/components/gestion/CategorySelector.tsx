@@ -7,18 +7,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { BUDGET_CATEGORIES } from '@/utils/categoryBudget'
 
-export const categories = [
-  'Alimentation',
-  'Transport',
-  'Logement',
-  'Loisirs',
-  'Santé',
-  'Éducation',
-  'Revenus',
-]
-
-function CategorySelector({ categorie, setCategorie }) {
+function CategorySelector({
+  categorie,
+  setCategorie,
+}: {
+  categorie: string
+  setCategorie: (categorie: string) => void
+}) {
   return (
     <div>
       <label
@@ -32,7 +29,7 @@ function CategorySelector({ categorie, setCategorie }) {
           <SelectValue placeholder="Sélectionner une catégorie" />
         </SelectTrigger>
         <SelectContent>
-          {categories.map((cat) => (
+          {BUDGET_CATEGORIES.map((cat) => (
             <SelectItem key={cat} value={cat}>
               {cat}
             </SelectItem>

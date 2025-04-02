@@ -13,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { BUDGET_CATEGORIES, SavedBudget } from '@/types/budget'
+import { SavedBudget } from '@/types/budget'
+import { BUDGET_CATEGORIES } from '@/utils/categoryBudget'
 import { parseStringToDate } from '@/utils/format'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
