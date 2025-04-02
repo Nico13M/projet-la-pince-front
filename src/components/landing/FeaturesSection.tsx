@@ -1,64 +1,57 @@
 'use client'
 
-import { BarChart3, PieChart, Wallet } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
-import features from '../../app/data/features_section.json'
+import { useVisibilityAnimation } from '@/hooks/useVisibilityAnimation'
+import FeatureCard from './FeatureCard'
+import Section from './Section'
+import SectionTitle from './SectionTitle'
 
-const iconMap: Record<string, React.ReactNode> = {
-  Wallet: <Wallet className="text-primary h-7 w-7" />,
-  BarChart3: <BarChart3 className="text-primary h-7 w-7" />,
-  PieChart: <PieChart className="text-primary h-7 w-7" />,
-}
+const features = [
+  {
+    icon: 'Wallet',
+    title: 'Suivi des Dépenses',
+    description:
+      'Visualisez et catégorisez automatiquement vos transactions pour identifier facilement où va votre argent.',
+    delay: 100,
+  },
+  {
+    icon: 'BarChart3',
+    title: 'Budgets Personnalisés',
+    description:
+      'Créez des budgets sur mesure pour chaque catégorie et recevez des alertes lorsque vous approchez de vos limites.',
+    delay: 200,
+  },
+  {
+    icon: 'PieChart',
+    title: 'Analyses Visuelles',
+    description:
+      'Obtenez des insights pertinents grâce à des graphiques interactifs et des rapports personnalisés.',
+    delay: 300,
+  },
+]
 
 const FeaturesSection = () => {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
+  const { visibilityClasses } = useVisibilityAnimation()
 
   return (
-    <section id="features" className="bg-muted/30 py-24">
-      <div className="mx-auto max-w-7xl px-6">
-        <div
-          className="mb-16 transform text-center transition-all duration-700"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
-          }}
-        >
-          <h2 className="text-primary text-3xl font-bold md:text-4xl">
-            Des outils conçus pour votre réussite financière
-          </h2>
-          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-            Gardez le contrôle de vos finances grâce à des fonctionnalités
-            intuitives et puissantes.
-          </p>
-        </div>
+    <Section id="features" bgColor="bg-muted/30">
+      <SectionTitle
+        title="Des outils conçus pour votre réussite financière"
+        subtitle="Gardez le contrôle de vos finances grâce à des fonctionnalités intuitives et puissantes."
+        className={visibilityClasses()}
+      />
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="rounded-2xl bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-md"
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-                transitionDelay: `${feature.delay}ms`,
-              }}
-            >
-              <div className="bg-primary/10 mb-6 flex h-14 w-14 items-center justify-center rounded-xl">
-                {iconMap[feature.icon]}
-              </div>
-              <h3 className="text-xl font-semibold">{feature.title}</h3>
-              <p className="text-muted-foreground mt-3">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {features.map((feature, index) => (
+          <FeatureCard
+            key={index}
+            icon={feature.icon}
+            title={feature.title}
+            description={feature.description}
+            className={visibilityClasses(feature.delay)}
+          />
+        ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
