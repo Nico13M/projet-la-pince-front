@@ -4,7 +4,7 @@ import { useVisibilityAnimation } from '@/hooks/useVisibilityAnimation'
 import { ArrowRight, CreditCard, TrendingUp } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import Chat from '../../../public/chats.jpg'
+import FeaturePreview from '../../../public/hero-preview.webp'
 const Hero = () => {
   const { isVisible, visibilityClasses } = useVisibilityAnimation()
   return (
@@ -23,7 +23,7 @@ const Hero = () => {
             </p>
             <div className="mt-12 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/register"
+                href="/sign-up"
                 className="group text-primary hover:bg-opacity-90 flex items-center justify-center rounded-full bg-white px-8 py-4 font-medium transition-all hover:scale-105 hover:shadow-lg"
               >
                 <span>Démarrer gratuitement</span>
@@ -44,7 +44,7 @@ const Hero = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="animate-float relative h-[560px] w-[560px] overflow-hidden rounded-[40px] border-8 border-white/20 shadow-2xl">
                 <Image
-                  src={Chat}
+                  src={FeaturePreview}
                   alt="Application mobile La Pince"
                   fill
                   className="object-cover"
@@ -59,7 +59,7 @@ const Hero = () => {
             </div>
             <div className="animate-float-slow absolute top-40 -right-14 rounded-xl bg-white/90 px-4 py-2 shadow-lg backdrop-blur">
               <p className="text-primary text-sm font-medium">
-                +28% d'économies
+                Optimisez vos finances !
               </p>
             </div>
           </div>
