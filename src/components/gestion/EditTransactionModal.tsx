@@ -12,11 +12,11 @@ import {
 import { Calendar } from 'lucide-react'
 
 import { useState, useEffect } from 'react'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { Button } from './ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { Button } from '../ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { format } from 'date-fns'
-import { categories } from './TransactionForm'
+import { categories } from '../forms/TransactionForm'
 
 export default function EditTransactionModal({ transaction, onSave, onClose }) {
   const [formData, setFormData] = useState(transaction || {})

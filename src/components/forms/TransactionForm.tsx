@@ -4,11 +4,11 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
-import Montant from './Montant'
-import Description from './Description'
-import DatePicker from './DatePicker'
-import CategorySelector from './CategorySelector'
-import TypeSelector from './TypeSelector'
+import Montant from '../gestion/Montant'
+import Description from '../gestion/Description'
+import DatePicker from '../gestion/DatePicker'
+import CategorySelector from '../gestion/CategorySelector'
+import TypeSelector from '../TypeSelector'
 
 export const categories = [
   'Alimentation',

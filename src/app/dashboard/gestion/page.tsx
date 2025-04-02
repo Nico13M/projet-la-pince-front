@@ -1,12 +1,11 @@
 'use client'
 
-import { AppSidebar } from '@/components/AppSidebar'
-import EditTransactionModal from '@/components/EditTransactionModal'
-import TransactionForm from '@/components/TransactionForm'
-import TransactionList from '@/components/TransactionList'
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import EditTransactionModal from '@/components/gestion/EditTransactionModal'
+import TransactionForm from '@/components/forms/TransactionForm'
+import TransactionList from '@/components/gestion/TransactionList'
 import { useState } from 'react'
-import { Transaction } from '../../types/transactionTypes'
+import { Transaction } from '../../../types/transaction'
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 
 export default function Gestion() {
   const [transactions, setTransactions] = useState([
@@ -57,32 +56,31 @@ export default function Gestion() {
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="space-y-8 py-6">
-          <TransactionForm onAddTransaction={addTransaction} />
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-xl font-semibold text-slate-800">
-              Transactions
-            </h2>
-            <TransactionList
-              transactions={transactions}
-              onEditTransaction={onEditTransaction}
-              onRemoveTransaction={removeTransaction}
-            />
-          </div>
-        </div>
+    <>
+      <DashboardHeader title="Gestion" />
 
-        {isEditMode && (
-          <EditTransactionModal
-            transaction={transactionToEdit}
-            onUpdateTransaction={updateTransaction}
-            onSave={updateTransaction}
-            onClose={() => setIsEditMode(false)}
+      <div className="space-y-8 py-6">
+        <TransactionForm onAddTransaction={addTransaction} />
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-6 text-xl font-semibold text-slate-800">
+            Transactions
+          </h2>
+          <TransactionList
+            transactions={transactions}
+            onEditTransaction={onEditTransaction}
+            onRemoveTransaction={removeTransaction}
           />
-        )}
-      </SidebarInset>
-    </SidebarProvider>
+        </div>
+      </div>
+
+      {isEditMode && (
+        <EditTransactionModal
+          transaction={transactionToEdit}
+          onUpdateTransaction={updateTransaction}
+          onSave={updateTransaction}
+          onClose={() => setIsEditMode(false)}
+        />
+      )}
+    </>
   )
 }
