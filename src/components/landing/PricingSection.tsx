@@ -38,7 +38,11 @@ export default function PricingSection() {
   const { visibilityClasses } = useVisibilityAnimation()
 
   return (
-    <Section className="relative overflow-hidden" bgColor="bg-background">
+    <Section
+      id="pricing"
+      className="relative overflow-hidden"
+      bgColor="bg-background"
+    >
       <div className="relative z-10 mx-auto max-w-4xl text-center">
         <div className={visibilityClasses()}>
           <SectionTitle
