@@ -17,7 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { CategorySelect } from './CategorySelect'
-import { DatePickerField } from './DatePickerField'
+// import { DatePickerField } from './DatePickerField'
 import { MoneyInput } from './MoneyInput'
 
 // Schéma de validation du formulaire
@@ -92,7 +92,7 @@ export default function BudgetForm() {
             )}
           />
 
-          <DatePickerField form={form} name="date" label="Date" className="flex-1" />
+          {/* <DatePickerField form={form} name="date" label="Date" /> */}
         </div>
 
 

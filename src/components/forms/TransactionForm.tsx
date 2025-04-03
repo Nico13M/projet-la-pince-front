@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import AmountInput from '../gestion/AmountInput'
 import CategorySelector from '../gestion/CategorySelector'
-import DatePicker from '../gestion/DatePicker'
+// import DatePicker from '../gestion/DatePicker'
 import Description from '../gestion/Description'
 import TypeSelector from '../gestion/TypeSelector'
 
@@ -67,7 +67,7 @@ function TransactionForm({
           />
 
           <AmountInput amount={montant} setAmount={setMontant} />
-          <DatePicker date={date} setDate={setDate} />
+          {/* <DatePicker date={date} setDate={setDate} /> */}
           <CategorySelector categorie={categorie} setCategorie={setCategorie} />
           <TypeSelector type={type} setType={setType} />
 

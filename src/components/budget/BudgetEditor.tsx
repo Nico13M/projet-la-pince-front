@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+// import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import {
   Popover,
@@ -113,13 +113,13 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <Calendar
+                    {/* <Calendar
                       mode="single"
                       selected={editData.date}
                       onSelect={(date) => date && handleChange('date', date)}
                       initialFocus
                       locale={fr}
-                    />
+                    /> */}
                   </PopoverContent>
                 </Popover>
               </div>
