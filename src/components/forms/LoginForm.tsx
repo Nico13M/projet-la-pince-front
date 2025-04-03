@@ -14,10 +14,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react'
-import { Eye, EyeOff, GhostIcon } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
+import { useState } from 'react'
 
 const formSchema = z.object({
   email: z.string().email({
@@ -28,9 +27,8 @@ const formSchema = z.object({
   }),
 })
 
-
 export default function LoginForm() {
-  const [errorMessage, setErrorMEssage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [passwordVisible, setPasswordVisible] = useState(false)
   const router = useRouter()
@@ -44,14 +42,9 @@ export default function LoginForm() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values, "received values")
-
     try {
       setIsLoading(true)
       const API_LINK = process.env.NEXT_PUBLIC_API_LINK
-      console.log(API_LINK, 'api link')
-
-      if (!API_LINK) throw new Error("PAS DE LIEN API ZEBI")
 
       const response = await fetch(API_LINK + '/auth/signin', {
         method: 'POST',
@@ -59,20 +52,23 @@ export default function LoginForm() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(values)
+        body: JSON.stringify(values),
       })
       if (response.status === 429) {
-        setErrorMEssage("Trop de requête, veuillez réessayer plus tard ")
+        setErrorMessage('Trop de requête, veuillez réessayer plus tard ')
       }
       if (response.status === 403) {
-        setErrorMEssage("Identifiant ou mot de passe incorect")
+        setErrorMessage('Identifiant ou mot de passe incorect')
       }
       if (response.status === 201) {
         router.push('/dashboard')
       }
-      console.log(response)
     } catch (error) {
-      setErrorMEssage(error.message)
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else {
+        setErrorMessage('Une erreur est survenue')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -101,14 +97,17 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Mot de passe</FormLabel>
               <FormControl>
-                <div className='relative'>
-
-                  <Input placeholder="91@a1b2c3d4" type={passwordVisible ? 'text' : 'password'} {...field} />
-                  <Button type="button"
-
+                <div className="relative">
+                  <Input
+                    placeholder="91@a1b2c3d4"
+                    type={passwordVisible ? 'text' : 'password'}
+                    {...field}
+                  />
+                  <Button
+                    type="button"
                     onClick={() => setPasswordVisible(!passwordVisible)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 "
-                    variant={GhostIcon}
+                    className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-500"
+                    variant="ghost"
                   >
                     {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
                   </Button>
@@ -118,7 +117,7 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        {errorMessage && <p className="text-red-500" >{errorMessage}</p>}
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
         <Button className="w-full" type="submit" disabled={isLoading}>
           {isLoading ? 'Connexion en cours' : 'Se connecter'}
         </Button>
