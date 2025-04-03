@@ -18,7 +18,6 @@ export function CsrfProvider({ children }: { children: React.ReactNode }) {
             const response = await fetch(url, { credentials: 'include' })
             const data = await response.json()
             setCsrfToken(data.csrfToken)
-            console.log(data.csrfToken)
         } catch (error) {
             console.error('Erreur lors de la récupération du CSRF Token:', error)
         }

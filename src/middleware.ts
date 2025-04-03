@@ -3,12 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 const publicPaths = ['/sign-in', '/sign-up', '/api/auth'];
 
 export function middleware(request: NextRequest) {
-    console.log("Middleware exécuté pour :", request.nextUrl.pathname);
     const isAuthenticated = request.cookies.get("access_token");
-    console.log(isAuthenticated, "isAuthenticated")
-
     const path = request.nextUrl.pathname;
-
     const isPublicPath = publicPaths.some(publicPath => path.startsWith(publicPath));
 
     if (!isAuthenticated && !isPublicPath) {
