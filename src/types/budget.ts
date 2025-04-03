@@ -1,3 +1,5 @@
+import { BUDGET_CATEGORIES } from '@/utils/categoryBudget'
+
 export interface BudgetFormValues {
   budget: string
   date: Date
@@ -14,13 +16,5 @@ export interface SavedBudget {
   amount: string
   description?: string
 }
-
-export const BUDGET_CATEGORIES = [
-  'Logement',
-  'Alimentation',
-  'Transport',
-  'Loisirs',
-  'Santé',
-]
 
 export type BudgetCategory = (typeof BUDGET_CATEGORIES)[number]

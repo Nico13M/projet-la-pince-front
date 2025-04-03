@@ -21,7 +21,7 @@ import { fr } from 'date-fns/locale'
 import { Edit } from 'lucide-react'
 import { useState } from 'react'
 
-interface BudgetEditorProps {
+interface GestionEditorProps {
   budget: SavedBudget
   onSave: (id: number, updatedBudget: Partial<SavedBudget>) => void
 }
@@ -30,7 +30,7 @@ type EditableBudget = Omit<SavedBudget, 'date'> & {
   date: Date
 }
 
-export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
+export function BudgetEditor({ budget, onSave }: GestionEditorProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [editData, setEditData] = useState<EditableBudget | null>(null)
 
