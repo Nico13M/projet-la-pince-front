@@ -16,6 +16,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 import { Eye, EyeOff, GhostIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
 
 const formSchema = z.object({
   email: z.string().email({
@@ -31,6 +33,7 @@ export default function LoginForm() {
   const [errorMessage, setErrorMEssage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [passwordVisible, setPasswordVisible] = useState(false)
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,6 +45,7 @@ export default function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values, "received values")
+
     try {
       setIsLoading(true)
       const API_LINK = process.env.NEXT_PUBLIC_API_LINK
@@ -62,6 +66,9 @@ export default function LoginForm() {
       }
       if (response.status === 403) {
         setErrorMEssage("Identifiant ou mot de passe incorect")
+      }
+      if (response.status === 201) {
+        router.push('/dashboard')
       }
       console.log(response)
     } catch (error) {
