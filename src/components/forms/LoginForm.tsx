@@ -14,6 +14,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useState } from 'react'
+import { Eye, EyeOff, GhostIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
 
 const formSchema = z.object({
   email: z.string().email({
@@ -24,7 +28,13 @@ const formSchema = z.object({
   }),
 })
 
+
 export default function LoginForm() {
+  const [errorMessage, setErrorMEssage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [passwordVisible, setPasswordVisible] = useState(false)
+  const router = useRouter()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,8 +43,39 @@ export default function LoginForm() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values, "received values")
+
+    try {
+      setIsLoading(true)
+      const API_LINK = process.env.NEXT_PUBLIC_API_LINK
+      console.log(API_LINK, 'api link')
+
+      if (!API_LINK) throw new Error("PAS DE LIEN API ZEBI")
+
+      const response = await fetch(API_LINK + '/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(values)
+      })
+      if (response.status === 429) {
+        setErrorMEssage("Trop de requête, veuillez réessayer plus tard ")
+      }
+      if (response.status === 403) {
+        setErrorMEssage("Identifiant ou mot de passe incorect")
+      }
+      if (response.status === 201) {
+        router.push('/dashboard')
+      }
+      console.log(response)
+    } catch (error) {
+      setErrorMEssage(error.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -60,14 +101,26 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Mot de passe</FormLabel>
               <FormControl>
-                <Input placeholder="91@a1b2c3d4" type="password" {...field} />
+                <div className='relative'>
+
+                  <Input placeholder="91@a1b2c3d4" type={passwordVisible ? 'text' : 'password'} {...field} />
+                  <Button type="button"
+
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 "
+                    variant={GhostIcon}
+                  >
+                    {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
-          Se connecter
+        {errorMessage && <p className="text-red-500" >{errorMessage}</p>}
+        <Button className="w-full" type="submit" disabled={isLoading}>
+          {isLoading ? 'Connexion en cours' : 'Se connecter'}
         </Button>
       </form>
     </Form>
