@@ -1,9 +1,6 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-
+import { signup } from '@/app/_actions/signup/signup'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -14,31 +11,34 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeOff } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-const formSchema = z
-  .object({
-    firstName: z.string().min(2, {
-      message: 'Le prénom est obligatoire',
-    }),
-    lastName: z.string().min(2, {
-      message: 'Le nom est obligatoire',
-    }),
-    email: z.string().email({
-      message: 'Veuillez saisir une adresse email valide',
-    }),
-    password: z.string().min(8, {
-      message: 'Le mot de passe doit contenir au moins 8 caractères',
-    }),
-    confirmPassword: z.string().min(8, {
-      message: 'Le mot de passe doit contenir au moins 8 caractères',
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Les mots de passe ne correspondent pas',
-    path: ['confirmPassword'],
-  })
+const formSchema = z.object({
+  firstName: z.string().min(2, {
+    message: 'Le prénom est obligatoire',
+  }),
+  lastName: z.string().min(2, {
+    message: 'Le nom est obligatoire',
+  }),
+  email: z.string().email({
+    message: 'Veuillez saisir une adresse email valide',
+  }),
+  password: z.string().min(8, {
+    message: 'Le mot de passe doit contenir au moins 8 caractères',
+  }),
+})
 
 export default function SignUpForm() {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const [passwordVisible, setPasswordVisible] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,12 +46,30 @@ export default function SignUpForm() {
       lastName: '',
       email: '',
       password: '',
-      confirmPassword: '',
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setIsLoading(true)
+      const response = await signup(values)
+      if (response.statusCode === 201) {
+        router.push('/sign-in')
+      } else if (
+        response.statusCode === 403 &&
+        response.message === 'Credentials taken'
+      ) {
+        setErrorMessage('Ces identifiants sont déjà utilisés')
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else {
+        setErrorMessage('Une erreur est survenue')
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -102,28 +120,28 @@ export default function SignUpForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Mot de passe</FormLabel>
-              <FormControl>
-                <Input placeholder="91@a1b2c3d4" type="password" {...field} />
-              </FormControl>
+              <div className="relative">
+                <Input
+                  placeholder="91@a1b2c3d4"
+                  type={passwordVisible ? 'text' : 'password'}
+                  {...field}
+                />
+                <Button
+                  type="button"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                  className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-500"
+                  variant="ghost"
+                >
+                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                </Button>
+              </div>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirmer le mot de passe</FormLabel>
-              <FormControl>
-                <Input placeholder="91@a1b2c3d4" type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className="w-full" type="submit">
-          S'inscrire
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        <Button className="w-full" type="submit" disabled={isLoading}>
+          {isLoading ? 'Inscription en cours' : "S'inscrire"}
         </Button>
       </form>
     </Form>
