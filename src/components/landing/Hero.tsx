@@ -4,7 +4,7 @@ import { useVisibilityAnimation } from '@/hooks/useVisibilityAnimation'
 import { ArrowRight, CreditCard, TrendingUp } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import FeaturePreview from '../../../public/hero-preview.png'
+import FeaturePreview from '../../../public/hero-preview.webp'
 const Hero = () => {
   const { isVisible, visibilityClasses } = useVisibilityAnimation()
   return (

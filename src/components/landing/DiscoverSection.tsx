@@ -3,9 +3,9 @@
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { useState } from 'react'
-import AnalyticsPreview from '../../../public/analytics-preview.png'
-import BudgetPreview from '../../../public/budget-preview.png'
-import DashboardPreview from '../../../public/dashboard-preview.png'
+import AnalyticsPreview from '../../../public/analytics-preview.webp'
+import BudgetPreview from '../../../public/budget-preview.webp'
+import DashboardPreview from '../../../public/dashboard-preview.webp'
 import FeatureItem from './FeatureItem'
 import Section from './Section'
 import SectionTitle from './SectionTitle'
@@ -23,7 +23,7 @@ const features = [
     image: DashboardPreview,
   },
   {
-    title: 'Créez des budgets qui fonctionnent',
+    title: 'Créez des budgets personnalisés',
     description:
       'Établissez des budgets mensuels adaptés à vos objectifs et à votre style de vie. Suivez votre progression et recevez des alertes avant de dépasser vos limites.',
     items: [
