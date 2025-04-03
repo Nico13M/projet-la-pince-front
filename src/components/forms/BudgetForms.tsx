@@ -17,8 +17,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { CategorySelect } from './CategorySelect'
-// import { DatePickerField } from './DatePickerField'
+import { DatePickerField } from './DatePickerField'
 import { MoneyInput } from './MoneyInput'
+import { Calendar } from '../ui/calendar'
+import { useState } from "react";
 
 // Schéma de validation du formulaire
 const formSchema = z.object({
@@ -39,6 +41,7 @@ const formSchema = z.object({
 })
 export default function BudgetForm() {
   const { showToast } = useToast()
+  const [date, setDate] = useState<Date | null>(null)
 
   const form = useForm<BudgetFormValues>({
     resolver: zodResolver(formSchema),
@@ -92,7 +95,7 @@ export default function BudgetForm() {
             )}
           />
 
-          {/* <DatePickerField form={form} name="date" label="Date" /> */}
+          <DatePickerField form={form} name="date" label="Date" />
         </div>
 
 
