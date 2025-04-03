@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { useState } from 'react'
+import AnalyticsPreview from '../../../public/analytics-preview.png'
+import BudgetPreview from '../../../public/budget-preview.png'
 import DashboardPreview from '../../../public/dashboard-preview.png'
 import FeatureItem from './FeatureItem'
 import Section from './Section'
@@ -29,14 +31,19 @@ const features = [
       'Alertes de dépassement',
       'Suivi visuel de progression',
     ],
-    image: '/budget-preview.png',
+    image: BudgetPreview,
   },
   {
     title: 'Analysez et optimisez vos finances',
     description:
       "Visualisez vos tendances de dépenses, identifiez les opportunités d'économie et suivez votre progression vers vos objectifs financiers.",
-    items: ['Graphiques interactifs', 'Comparaisons mensuelles et annuelles'],
-    image: '/dashboard-analytics.png',
+    items: [
+      'Graphiques interactifs',
+      'Analyse des dépenses',
+      'Comparaisons mensuelles',
+      'Suivi des dépenses par catégorie',
+    ],
+    image: AnalyticsPreview,
   },
 ]
 
