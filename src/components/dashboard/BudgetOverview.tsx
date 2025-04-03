@@ -22,9 +22,9 @@ export function BudgetOverview() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <BudgetItem name="Groceries" currentAmount={350} totalAmount={500} />
+          <BudgetItem name="Loisirs" currentAmount={350} totalAmount={500} />
           <BudgetItem
-            name="Entertainment"
+            name="Restaurants"
             currentAmount={180}
             totalAmount={200}
           />
