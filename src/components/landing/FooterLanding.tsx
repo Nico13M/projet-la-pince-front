@@ -1,5 +1,60 @@
 import Link from 'next/link'
-import footerData from '../../app/data/footer.json'
+
+const footerData = {
+  footerLinks: [
+    {
+      title: 'Informations',
+      links: [
+        { label: 'Tarifs', href: '#pricing' },
+        { label: 'Fonctionnalités', href: '#features' },
+      ],
+    },
+    {
+      title: 'Contact',
+      links: [
+        {
+          label: 'Email: contact@lapince.fr',
+          href: 'mailto:contact@lapince.fr',
+        },
+        { label: 'Téléphone: 06 06 06 06 06', href: 'tel:0606060606' },
+        {
+          label: 'Adresse: 75 rue du Budget, Paris',
+          href: 'https://maps.google.com/?q=Paris',
+        },
+      ],
+    },
+    {
+      title: 'Légal',
+      links: [
+        { label: 'Mentions légales', href: '/legal-mentions' },
+        { label: 'Politique de confidentialité', href: '/legal-privacy' },
+        { label: 'CGU', href: '/legal-conditions' },
+      ],
+    },
+  ],
+  socialLinks: [
+    {
+      href: 'https://twitter.com/lapince',
+      label: 'Twitter',
+      iconPath: 'M6.329 1l4.369 5...',
+    },
+    {
+      href: 'https://facebook.com/lapince',
+      label: 'Facebook',
+      iconPath: 'M20 10.025C20 4.491...',
+    },
+    {
+      href: 'https://instagram.com/lapince',
+      label: 'Instagram',
+      iconPath: 'M19.96 2.336a.421...',
+    },
+    {
+      href: 'https://linkedin.com/company/lapince',
+      label: 'LinkedIn',
+      iconPath: 'M10.041 0C4.52 0...',
+    },
+  ],
+}
 
 export default function FooterLanding() {
   const { footerLinks, socialLinks } = footerData
@@ -13,7 +68,7 @@ export default function FooterLanding() {
               <Link
                 href="/"
                 className="inline-flex text-blue-600 transition duration-150 ease-in-out"
-                aria-label="GestionBudget"
+                aria-label="LaPince"
               >
                 <svg
                   className="h-8 w-8 fill-current"
