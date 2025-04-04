@@ -83,7 +83,6 @@ function DatePickerInput({ field, placeholder }: DatePickerInputProps) {
           disabled={(date) => date > new Date()}
           initialFocus
           locale={fr}
-          captionLayout="dropdown-buttons"
           fromYear={2020}
           toYear={new Date().getFullYear()}
         />
