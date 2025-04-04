@@ -10,7 +10,7 @@ export function BudgetItem({
   totalAmount: number
 }) {
   const percentage = (currentAmount / totalAmount) * 100
-
+  console.log(currentAmount, totalAmount, "erere")
   return (
     <div>
       <div className="mb-1 flex items-center justify-between">

@@ -1,12 +1,23 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CreditCard, DollarSign, PieChart, PiggyBank } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CardSkeleton } from '../ui/skeleton/skeleton-card'
 import { StatCardContent } from './StatCardContent'
+import { fetchOneBudgetSummary } from '@/app/_actions/dashbord/fetchOneBudgetSummary'
+import { set } from 'date-fns'
 
 export function StatCards() {
   const [isLoading, setIsLoading] = useState(false)
+  const [budgetSummaryData, setBudgetSummaryData] = useState([])
+  
+  useEffect(() => {
+    async function fetchData() {
+      const data = await fetchOneBudgetSummary();
+      setBudgetSummaryData(data);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -25,7 +36,7 @@ export function StatCards() {
               <DollarSign className="text-primary h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <StatCardContent value={3580.45} percentage={2.5} />
+              <StatCardContent value={budgetSummaryData?.remainingBalance} percentage={2.5} />
             </CardContent>
           </Card>
           <Card>
@@ -37,7 +48,7 @@ export function StatCards() {
             </CardHeader>
             <CardContent>
               <StatCardContent
-                value={1245.8}
+                value={budgetSummaryData?.totalExpense}
                 percentage={4.3}
                 isPositive={false}
               />
@@ -51,7 +62,7 @@ export function StatCards() {
               <PiggyBank className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <StatCardContent value={850} percentage={12.3} />
+              <StatCardContent value={budgetSummaryData?.totalInvestment} percentage={12.3} />
             </CardContent>
           </Card>
           <Card>

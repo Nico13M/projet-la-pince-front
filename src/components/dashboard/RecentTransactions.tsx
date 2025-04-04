@@ -2,12 +2,22 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { TransactionItem } from './TransactionItem'
+import { fetchUserTransactions } from '@/app/_actions/dashbord/fetchUserTransactions'
 
 export function RecentTransactions() {
   const [isLoading, setIsLoading] = useState(false)
+  const [transactionData, setTransactionData] = useState([])
+
+   useEffect(() => {
+      async function fetchData() {
+        const data = await fetchUserTransactions();
+        setTransactionData(data.data);
+      }
+      fetchData();
+    }, []);
 
   if (isLoading) {
     return <TableSkeleton />
@@ -23,27 +33,15 @@ export function RecentTransactions() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <TransactionItem
-            name="Gucci"
-            category="shopping"
-            amount={82.5}
-            date={new Date('2023-11-15')}
-            type="expense"
-          />
-          <TransactionItem
-            name="McDonald's"
-            category="restaurant"
-            amount={45.2}
-            date={new Date('2023-11-15')}
-            type="expense"
-          />
-          <TransactionItem
-            name="Electricité"
-            category="utilities"
-            amount={2850}
-            date={new Date('2023-11-15')}
-            type="income"
-          />
+          {Array.isArray(transactionData) && transactionData?.map((transaction) => (
+            <TransactionItem
+              key={transaction.id}
+              name={transaction.name}
+              amount={transaction.amount}
+              date={transaction.dateOfExpense}
+              transactionType={transaction.transactionType}
+            />
+          ))}
         </div>
       </CardContent>
     </Card>

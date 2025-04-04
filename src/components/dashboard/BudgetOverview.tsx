@@ -1,12 +1,23 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetItem } from './BudgetItem'
+import { fetchUserBudget } from '@/app/_actions/dashbord/fetchUserBudget'
 
 export function BudgetOverview() {
   const [isLoading, setIsLoading] = useState(false)
+  const [budgetData, setBudgetData] = useState([])
+
+  useEffect(() => {
+        async function fetchData() {
+          const data = await fetchUserBudget();
+          console.log(data, "ddd")
+          setBudgetData(data);
+        }
+        fetchData();
+      }, []);
 
   if (isLoading) {
     return <TableSkeleton />
@@ -22,13 +33,16 @@ export function BudgetOverview() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <BudgetItem name="Loisirs" currentAmount={350} totalAmount={500} />
-          <BudgetItem
-            name="Restaurants"
-            currentAmount={180}
-            totalAmount={200}
-          />
-          <BudgetItem name="Transport" currentAmount={110} totalAmount={150} />
+        {budgetData &&
+          budgetData.map((budget) => (
+            <BudgetItem
+              key={budget.id}
+              name={budget.name}
+              currentAmount={budget.availableAmount}
+              totalAmount={budget.threshold}
+            />
+          ))
+        }
         </div>
       </CardContent>
     </Card>

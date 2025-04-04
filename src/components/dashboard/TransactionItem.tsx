@@ -1,20 +1,19 @@
-import { categoryIcons } from '@/utils/categoryIcons'
+import { transactionTypeIcons } from '@/utils/categoryIcons'
 import { formatEuro } from '@/utils/format'
 
 export function TransactionItem({
   name,
-  category,
   amount,
   date,
-  type,
+  transactionType,
 }: {
   name: string
-  category: string
   amount: number
   date: Date
-  type: 'income' | 'expense'
+  transactionType: 'income' | 'expense' | 'investment'
 }) {
-  const Icon = categoryIcons[category]
+
+  const Icon = transactionTypeIcons[transactionType] 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -25,14 +24,14 @@ export function TransactionItem({
           <p className="font-medium">{Icon.label}</p>
           <p className="text-muted-foreground text-xs">{name}</p>
           <p className="text-muted-foreground text-xs">
-            {date.toLocaleDateString('fr-FR')}
+          {new Date(date).toLocaleDateString()}
           </p>
         </div>
       </div>
       <p
-        className={`font-medium ${type === 'income' ? 'text-green-500' : 'text-red-500'}`}
+        className={`font-medium ${transactionType === 'income' ? 'text-green-500' : 'text-red-500'}`}
       >
-        {type === 'income' ? '+' : '-'} {formatEuro(amount)}
+        {transactionType === 'income' ? '+' : '-'} {formatEuro(amount)}
       </p>
     </div>
   )
