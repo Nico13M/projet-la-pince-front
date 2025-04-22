@@ -1,12 +1,38 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CreditCard, DollarSign, PieChart, PiggyBank } from 'lucide-react'
-import { useState } from 'react'
+import { CreditCard, DollarSign, PieChart, PiggyBank, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { CardSkeleton } from '../ui/skeleton/skeleton-card'
 import { StatCardContent } from './StatCardContent'
+import { fetchOneBudgetSummary } from '@/app/_actions/dashbord/fetchOneBudgetSummary'
+
+interface BudgetSummary {
+  remainingBalance: number
+  totalExpense: number
+  totalInvestment: number
+  budgetUtilization: number
+}
 
 export function StatCards() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [budgetSummaryData, setBudgetSummaryData] = useState<BudgetSummary | null>(null)
+  
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true)
+        const data = await fetchOneBudgetSummary();
+        setBudgetSummaryData(data as BudgetSummary);
+      } catch (error) {
+        console.error("Error fetching budget summary:", error);
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchData();
+  }, []);
+
+  const budgetUtilization = budgetSummaryData?.budgetUtilization || 68;
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -19,52 +45,92 @@ export function StatCards() {
         </>
       ) : (
         <>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium">Solde total</CardTitle>
-              <DollarSign className="text-primary h-4 w-4" />
+          <Card className="border-accent/20 shadow-md bg-white overflow-hidden">
+            <div className="absolute h-2 top-0 left-0 right-0 bg-gradient-to-r from-primary to-primary/50"></div>
+            <CardHeader className="flex flex-row items-center justify-between pt-6">
+              <CardTitle className="text-sm font-medium flex items-center gap-1.5">
+                <DollarSign className="text-primary h-4 w-4" />
+                Solde total
+              </CardTitle>
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <TrendingUp className="text-primary h-4 w-4" />
+              </div>
             </CardHeader>
             <CardContent>
-              <StatCardContent value={3580.45} percentage={2.5} />
+              <StatCardContent 
+                value={budgetSummaryData?.remainingBalance || 0} 
+                percentage={2.5} 
+              />
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium">
+          
+          <Card className="border-accent/20 shadow-md bg-white overflow-hidden">
+            <div className="absolute h-2 top-0 left-0 right-0 bg-gradient-to-r from-blue-400 to-blue-300"></div>
+            <CardHeader className="flex flex-row items-center justify-between pt-6">
+              <CardTitle className="text-sm font-medium flex items-center gap-1.5">
+                <CreditCard className="h-4 w-4 text-blue-400" />
                 Dépenses mensuelles
               </CardTitle>
-              <CreditCard className="h-4 w-4 text-blue-400" />
+              <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center">
+                <CreditCard className="h-4 w-4 text-blue-400" />
+              </div>
             </CardHeader>
             <CardContent>
               <StatCardContent
-                value={1245.8}
+                value={budgetSummaryData?.totalExpense || 0}
                 percentage={4.3}
                 isPositive={false}
               />
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium">
+          
+          <Card className="border-accent/20 shadow-md bg-white overflow-hidden">
+            <div className="absolute h-2 top-0 left-0 right-0 bg-gradient-to-r from-purple-500 to-purple-400"></div>
+            <CardHeader className="flex flex-row items-center justify-between pt-6">
+              <CardTitle className="text-sm font-medium flex items-center gap-1.5">
+                <PiggyBank className="h-4 w-4 text-purple-500" />
                 Économies mensuelles
               </CardTitle>
-              <PiggyBank className="h-4 w-4 text-purple-500" />
+              <div className="h-8 w-8 rounded-full bg-purple-50 flex items-center justify-center">
+                <PiggyBank className="h-4 w-4 text-purple-500" />
+              </div>
             </CardHeader>
             <CardContent>
-              <StatCardContent value={850} percentage={12.3} />
+              <StatCardContent 
+                value={budgetSummaryData?.totalInvestment || 0} 
+                percentage={12.3} 
+              />
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium">
+          
+          <Card className="border-accent/20 shadow-md bg-white overflow-hidden">
+            <div className="absolute h-2 top-0 left-0 right-0 bg-gradient-to-r from-blue-300 to-cyan-300"></div>
+            <CardHeader className="flex flex-row items-center justify-between pt-6">
+              <CardTitle className="text-sm font-medium flex items-center gap-1.5">
+                <PieChart className="h-4 w-4 text-blue-300" />
                 État du budget
               </CardTitle>
-              <PieChart className="h-4 w-4 text-blue-300" />
+              <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center">
+                <PieChart className="h-4 w-4 text-blue-300" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">68%</div>
-              <div className="bg-muted mt-2 h-2 w-full rounded-full">
-                <div className="bg-primary h-full w-[68%] rounded-full" />
+              <div className="space-y-3">
+                <div className="text-2xl font-bold tracking-tight">{budgetUtilization}%</div>
+                <div className="bg-gray-100 h-3 w-full rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-700 ease-out ${
+                      budgetUtilization > 80 ? 'bg-red-500' : 
+                      budgetUtilization > 60 ? 'bg-amber-500' : 'bg-primary'
+                    }`}
+                    style={{ width: `${budgetUtilization}%` }} 
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-foreground/60">
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
+                </div>
               </div>
             </CardContent>
           </Card>

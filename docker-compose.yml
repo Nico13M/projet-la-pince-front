@@ -13,7 +13,13 @@ services:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
     command: npm run dev
+    networks:
+      - shared-network
 
 volumes:
   node_modules:
   next_build:
+
+networks:
+  shared-network:
+    external: true
