@@ -78,13 +78,11 @@ function DatePickerInput({ field, placeholder }: DatePickerInputProps) {
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
+          className={"d-flex"}
           selected={field.value}
           onSelect={field.onChange}
           disabled={(date) => date > new Date()}
-          initialFocus
           locale={fr}
-          fromYear={2020}
-          toYear={new Date().getFullYear()}
         />
       </PopoverContent>
     </Popover>
