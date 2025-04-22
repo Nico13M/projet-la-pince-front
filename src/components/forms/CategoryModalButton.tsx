@@ -25,10 +25,10 @@ const CategoryModalButton = ({ onAddCategory }: CategoryModalButtonProps) => {
                 <DialogTrigger asChild>
                     <Button
                         variant="ghost"
-                        className="w-10  border border-slate-300 hover:border-slate-400 hover:bg-white rounded-md p-0 flex items-center justify-center"
+                        className="  border border-slate-400 hover:border-slate-400 hover:bg-white rounded-md p-0 flex items-center justify-center"
                         title="Ajouter une catégorie"
                     >
-                        <Plus className="w-5 h-5 text-slate-600" />
+                        <Plus className="w-2 h-2 text-slate-600" />
                     </Button>
                 </DialogTrigger>
                 <DialogContent>

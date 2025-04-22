@@ -26,7 +26,7 @@ function TypeSelector({
         Type
       </label>
       <Select value={type} onValueChange={setType}>
-        <SelectTrigger className="w-full border-slate-300 text-slate-500">
+        <SelectTrigger className="w-full text-slate-500">
           <SelectValue placeholder="Sélectionner un type" />
         </SelectTrigger>
         <SelectContent>
