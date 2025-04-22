@@ -87,8 +87,8 @@ export function CategorySelect<T extends Record<string, any>>({
       render={({ field }) => (
         <FormItem className={className}>
           {label && <FormLabel>{label}</FormLabel>}
-          <div className="flex justify-between">
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <div className="flex justify-between w-full">
+            <Select onValueChange={field.onChange} defaultValue={field.value} >
               <FormControl>
                 <SelectTrigger className="w-full border-slate-300 text-slate-500 me-4">
                   <SelectValue placeholder={placeholder} />
