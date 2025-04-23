@@ -1,5 +1,6 @@
 'use client'
 
+import { fetchUserCompareMonthlyBudget } from '@/app/_actions/dashbord/fetchUserCompareMonthlyBudget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -7,37 +8,35 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 import { formatEuro } from '@/utils/format'
-import { useState } from 'react'
+import { ChartColumnBig } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
 
-const categoryData = [
-  {
-    categorie: 'Alimentation',
-    lastMonthExpense: 450,
-    currentMonthExpense: 500,
-  },
-  {
-    categorie: 'Logement',
-    lastMonthExpense: 800,
-    currentMonthExpense: 800,
-  },
-  {
-    categorie: 'Transport',
-    lastMonthExpense: 320,
-    currentMonthExpense: 300,
-  },
-  {
-    categorie: 'Loisirs',
-    lastMonthExpense: 180,
-    currentMonthExpense: 200,
-  },
-  {
-    categorie: 'Divers',
-    lastMonthExpense: 170,
-    currentMonthExpense: 150,
-  },
-]
+interface BudgetItem {
+  id: string
+  name: string
+  description: string
+  threshold: number
+  availableAmount: number
+  userId: string
+  categoryId: string
+  createdAt: string
+  updatedAt: string
+  category: {
+    id: string
+    name: string
+    createdAt: string
+    updatedAt: string
+    transactionType: string
+    userId: string
+  }
+}
+interface CategoryData {
+  categorie: string
+  lastMonthExpense: number
+  currentMonthExpense: number
+}
 
 const chartConfig = {
   lastMonthExpense: {
@@ -52,6 +51,60 @@ const chartConfig = {
 
 export function CategoryAnalysis() {
   const [isLoading, setIsLoading] = useState(false)
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([])
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true)
+        const response = await fetchUserCompareMonthlyBudget()
+        const categories: Record<string, CategoryData> = {}
+
+        response.currentBudgetSummary.forEach((item: BudgetItem) => {
+          const categoryName = item.category.name
+          if (!categories[categoryName]) {
+            categories[categoryName] = {
+              categorie: categoryName,
+              currentMonthExpense: item.availableAmount,
+              lastMonthExpense: 0,
+            }
+          } else {
+            categories[categoryName] = {
+              ...categories[categoryName],
+              currentMonthExpense:
+                categories[categoryName].currentMonthExpense +
+                item.availableAmount,
+            }
+          }
+        })
+
+        response.lastMonthBudgetSummary.forEach((item: BudgetItem) => {
+          const categoryName = item.category.name
+          if (!categories[categoryName]) {
+            categories[categoryName] = {
+              categorie: categoryName,
+              lastMonthExpense: item.availableAmount,
+              currentMonthExpense: 0,
+            }
+          } else {
+            categories[categoryName] = {
+              ...categories[categoryName],
+              lastMonthExpense:
+                categories[categoryName].lastMonthExpense +
+                item.availableAmount,
+            }
+          }
+        })
+        const formattedData = Object.values(categories)
+        setCategoryData(formattedData)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   if (isLoading) {
     return <AnalyticsSkeleton />
@@ -59,9 +112,12 @@ export function CategoryAnalysis() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle>
-          Analyse des dépenses par catégorie par rapport au mois dernier
-        </CardTitle>
+        <div className="flex gap-2">
+          <ChartColumnBig className="text-primary/80 h-5 w-5 shrink-0" />
+          <CardTitle>
+            Analyse des dépenses par catégorie par rapport au mois dernier
+          </CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
@@ -100,7 +156,9 @@ export function CategoryAnalysis() {
                 <ChartTooltipContent
                   className="w-full"
                   formatter={(value, name) => {
-                    return `${name} : ${formatEuro(value as number)}`
+                    return value === 0
+                      ? `${name} : N/A`
+                      : `${name} : ${formatEuro(value as number)}`
                   }}
                 />
               }
