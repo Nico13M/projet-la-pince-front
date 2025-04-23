@@ -1,6 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 
 interface CategoryModalButtonProps {
@@ -22,8 +23,12 @@ const CategoryModalButton = ({ onAddCategory }: CategoryModalButtonProps) => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline" >
-                        Ajouter une catégorie
+                    <Button
+                        variant="ghost"
+                        className="  border border-slate-400 hover:border-slate-400 hover:bg-white rounded-md p-0 flex items-center justify-center"
+                        title="Ajouter une catégorie"
+                    >
+                        <Plus className="w-2 h-2 text-slate-600" />
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
