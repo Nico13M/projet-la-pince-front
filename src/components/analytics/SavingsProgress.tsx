@@ -227,18 +227,18 @@ export function SavingsProgress() {
               />
               <Area
                 type="monotone"
-                dataKey="availableAmount"
-                stroke="var(--color-availableAmount)"
-                fillOpacity={1}
-                fill="url(#coloravailableAmount)"
-              />
-              <Area
-                type="monotone"
                 dataKey="threshold"
                 stroke="var(--color-threshold)"
                 fill="none"
                 strokeDasharray="5 5"
               />
+              <Area
+                type="monotone"
+                dataKey="availableAmount"
+                stroke="var(--color-availableAmount)"
+                fillOpacity={1}
+                fill="url(#coloravailableAmount)"
+              />              
               <ChartTooltip
                 content={
                   <ChartTooltipContent
