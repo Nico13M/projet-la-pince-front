@@ -1,49 +1,20 @@
-import {
-  Building,
-  Car,
-  Gamepad2,
-  Plane,
-  Receipt,
-  ShoppingBag,
-  Stethoscope,
-  Utensils,
-} from 'lucide-react'
+import { ArrowDownCircle, ArrowUpCircle, DollarSign } from 'lucide-react'
 import React from 'react'
 
-export const categoryIcons: Record<
+export const transactionTypeIcons: Record<
   string,
   { label: string; icon: React.ElementType }
 > = {
-  shopping: {
-    label: 'Shopping',
-    icon: ShoppingBag,
+  income: {
+    label: 'Revenu',
+    icon: ArrowDownCircle,
   },
-  restaurant: {
-    label: 'Restaurant',
-    icon: Utensils,
+  expense: {
+    label: 'Dépense',
+    icon: ArrowUpCircle,
   },
-  salary: {
-    label: 'Salaire',
-    icon: Building,
-  },
-  transport: {
-    label: 'Transport',
-    icon: Car,
-  },
-  entertainment: {
-    label: 'Divertissement',
-    icon: Gamepad2,
-  },
-  health: {
-    label: 'Santé',
-    icon: Stethoscope,
-  },
-  utilities: {
-    label: 'Facture',
-    icon: Receipt,
-  },
-  travel: {
-    label: 'Voyage',
-    icon: Plane,
+  investment: {
+    label: 'Investissement',
+    icon: DollarSign,
   },
 }

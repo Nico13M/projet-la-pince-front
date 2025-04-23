@@ -11,19 +11,24 @@ export function StatCardContent({
   isPositive?: boolean
 }) {
   const ArrowIcon = isPositive ? ArrowUpIcon : ArrowDownIcon
-  const colorClass = isPositive ? 'text-green-500' : 'text-red-500'
+  const colorClass = isPositive ? 'text-green-600' : 'text-red-600'
+  const bgColorClass = isPositive ? 'bg-green-50' : 'bg-red-50'
 
   return (
-    <>
-      <div className="text-2xl font-bold">{formatEuro(value)}</div>
-      <div className="text-muted-foreground flex items-center text-xs">
-        <ArrowIcon className={`mr-1 h-4 w-4 ${colorClass}`} />
-        <span className={colorClass}>
-          {isPositive ? '+' : ''}
-          {percentage}%
-        </span>
-        <span className="ml-1">par rapport au mois dernier</span>
+    <div className="space-y-3">
+      <div className="text-2xl font-bold tracking-tight">{formatEuro(value || 0)}</div>
+      <div className="flex items-center gap-1.5">
+        <div className={`${bgColorClass} rounded-md p-1 flex items-center`}>
+          <ArrowIcon className={`h-3.5 w-3.5 ${colorClass}`} />
+        </div>
+        <div className="flex items-center text-xs">
+          <span className={`${colorClass} font-semibold`}>
+            {isPositive ? '+' : ''}
+            {percentage}%
+          </span>
+          <span className="ml-1.5 text-foreground/60">vs mois dernier</span>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
