@@ -19,58 +19,66 @@ import { z } from 'zod'
 import { CategorySelect } from './CategorySelect'
 import { DatePickerField } from './DatePickerField'
 import { MoneyInput } from './MoneyInput'
-import { Calendar } from '../ui/calendar'
-import { useState } from "react";
+import { useState } from "react"
+import { createBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 
-// Schéma de validation du formulaire
 const formSchema = z.object({
-  budget: z.string().min(2, {
+  name: z.string().min(2, {
     message: 'Le nom du budget doit contenir au moins 2 caractères',
   }),
-  date: z.date(),
-  category: z
-    .string()
-    .min(1, { message: 'Veuillez sélectionner une catégorie' }),
-  amount: z
+  category: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+  threshold: z
     .number({
       required_error: 'Le montant est requis',
       invalid_type_error: 'Le montant doit être un nombre',
-    })
-    .nonnegative({ message: 'Le montant doit être positif' }),
+    }),
   description: z.string().optional(),
 })
-export default function BudgetForm() {
+
+export default function BudgetForm({ userId }: { userId: string }) {
   const { showToast } = useToast()
   const [date, setDate] = useState<Date | null>(null)
 
   const form = useForm<BudgetFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      budget: '',
-      date: new Date(),
-      category: '',
-      amount: 0,
+      name: '',
+      category: { id: '', name: '' },
+      threshold: 0,
       description: '',
     },
   })
 
-  function onSubmit(values: BudgetFormValues) {
+  async function onSubmit(values: BudgetFormValues) {
+    console.log('values', values)
     const newBudget: SavedBudget = {
-      id: Date.now(),
-      budget: values.budget,
-      date: formatDate(values.date),
+      name: values.name,
       category: values.category,
-      amount: formatEuro(values.amount),
+      threshold: values.threshold,
       description: values.description,
     }
+    const params = {
+      categoryId: values.category.id,
+    }
+    console.log(params)
+    try {
+      console.log('test')
+      await createBudget(newBudget, params);
+      showToast({
+        title: 'Budget ajouté',
+        description: 'Le budget a été ajouté avec succès',
+      })
+      form.reset()
+    } catch (err) {
+      showToast({
+        title: 'Erreur',
+        description: 'Une erreur est survenue lors de l\'ajout du budget',
 
-    window.dispatchEvent(new CustomEvent('budget-added', { detail: newBudget }))
-    form.reset()
-
-    showToast({
-      title: 'Budget ajouté',
-      description: 'Le budget a été ajouté avec succès',
-    })
+      })
+    }
   }
 
   return (
@@ -79,11 +87,10 @@ export default function BudgetForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 rounded-lg border p-6"
       >
-
         <div className="flex space-x-4">
           <FormField
             control={form.control}
-            name="budget"
+            name="name"
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormLabel>Budget</FormLabel>
@@ -95,15 +102,13 @@ export default function BudgetForm() {
             )}
           />
 
-          <DatePickerField form={form} name="date" label="Date" />
+          {/* <DatePickerField form={form} name="date" label="Date" /> */}
         </div>
-
 
         <div className="flex space-x-4">
           <CategorySelect form={form} name="category" label="Catégorie" className="flex-1" />
-          <MoneyInput form={form} name="amount" label="Objectif" className="flex-1" />
+          <MoneyInput form={form} name="threshold" label="Plafond" className="flex-1" />
         </div>
-
 
         <FormField
           control={form.control}
@@ -121,7 +126,6 @@ export default function BudgetForm() {
             </FormItem>
           )}
         />
-
 
         <Button type="submit" className="w-full">
           Ajouter le budget

@@ -19,7 +19,6 @@ export default function BudgetPage() {
             <div className="rounded-md">
               <BudgetList />
             </div>
-            <Pagination />
           </div>
         </div>
       </div>

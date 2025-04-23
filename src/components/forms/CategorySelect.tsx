@@ -109,7 +109,10 @@ export function CategorySelect<T extends Record<string, any>>({
         <FormItem className={className}>
           {label && <FormLabel>{label}</FormLabel>}
           <div className="flex justify-between w-full">
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={(value) => {
+              const selected = categories.find(c => c.name === value)
+              field.onChange(selected ? { id: selected.id, name: selected.name } : { id: '', name: '' })
+            }} defaultValue={field.value?.name}>
               <FormControl>
                 <SelectTrigger className="w-full text-slate-500 me-4">
                   <SelectValue placeholder={placeholder} />
@@ -129,7 +132,7 @@ export function CategorySelect<T extends Record<string, any>>({
                           className="flex-1 mr-2"
                         />
                       ) : (
-                        <SelectItem value={category.name} className="flex-1">
+                        <SelectItem value={category.name} key={category.id} className="flex-1">
                           {category.name}
                         </SelectItem>
                       )}

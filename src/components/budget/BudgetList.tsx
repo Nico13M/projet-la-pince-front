@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -9,41 +10,75 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useToast } from '@/hooks/use-toast'
-import { SavedBudget } from '@/types/budget'
 import { Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetEditor } from './BudgetEditor'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { DescriptionPopover } from './DescriptionPopover'
+import { Pagination } from '../Pagination'
 
-// Données initiales pour les tests
-const initialBudgets: SavedBudget[] = [
-  {
-    id: 1,
-    budget: 'lorem ipsum',
-    description: 'Description courte',
-    date: '11/03/2025',
-    category: 'Logement',
-    amount: '- XX,XX €',
-  },
-  {
-    id: 2,
-    budget: 'lorem ipsum',
-    description:
-      "Cette description est beaucoup plus longue et nécessitera d'être tronquée dans le tableau avec un bouton pour voir l'intégralité du texte dans une popup",
-    date: '11/03/2025',
-    category: 'Logement',
-    amount: '- XX,XX €',
-  },
-]
+import { SavedBudget, BudgetFormValues } from '@/types/budget'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+
+function capitalize(str: string) {
+  if (!str) return ''
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
 
 export default function BudgetList() {
   const { showToast } = useToast()
-  const [budgets, setBudgets] = useState<SavedBudget[]>(initialBudgets)
+
+  const [budgets, setBudgets] = useState<SavedBudget[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [budgetToDelete, setBudgetToDelete] = useState<number | null>(null)
+  const [budgetToDelete, setBudgetToDelete] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+
+  const formatBudget = (budget: any): SavedBudget => {
+    console.log('Budget to format:', budget)
+    return {
+      id: budget.id,
+      name: capitalize(budget.name),
+      description: budget.description || '',
+      category: capitalize(budget.category.name || 'Inconnu'),
+      // date: new Date(budget.createdAt || Date.now()).toLocaleDateString('fr-FR'),
+
+      threshold: typeof budget.threshold === 'number'
+        ? `${budget.threshold.toLocaleString('fr-FR', {
+          style: 'currency',
+          currency: 'EUR'
+        })}` : budget.threshold || '',
+    }
+  }
+
+
+  const getAndSetBudgets = async (pageNumber = 1) => {
+    try {
+      setIsLoading(true)
+      const data = await fetchUserBudget(pageNumber)
+      if (data && data.data) {
+        setBudgets(data.data.map(formatBudget))
+        setPage(data.page)
+        setTotalPages(data.totalPages)
+      } else {
+        console.error('Pas de données dans la réponse:', data)
+      }
+    } catch (err) {
+      showToast({
+        title: 'Erreur',
+        description: 'Impossible de charger les budgets.',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+
+  useEffect(() => {
+    getAndSetBudgets(page)
+  }, [page])
 
   useEffect(() => {
     const handleNewBudget = (event: CustomEvent<SavedBudget>) => {
@@ -54,50 +89,52 @@ export default function BudgetList() {
     return () => {
       window.removeEventListener(
         'budget-added',
-        handleNewBudget as EventListener,
+        handleNewBudget as EventListener
       )
     }
   }, [])
 
   const handleSaveBudget = (
-    id: number,
-    updatedBudget: Partial<SavedBudget>,
+    id: string,
+    updatedBudget: Partial<SavedBudget>
   ) => {
-    const updatedBudgets = budgets.map((b) => {
-      if (b.id === id) {
-        return { ...b, ...updatedBudget }
-      }
-      return b
-    })
-
+    const updatedBudgets = budgets.map((b) =>
+      b.id === id ? { ...b, ...updatedBudget } : b
+    )
     setBudgets(updatedBudgets)
     showToast({
-      title: 'Modification enregistrée',
-      description: 'Le budget a été mis à jour',
+      title: 'Budget modifié',
+      description: 'Les modifications ont été enregistrées.',
     })
   }
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = (id: string) => {
     setBudgetToDelete(id)
     setDeleteDialogOpen(true)
   }
 
   const handleConfirmDelete = () => {
-    if (budgetToDelete === null) return
+    if (!budgetToDelete) return
 
-    setBudgets(budgets.filter((b) => b.id !== budgetToDelete))
+    setBudgets((prev) => prev.filter((b) => b.id !== budgetToDelete))
     setDeleteDialogOpen(false)
 
     showToast({
       title: 'Budget supprimé',
-      description: 'Le budget a été supprimé avec succès',
+      description: 'Le budget a été supprimé avec succès.',
     })
   }
-  const [isLoading, setIsLoading] = useState(false)
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage !== page && newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage)
+    }
+  }
 
   if (isLoading) {
     return <TableSkeleton />
   }
+
   return (
     <>
       <div className="overflow-x-auto">
@@ -106,9 +143,10 @@ export default function BudgetList() {
             <TableRow>
               <TableHead>Budget</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>Date</TableHead>
+              {/* <TableHead>Date</TableHead> */}
               <TableHead>Catégorie</TableHead>
-              <TableHead>Montant</TableHead>
+              {/* <TableHead>Montant disponible</TableHead> */}
+              <TableHead>Seuil</TableHead>
               <TableHead className="w-[120px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -116,15 +154,18 @@ export default function BudgetList() {
             {budgets.length > 0 ? (
               budgets.map((budget) => (
                 <TableRow key={budget.id}>
-                  <TableCell className="font-medium">{budget.budget}</TableCell>
+                  <TableCell className="font-medium">
+                    {budget.name}
+                  </TableCell>
                   <TableCell className="max-w-[200px]">
                     <DescriptionPopover
                       description={budget.description || ''}
                     />
                   </TableCell>
-                  <TableCell>{budget.date}</TableCell>
+                  {/* <TableCell>{budget.date}</TableCell> */}
                   <TableCell>{budget.category}</TableCell>
-                  <TableCell>{budget.amount}</TableCell>
+                  {/* <TableCell>{budget.availableAmount}</TableCell> */}
+                  <TableCell>{budget.threshold}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <BudgetEditor budget={budget} onSave={handleSaveBudget} />
@@ -150,6 +191,12 @@ export default function BudgetList() {
             )}
           </TableBody>
         </Table>
+
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       <ConfirmDeleteDialog

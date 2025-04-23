@@ -1,20 +1,29 @@
 import { BUDGET_CATEGORIES } from '@/utils/categoryBudget'
 
 export interface BudgetFormValues {
-  budget: string
-  date: Date
-  category: string
-  amount: number
+  name: string
+  category: { id: string, name: string },
+  threshold: number
   description?: string
 }
 
 export interface SavedBudget {
-  id: number
-  budget: string
-  date: string
-  category: string
-  amount: string
+  id: string
+  name: string
+  category: { id: string, name: string },
   description?: string
+  threshold: number
+}
+
+export interface Pagination {
+  limit: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface Data<T> extends Pagination {
+  data: T[];
+  count: number;
 }
 
 export type BudgetCategory = (typeof BUDGET_CATEGORIES)[number]
