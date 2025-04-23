@@ -29,7 +29,6 @@ interface Budget {
   userId: string
   categoryId: string
   createdAt: Date
-  updatedAt: Date
 }
 
 const chartConfig = {
@@ -109,7 +108,7 @@ export function SavingsProgress() {
   }
 
   budgetData.forEach((element) => {
-    const monthIndex = new Date(element.updatedAt).getUTCMonth()
+    const monthIndex = new Date(element.createdAt).getUTCMonth()
     const monthKey = Object.keys(monthsConfig)[monthIndex]
 
     if (monthsConfig[monthKey]) {

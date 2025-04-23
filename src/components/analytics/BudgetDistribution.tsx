@@ -47,14 +47,16 @@ export function BudgetDistribution() {
     async function fetchData() {
       try {
         setIsLoading(true)
-        const data = await fetchUserBudget()
+        const response = await fetchUserBudget()
 
-        if (data && Array.isArray(data)) {
-          const chartData = data.map((budget: Budget, index: number) => ({
-            name: budget.name,
-            value: budget.threshold,
-            fill: `${Object.values(chartConfig)[index % Object.values(chartConfig).length].color}`,
-          }))
+        if (response.data && Array.isArray(response.data)) {
+          const chartData = response.data.map(
+            (budget: Budget, index: number) => ({
+              name: budget.name,
+              value: budget.threshold,
+              fill: `${Object.values(chartConfig)[index % Object.values(chartConfig).length].color}`,
+            }),
+          )
 
           setBudgetData(chartData)
         } else {
