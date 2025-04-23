@@ -1,5 +1,6 @@
 'use client'
 
+import { fetchUserBudget } from '@/app/_actions/dashbord/fetchUserBudget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -10,18 +11,17 @@ import { formatEuro } from '@/utils/format'
 import { useEffect, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
-import { fetchUserBudget } from '@/app/_actions/dashbord/fetchUserBudget'
 
 interface Budget {
-  id: string;
-  name: string;
-  description: string;
-  threshold: number;
-  availableAmount: number;
-  userId: string;
-  categoryId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  name: string
+  description: string
+  threshold: number
+  availableAmount: number
+  userId: string
+  categoryId: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 const chartConfig = {
@@ -43,101 +43,82 @@ export function SavingsProgress() {
     async function fetchData() {
       try {
         setIsLoading(true)
-        const data = await fetchUserBudget();
-        setBudgetData(data as Budget[]);
+        const data = await fetchUserBudget()
+        setBudgetData(data)
       } catch (error) {
-        console.error("Error fetching budget data:", error);
+        console.error('Error fetching budget data:', error)
       } finally {
         setIsLoading(false)
       }
     }
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   if (isLoading) {
     return <AnalyticsSkeleton />
   }
 
-  type MonthName =
-  | "January" | "February" | "March" | "April"
-  | "May" | "June" | "July" | "August"
-  | "September" | "October" | "November" | "December";
-
-  type MonthlyData = {
-    threshold: number[];
-    availableAmount: number[];
-  };
-
-  const months: Record<MonthName, MonthlyData> = {
-    January: { threshold: [], availableAmount: [] },
-    February: { threshold: [], availableAmount: [] },
-    March: { threshold: [], availableAmount: [] },
-    April: { threshold: [], availableAmount: [] },
-    May: { threshold: [], availableAmount: [] },
-    June: { threshold: [], availableAmount: [] },
-    July: { threshold: [], availableAmount: [] },
-    August: { threshold: [], availableAmount: [] },
-    September: { threshold: [], availableAmount: [] },
-    October: { threshold: [], availableAmount: [] },
-    November: { threshold: [], availableAmount: [] },
-    December: { threshold: [], availableAmount: [] }
-  };
-
-  const monthNames: MonthName[] = [
-    "January", "February", "March", "April",
-    "May", "June", "July", "August",
-    "September", "October", "November", "December"
-  ];
-
-  //et ici on type pour avoir l'affichage des mois de manière plus compacte
-  const monthLabels: Record<MonthName, string> = {
-    January: "Jan",
-    February: "Fév",
-    March: "Mar",
-    April: "Avr",
-    May: "Mai",
-    June: "Juin",
-    July: "Juil",
-    August: "Aoû",
-    September: "Sep",
-    October: "Oct",
-    November: "Nov",
-    December: "Déc"
-  };
-
-  budgetData.forEach(element => {
-    const monthIndex = new Date(element.updatedAt).getUTCMonth(); // 0-11
-    const monthName = monthNames[monthIndex];
-  
-    if (months[monthName]) {
-      months[monthName].threshold.push(element.threshold);
-      months[monthName].availableAmount.push(element.threshold - element.availableAmount);
+  const monthsConfig: Record<
+    string,
+    {
+      shortLabel: string
+      data: { threshold: number[]; availableAmount: number[] }
     }
-  });
+  > = {
+    January: {
+      shortLabel: 'Jan',
+      data: { threshold: [], availableAmount: [] },
+    },
+    February: {
+      shortLabel: 'Fév',
+      data: { threshold: [], availableAmount: [] },
+    },
+    March: { shortLabel: 'Mar', data: { threshold: [], availableAmount: [] } },
+    April: { shortLabel: 'Avr', data: { threshold: [], availableAmount: [] } },
+    May: { shortLabel: 'Mai', data: { threshold: [], availableAmount: [] } },
+    June: { shortLabel: 'Juin', data: { threshold: [], availableAmount: [] } },
+    July: { shortLabel: 'Juil', data: { threshold: [], availableAmount: [] } },
+    August: { shortLabel: 'Aoû', data: { threshold: [], availableAmount: [] } },
+    September: {
+      shortLabel: 'Sep',
+      data: { threshold: [], availableAmount: [] },
+    },
+    October: {
+      shortLabel: 'Oct',
+      data: { threshold: [], availableAmount: [] },
+    },
+    November: {
+      shortLabel: 'Nov',
+      data: { threshold: [], availableAmount: [] },
+    },
+    December: {
+      shortLabel: 'Déc',
+      data: { threshold: [], availableAmount: [] },
+    },
+  }
 
-  const savingsData = Object.entries(months).map(([fullMonth, data]) => {
-    const totalThreshold = data.threshold.reduce((sum, val) => sum + val, 0);
-    const totalAvailable = data.availableAmount.reduce((sum, val) => sum + val, 0);
-  
+  budgetData.forEach((element) => {
+    const monthIndex = new Date(element.updatedAt).getUTCMonth()
+    const monthKey = Object.keys(monthsConfig)[monthIndex]
+
+    if (monthsConfig[monthKey]) {
+      monthsConfig[monthKey].data.threshold.push(element.threshold)
+      monthsConfig[monthKey].data.availableAmount.push(
+        element.threshold - element.availableAmount,
+      )
+    }
+  })
+
+  const savingsData = Object.entries(monthsConfig).map(([_, config]) => {
+    const calculateTotal = (array: number[]) =>
+      array.reduce((sum, value) => sum + value, 0)
+
     return {
-      month: monthLabels[fullMonth as MonthName],
-      availableAmount: totalAvailable,
-      threshold: totalThreshold
-    };
-  });
-
-  console.log(savingsData);
-
-  const oldsavingsData = [
-    { month: 'Jan', savings: 200, goal: 250 },
-    { month: 'Fév', savings: 300, goal: 300 },
-    { month: 'Mar', savings: 250, goal: 300 },
-    { month: 'Avr', savings: 400, goal: 350 },
-    { month: 'Mai', savings: 350, goal: 400 },
-    { month: 'Juin', savings: 500, goal: 450 },
-  ]
-
-  // console.log("Voici le budget global", budgetData);
+      month: config.shortLabel,
+      availableAmount: calculateTotal(config.data.availableAmount),
+      threshold: calculateTotal(config.data.threshold),
+    }
+  })
 
   return (
     <Card>
@@ -148,7 +129,13 @@ export function SavingsProgress() {
         <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
           <AreaChart accessibilityLayer data={savingsData}>
             <defs>
-              <linearGradient id="coloravailableAmount" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient
+                id="coloravailableAmount"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
                 <stop
                   offset="5%"
                   stopColor="var(--color-availableAmount)"
