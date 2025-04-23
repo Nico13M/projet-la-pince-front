@@ -23,7 +23,7 @@ import { useState } from 'react'
 
 interface GestionEditorProps {
   budget: SavedBudget
-  onSave: (id: number, updatedBudget: Partial<SavedBudget>) => void
+  onSave: (id: string, updatedBudget: Partial<SavedBudget>) => void
 }
 
 type EditableBudget = Omit<SavedBudget, 'date'> & {
@@ -91,15 +91,7 @@ export function BudgetEditor({ budget, onSave }: GestionEditorProps) {
                 />
               </div>
 
-              <div className="grid grid-cols-3 items-center gap-4">
-                <label>Description</label>
-                <Input
-                  value={editData.description || ''}
-                  onChange={(e) => handleChange('description', e.target.value)}
-                  className="col-span-2 h-8"
-                />
-              </div>
-
+          
               {/* Date */}
               <div className="grid grid-cols-3 items-center gap-4">
                 <label>Date</label>

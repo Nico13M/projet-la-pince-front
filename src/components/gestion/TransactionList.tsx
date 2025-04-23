@@ -1,5 +1,3 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -9,102 +7,111 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useToast } from '@/hooks/use-toast'
-import { SavedBudget } from '@/types/budget'
+
+import { SavedBudget, Transaction } from '@/types/budget'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetEditor } from './GestiontEditor'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
-import { DescriptionPopover } from './DescriptionPopover'
+import { Pagination } from '../Pagination'
 
-// Données initiales pour les tests
-const initialBudgets: SavedBudget[] = [
-  {
-    id: 1,
-    budget: 'lorem ipsum',
-    description: 'Description courte',
-    date: '11/03/2025',
-    category: 'Logement',
-    amount: '- XX,XX €',
-  },
-  {
-    id: 2,
-    budget: 'lorem ipsum',
-    description:
-      "Cette description est beaucoup plus longue et nécessitera d'être tronquée dans le tableau avec un bouton pour voir l'intégralité du texte dans une popup",
-    date: '11/03/2025',
-    category: 'Logement',
-    amount: '- XX,XX €',
-  },
-]
+import { fetchGetTransactions } from '@/app/_actions/transactions/fetchTransactions'
+
+function capitalize(str: string) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 export default function BudgetList() {
-  const { showToast } = useToast()
-  const [budgets, setBudgets] = useState<SavedBudget[]>(initialBudgets)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [budgetToDelete, setBudgetToDelete] = useState<number | null>(null)
+  
+  const [budgets, setBudgets] = useState<SavedBudget[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [budgetToDelete, setBudgetToDelete] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    const handleNewBudget = (event: CustomEvent<SavedBudget>) => {
-      setBudgets((prev) => [event.detail, ...prev])
-    }
-
-    window.addEventListener('budget-added', handleNewBudget as EventListener)
-    return () => {
-      window.removeEventListener(
-        'budget-added',
-        handleNewBudget as EventListener,
-      )
-    }
-  }, [])
+  const mapTransactionToBudget = (transaction: Transaction): SavedBudget => ({
+    id: transaction.id,
+    budget: capitalize(transaction.name || ''),
+    category: capitalize(transaction.transactionType || ''),
+    date: transaction.dateOfExpense
+      ? new Date(transaction.dateOfExpense).toLocaleDateString('fr-FR')
+      : '',
+    amount:
+      typeof transaction.amount === 'number'
+        ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
+        : transaction.amount || '',
+  });
 
   const handleSaveBudget = (
-    id: number,
+    id: string,
     updatedBudget: Partial<SavedBudget>,
   ) => {
-    const updatedBudgets = budgets.map((b) => {
+    const updatedBudgets = budgets.map((b: { id: string }) => {
       if (b.id === id) {
         return { ...b, ...updatedBudget }
       }
       return b
     })
-
     setBudgets(updatedBudgets)
-    showToast({
-      title: 'Modification enregistrée',
-      description: 'Le budget a été mis à jour',
-    })
+    
   }
 
-  const handleDeleteClick = (id: number) => {
+  const handleConfirmDelete = async () => {
+    if (!budgetToDelete) return
+    try {
+      setBudgets((prev: SavedBudget[]) => prev.filter((b: any) => b.id !== budgetToDelete))
+      setDeleteDialogOpen(false)
+      setBudgetToDelete(null)
+      
+    } catch (err) {
+      
+    }
+  }
+
+  const getAndSetTransactions = async (pageNumber = 1) => {
+    try {
+      setIsLoading(true)
+      const data = await fetchGetTransactions(pageNumber)
+      setBudgets(data.data.map(mapTransactionToBudget))
+      setPage(data.page)
+      setTotalPages(data.totalPages)
+    } catch (err) {
+      
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDeleteClick = (id: string) => {
     setBudgetToDelete(id)
     setDeleteDialogOpen(true)
   }
 
-  const handleConfirmDelete = () => {
-    if (budgetToDelete === null) return
+  useEffect(() => {
+    getAndSetTransactions(page)
+    
+  }, [page])
 
-    setBudgets(budgets.filter((b) => b.id !== budgetToDelete))
-    setDeleteDialogOpen(false)
-
-    showToast({
-      title: 'Budget supprimé',
-      description: 'Le budget a été supprimé avec succès',
-    })
+  const handlePageChange = (newPage: number) => {
+    if (newPage !== page && newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage)
+    }
   }
-  const [isLoading, setIsLoading] = useState(false)
 
   if (isLoading) {
     return <TableSkeleton />
   }
+
   return (
     <>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Description</TableHead>
+              <TableHead>Titre budget</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Catégorie</TableHead>
               <TableHead>Montant</TableHead>
@@ -113,14 +120,9 @@ export default function BudgetList() {
           </TableHeader>
           <TableBody>
             {budgets.length > 0 ? (
-              budgets.map((budget) => (
+              budgets.map((budget: SavedBudget) => (
                 <TableRow key={budget.id}>
                   <TableCell className="font-medium">{budget.budget}</TableCell>
-                  <TableCell className="max-w-[200px]">
-                    <DescriptionPopover
-                      description={budget.description || ''}
-                    />
-                  </TableCell>
                   <TableCell>{budget.date}</TableCell>
                   <TableCell>{budget.category}</TableCell>
                   <TableCell>{budget.amount}</TableCell>
@@ -149,6 +151,12 @@ export default function BudgetList() {
             )}
           </TableBody>
         </Table>
+
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       <ConfirmDeleteDialog

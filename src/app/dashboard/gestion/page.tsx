@@ -47,7 +47,6 @@ export default function GestionPage() {
             </div>
           </div>
         </div>
-        <Pagination />
       </div>
     </>
   )
