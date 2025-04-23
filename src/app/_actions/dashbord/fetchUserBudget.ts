@@ -14,8 +14,7 @@ export async function fetchUserBudget() {
     if (!csrfToken) {
       throw new Error('CSRF Token non trouvé')
     }
-
-    const response = await fetch(API_LINK + '/budget', {
+    const response = await fetch(API_LINK + '/budget/list', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

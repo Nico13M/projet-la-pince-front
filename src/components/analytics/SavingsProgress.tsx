@@ -54,8 +54,8 @@ export function SavingsProgress() {
     async function fetchData() {
       try {
         setIsLoading(true)
-        const data = await fetchUserBudget()
-        setBudgetData(data)
+        const response = await fetchUserBudget()
+        setBudgetData(response.data)
       } catch (error) {
         console.error('Error fetching budget data:', error)
       } finally {
@@ -238,7 +238,7 @@ export function SavingsProgress() {
                 stroke="var(--color-availableAmount)"
                 fillOpacity={1}
                 fill="url(#coloravailableAmount)"
-              />              
+              />
               <ChartTooltip
                 content={
                   <ChartTooltipContent
