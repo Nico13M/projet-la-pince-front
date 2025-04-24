@@ -1,6 +1,6 @@
 'use client'
 
-import { fetchUserCompareMonthlyBudget } from '@/app/_actions/dashbord/fetchUserCompareMonthlyBudget'
+import { fetchUserCompareMonthlyBudget } from '@/app/_actions/dashboard/fetchUserCompareMonthlyBudget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
