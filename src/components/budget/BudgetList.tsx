@@ -20,6 +20,7 @@ import { Pagination } from '../Pagination'
 
 import { SavedBudget, BudgetFormValues } from '@/types/budget'
 import { deleteBudget, fetchUserBudget, updateBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { formatEuro } from '@/utils/format'
 
 function capitalize(str: string) {
   if (!str) return ''
@@ -46,10 +47,11 @@ export default function BudgetList() {
       // date: new Date(budget.createdAt || Date.now()).toLocaleDateString('fr-FR'),
 
       threshold: typeof budget.threshold === 'number'
-        ? `${budget.threshold.toLocaleString('fr-FR', {
-          style: 'currency',
-          currency: 'EUR'
-        })}` : budget.threshold || '',
+        ? budget.threshold : null
+      // `${budget.threshold.toLocaleString('fr-FR', {
+      //   style: 'currency',
+      //   currency: 'EUR'
+      // })}` : budget.threshold || '',
     }
   }
 
@@ -185,7 +187,9 @@ export default function BudgetList() {
                   {/* <TableCell>{budget.date}</TableCell> */}
                   <TableCell>{budget.category}</TableCell>
                   {/* <TableCell>{budget.availableAmount}</TableCell> */}
-                  <TableCell>{budget.threshold}</TableCell>
+                  <TableCell>{budget.threshold !== null
+                    ? formatEuro(budget.threshold)
+                    : '—'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <BudgetEditor budget={budget} onSave={handleSaveBudget} />

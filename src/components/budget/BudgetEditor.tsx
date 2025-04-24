@@ -27,9 +27,10 @@ interface BudgetEditorProps {
   onSave: (id: string, updatedBudget: Partial<SavedBudget>) => void
 }
 
-type EditableBudget = Omit<SavedBudget, 'date'> & {
-  // date: Date
+type EditableBudget = Omit<SavedBudget, 'date' | 'threshold'> & {
+  threshold: string;
 }
+
 
 export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
 
@@ -50,8 +51,8 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
     setIsOpen(open)
     if (open && !editData) {
       setEditData({
-        ...budget
-        // date: parseStringToDate(budget.date),
+        ...budget,
+        threshold: String(budget.threshold),
       })
     }
   }
@@ -66,18 +67,19 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
     setEditData(null)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editData) return
 
     const updatedBudget: Partial<SavedBudget> = {
       ...editData,
       // date: format(editData.date, 'dd/MM/yyyy'),
       threshold: parseFloat(
-        (editData.threshold as unknown as string).replace(',', '.')
+        String(editData.threshold).replace(',', '.')
       ),
+
     }
 
-    onSave(budget.id, updatedBudget)
+    await onSave(budget.id, updatedBudget)
     setIsOpen(false)
     setEditData(null)
   }
@@ -162,7 +164,7 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
                 <label>Montant</label>
                 <div className="relative col-span-2">
                   <Input
-                    value={editData.threshold.replace(/[^0-9.,]/g, '')}
+                    value={String(editData.threshold).replace(/[^0-9.,]/g, '')}
                     onChange={(e) => {
                       const value = e.target.value
                       if (
