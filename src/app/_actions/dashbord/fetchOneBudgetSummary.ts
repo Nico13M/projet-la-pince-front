@@ -16,7 +16,7 @@ export async function fetchOneBudgetSummary() {
             throw new Error("CSRF Token non trouvé");
         }
         // redondance j'envoie token 2 fois
-        const response = await fetch(API_LINK + '/budget-summaries/3d379624-07ce-4a32-9f0e-16e6d18ae7d1', {
+        const response = await fetch(API_LINK + '/budget-summaries/user', {
             method: 'GET',
             headers:{
                 'Content-Type': 'application/json',
