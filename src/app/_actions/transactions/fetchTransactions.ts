@@ -1,4 +1,4 @@
-'use server'
+use server'
 import { Data, SavedBudget } from '@/types/budget'
 import { Transaction, TransactionDisplayRow } from '@/types/transaction'
 
@@ -24,7 +24,6 @@ export async function fetchGetTransactions(pageNumber = 1) {
         },
       },
     )
-    console.log('🚀 🍒 ⛔ ☢️ ~ fetchGetTransactions ~ response:', response)
     return await response.json()
   } catch (error) {
     console.error('Erreur lors du fetch:', error)
@@ -108,7 +107,6 @@ export async function fetchUpdateTransaction(
 }
 
 export async function fetchCreateTransaction(data: SavedBudget) {
-  console.log('🚀 🍒 ⛔ ☢️ ~ fetchCreateTransaction ~ data:', data)
   try {
     const cookieStore = await cookies()
     const csrfSecret = cookieStore.get('x-csrf-token')?.value
@@ -126,7 +124,6 @@ export async function fetchCreateTransaction(data: SavedBudget) {
       },
       body: JSON.stringify(data),
     })
-    console.log('🚀 🍒 ⛔ ☢️ ~ fetchCreateTransaction ~ response:', response)
     return await response.json()
   } catch (error) {
     console.error('Erreur lors du fetch:', error)

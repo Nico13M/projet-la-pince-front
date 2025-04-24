@@ -24,6 +24,7 @@ export function StatCards() {
   const [budgetSummaryData, setBudgetSummaryData] =
     useState<BudgetSummary | null>(null)
 
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -73,6 +74,7 @@ export function StatCards() {
 
           <Card className="border-accent/20 overflow-hidden bg-white shadow-md">
             <div className="absolute top-0 right-0 left-0 h-2 bg-gradient-to-r from-blue-400 to-blue-300"></div>
+
             <CardHeader className="flex flex-row items-center justify-between pt-6">
               <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
                 <CreditCard className="h-4 w-4 text-blue-400" />
@@ -90,9 +92,9 @@ export function StatCards() {
               />
             </CardContent>
           </Card>
-
           <Card className="border-accent/20 overflow-hidden bg-white shadow-md">
             <div className="absolute top-0 right-0 left-0 h-2 bg-gradient-to-r from-purple-500 to-purple-400"></div>
+
             <CardHeader className="flex flex-row items-center justify-between pt-6">
               <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
                 <PiggyBank className="h-4 w-4 text-purple-500" />
@@ -112,6 +114,7 @@ export function StatCards() {
 
           <Card className="border-accent/20 overflow-hidden bg-white shadow-md">
             <div className="absolute top-0 right-0 left-0 h-2 bg-gradient-to-r from-blue-300 to-cyan-300"></div>
+
             <CardHeader className="flex flex-row items-center justify-between pt-6">
               <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
                 <PieChart className="h-4 w-4 text-blue-300" />
@@ -135,6 +138,7 @@ export function StatCards() {
                           ? 'bg-amber-500'
                           : 'bg-primary'
                     }`}
+
                     style={{ width: `${budgetUtilization}%` }}
                   />
                 </div>

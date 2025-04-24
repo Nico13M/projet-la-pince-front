@@ -21,5 +21,6 @@ volumes:
   next_build:
 
 networks:
-  shared-network:
-    external: true
+ shared-network: 
+  external: true
+

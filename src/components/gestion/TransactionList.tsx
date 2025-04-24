@@ -10,13 +10,13 @@ import {
 
 import { Transaction } from '@/types/transaction'
 
+
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { TransactionEditor } from './TransactionEditor'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { Pagination } from '../Pagination'
-
 import {
   fetchGetTransactions,
   fetchDeleteTransactions,
@@ -37,6 +37,7 @@ export default function TransactionList() {
     updatedTransaction: Partial<Transaction>,
   ) => {
     const updatedTransactions = transactions.map((b: { id: string }) => {
+
       if (b.id === id) {
         return { ...b, ...updatedTransaction }
       }
@@ -98,6 +99,7 @@ export default function TransactionList() {
             <TableRow>
               <TableHead>Titre transaction</TableHead>
               <TableHead>Type de transaction</TableHead>
+
 
               <TableHead>Date</TableHead>
               <TableHead>Catégorie</TableHead>

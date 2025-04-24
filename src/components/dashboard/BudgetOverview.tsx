@@ -1,17 +1,21 @@
 'use client'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { BarChart3, ChevronRight, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetItem } from './BudgetItem'
-import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
-import { BarChart3, ChevronRight, Plus } from 'lucide-react'
 
 interface Budget {
   id: string | number
   name: string
   availableAmount: number
   threshold: number
+  category: {
+    id: string
+    name: string
+  }
 }
 
 export function BudgetOverview() {
@@ -24,6 +28,7 @@ export function BudgetOverview() {
         setIsLoading(true)
         const data = await fetchUserBudget()
         setBudgetData(data as Budget[])
+
       } catch (error) {
         console.error('Error fetching budget data:', error)
       } finally {

@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers'
 
-export async function fetchUserTransactions() {
+export async function fetchUserBudgetSummaryFromLastMonth() {
   try {
     const API_LINK = process.env.API_LINK
     const cookieStore = await cookies()
@@ -14,15 +14,17 @@ export async function fetchUserTransactions() {
     if (!csrfToken) {
       throw new Error('CSRF Token non trouvé')
     }
-
-    const response = await fetch(API_LINK + '/transaction/list', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': csrfToken,
-        Cookie: cookieHeader,
+    const response = await fetch(
+      API_LINK + '/budget-summaries/user/last-month',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+          Cookie: cookieHeader,
+        },
       },
-    })
+    )
     const data = await response.json()
     return data
   } catch (error) {
