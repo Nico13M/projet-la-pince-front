@@ -120,51 +120,63 @@ export function CategoryAnalysis() {
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-          <BarChart accessibilityLayer data={categoryData}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="categorie"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: 'var(--muted-foreground)' }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: 'var(--muted-foreground)' }}
-              tickFormatter={(value) => formatEuro(value, true)}
-            />
-            <Bar
-              dataKey="lastMonthExpense"
-              fill={chartConfig.lastMonthExpense.color}
-              fillOpacity={1}
-              radius={[4, 4, 0, 0]}
-              barSize={20}
-              name="Mois dernier"
-            />
-            <Bar
-              dataKey="currentMonthExpense"
-              fill={chartConfig.currentMonthExpense.color}
-              fillOpacity={1}
-              radius={[4, 4, 0, 0]}
-              barSize={20}
-              name="Mois actuel"
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-full"
-                  formatter={(value, name) => {
-                    return value === 0
-                      ? `${name} : N/A`
-                      : `${name} : ${formatEuro(value as number)}`
-                  }}
-                />
-              }
-            />
-          </BarChart>
-        </ChartContainer>
+        {categoryData.length > 0 ? (
+          <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+            <BarChart accessibilityLayer data={categoryData}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="categorie"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: 'var(--muted-foreground)' }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: 'var(--muted-foreground)' }}
+                tickFormatter={(value) => formatEuro(value, true)}
+              />
+              <Bar
+                dataKey="lastMonthExpense"
+                fill={chartConfig.lastMonthExpense.color}
+                fillOpacity={1}
+                radius={[4, 4, 0, 0]}
+                barSize={20}
+                name="Mois dernier"
+              />
+              <Bar
+                dataKey="currentMonthExpense"
+                fill={chartConfig.currentMonthExpense.color}
+                fillOpacity={1}
+                radius={[4, 4, 0, 0]}
+                barSize={20}
+                name="Mois actuel"
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    className="w-full"
+                    formatter={(value, name) => {
+                      return value === 0
+                        ? `${name} : N/A`
+                        : `${name} : ${formatEuro(value as number)}`
+                    }}
+                  />
+                }
+              />
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-8 text-center">
+            <div className="bg-primary/10 mb-4 rounded-full p-3">
+              <ChartColumnBig className="text-primary h-6 w-6" />
+            </div>
+            <h3 className="mb-2 text-base font-medium">Aucune dépense</h3>
+            <p className="text-foreground/60 mb-4 max-w-md text-sm">
+              Dépensez de l'argent pour visualiser les tendances.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

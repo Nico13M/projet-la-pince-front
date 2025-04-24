@@ -1,16 +1,25 @@
 'use client'
 
+import { fetchAllBudgetSummaries } from '@/app/_actions/analytics/fetchAllBudgetSummaries'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { filterDataByTimeframe } from '@/utils/chartUtils'
 import { formatEuro } from '@/utils/format'
+import { ChartLine } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
-import { fetchAllBudgetSummaries } from '@/app/_actions/analytics/fetchAllBudgetSummaries'
 
 interface BudgetItem {
   threshold: number
@@ -19,6 +28,12 @@ interface BudgetItem {
   totalExpense: number
   totalInvestment: number
   remainingBalance: number
+}
+
+interface ChartDataItem {
+  month: string
+  income: number
+  expense: number
 }
 
 const monthsConfig: Record<
@@ -55,9 +70,15 @@ const chartConfig = {
 
 export function ExpenseTrend() {
   const [isLoading, setIsLoading] = useState(true)
-  const [displayData, setDisplayData] = useState<
-    { month: string; income: number; expense: number }[]
-  >([])
+  const [displayData, setDisplayData] = useState<ChartDataItem[]>([])
+  const [timeframe, setTimeframe] = useState<'year' | '6months' | '3months'>(
+    'year',
+  )
+  const [fullData, setFullData] = useState<ChartDataItem[]>([])
+
+  const filterData = (data: ChartDataItem[] = fullData) => {
+    setDisplayData(filterDataByTimeframe(data, timeframe, monthsConfig))
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +86,7 @@ export function ExpenseTrend() {
         const budgetData: BudgetItem[] = await fetchAllBudgetSummaries()
 
         if (Array.isArray(budgetData)) {
-          budgetData.forEach((element) => {
+          budgetData.forEach((element: BudgetItem) => {
             const monthIndex = new Date(element.updatedAt).getUTCMonth()
             const monthKey = Object.keys(monthsConfig)[monthIndex]
 
@@ -83,28 +104,20 @@ export function ExpenseTrend() {
           })
         }
 
-        const fullData = Object.entries(monthsConfig).map(([_, config]) => {
-          const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0)
+        const processedData = Object.entries(monthsConfig).map(
+          ([_, config]) => {
+            const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0)
 
-          return {
-            month: config.shortLabel,
-            income: sum(config.data.income),
-            expense: sum(config.data.expense),
-          }
-        })
-
-        const currentMonth = new Date().getMonth()
-
-        const last6Months = Array.from({ length: 6 }, (_, i) => {
-          const index = (currentMonth - 5 + i + 12) % 12
-          return Object.values(monthsConfig)[index].shortLabel
-        })
-
-        const filtered = fullData.filter((entry) =>
-          last6Months.includes(entry.month),
+            return {
+              month: config.shortLabel,
+              income: sum(config.data.income),
+              expense: sum(config.data.expense),
+            }
+          },
         )
 
-        setDisplayData(filtered)
+        setFullData(processedData)
+        filterData(processedData)
       } catch (error) {
         console.error('Error loading budget chart data:', error)
       } finally {
@@ -115,6 +128,10 @@ export function ExpenseTrend() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    filterData()
+  }, [timeframe, fullData])
+
   if (isLoading) {
     return <AnalyticsSkeleton />
   }
@@ -122,54 +139,84 @@ export function ExpenseTrend() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle>Tendance des Dépenses</CardTitle>
+        <div className="flex gap-2">
+          <ChartLine className="text-primary/80 h-5 w-5 shrink-0" />
+          <CardTitle>Tendances des dépenses</CardTitle>
+        </div>
+        <Select
+          value={timeframe}
+          onValueChange={(value) =>
+            setTimeframe(value as 'year' | '6months' | '3months')
+          }
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sélectionner une période" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="year">Année en cours</SelectItem>
+            <SelectItem value="6months">6 derniers mois</SelectItem>
+            <SelectItem value="3months">3 derniers mois</SelectItem>
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-          <LineChart data={displayData}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              tick={{ fill: 'var(--muted-foreground)' }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: 'var(--muted-foreground)' }}
-              tickMargin={15}
-              tickFormatter={(value) => formatEuro(value, true)}
-            />
-            <Line
-              type="monotone"
-              dataKey="expense"
-              stroke="var(--color-expense)"
-              strokeWidth={2}
-              dot={{ r: 4, fill: 'var(--color-expense)' }}
-            />
-            <Line
-              type="monotone"
-              dataKey="income"
-              stroke="var(--color-income)"
-              strokeWidth={2}
-              dot={{ r: 4, fill: 'var(--color-income)' }}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, name) => {
-                    const label =
-                      chartConfig[name as keyof typeof chartConfig]?.label
-                    return `${label} : ${formatEuro(value as number)}`
-                  }}
-                  className="w-full"
-                />
-              }
-            />
-          </LineChart>
-        </ChartContainer>
+        {displayData.length > 0 ? (
+          <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+            <LineChart data={displayData}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                tick={{ fill: 'var(--muted-foreground)' }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: 'var(--muted-foreground)' }}
+                tickMargin={15}
+                tickFormatter={(value) => formatEuro(value, true)}
+              />
+              <Line
+                type="monotone"
+                dataKey="expense"
+                stroke="var(--color-expense)"
+                strokeWidth={2}
+                dot={{ r: 4, fill: 'var(--color-expense)' }}
+              />
+              <Line
+                type="monotone"
+                dataKey="income"
+                stroke="var(--color-income)"
+                strokeWidth={2}
+                dot={{ r: 4, fill: 'var(--color-income)' }}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => {
+                      const label =
+                        chartConfig[name as keyof typeof chartConfig]?.label
+                      return `${label} : ${formatEuro(value as number)}`
+                    }}
+                    className="w-full"
+                  />
+                }
+              />
+            </LineChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-8 text-center">
+            <div className="bg-primary/10 mb-4 rounded-full p-3">
+              <ChartLine className="text-primary h-6 w-6" />
+            </div>
+            <h3 className="mb-2 text-base font-medium">Aucune dépense</h3>
+            <p className="text-foreground/60 mb-4 max-w-md text-sm">
+              Dépensez de l'argent pour visualiser les tendances.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
