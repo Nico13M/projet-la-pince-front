@@ -1,17 +1,13 @@
 'use server'
 
 import { cookies } from "next/headers";
-
 import { Data, SavedBudget } from '@/types/budget'
-
+const API_LINK = process.env.API_LINK
 export async function fetchUserBudget(pageNumber = 1): Promise<Data<SavedBudget>> {
     try {
-
-        const API_LINK = "http://192.168.1.2:3000"
         const cookieStore = await cookies();
         const csrfToken = cookieStore.get('x-csrf-token')?.value;
         const accessToken = cookieStore.get('access_token')?.value;
-
         const cookieHeader = `x-csrf-token=${csrfToken}; access_token=${accessToken}`;
 
         if (!csrfToken) {
@@ -37,9 +33,6 @@ interface CreateBudgetParams {
 }
 export async function createBudget(budget: Partial<SavedBudget>, params: CreateBudgetParams): Promise<SavedBudget | undefined> {
     try {
-        console.log(budget, "budget")
-        console.log(params.categoryId, "categoryId")
-        const API_LINK = "http://backend-la-pince:3000";
         const cookieStore = await cookies();
         const csrfSecret = cookieStore.get('x-csrf-token')?.value;
         const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
@@ -70,7 +63,6 @@ export async function createBudget(budget: Partial<SavedBudget>, params: CreateB
 
 export async function updateBudget(id: string, budget: Partial<SavedBudget>): Promise<SavedBudget | undefined> {
     try {
-        const API_LINK = "http://192.168.1.2:3000"
         const cookieStore = await cookies()
         const csrfSecret = cookieStore.get('x-csrf-token')?.value;
         const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
@@ -99,7 +91,6 @@ export async function updateBudget(id: string, budget: Partial<SavedBudget>): Pr
 
 export async function deleteBudget(id: string) {
     try {
-        const API_LINK = "http://192.168.1.2:3000"
         const cookieStore = await cookies()
         const csrfSecret = cookieStore.get('x-csrf-token')?.value;
         const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;

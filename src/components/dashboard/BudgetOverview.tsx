@@ -7,8 +7,6 @@ import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetItem } from './BudgetItem'
 
-
-
 interface Budget {
   id: string | number
   name: string
@@ -28,8 +26,9 @@ export function BudgetOverview() {
     async function fetchData() {
       try {
         setIsLoading(true)
-        const response = await fetchUserBudget()
-        setBudgetData(response.data)
+        const data = await fetchUserBudget()
+        setBudgetData(data as Budget[])
+
       } catch (error) {
         console.error('Error fetching budget data:', error)
       } finally {

@@ -65,12 +65,14 @@ export function CategorySelect<T extends Record<string, any>>({
     if (onCategoryDelete) onCategoryDelete(categoryName)
     setCategories(categories.filter((c) => c.name !== categoryName))
 
+
     if (form.getValues(name) === categoryName) {
       form.setValue(name, '' as PathValue<T, Path<T>>, { shouldValidate: true })
     }
   }
 
   const handleAddCategory = (newCategory: string) => {
+
     const alreadyExists = categories.some((c) => c.name === newCategory)
     if (newCategory && !alreadyExists) {
       const newCat = { id: Date.now(), name: newCategory }
@@ -95,7 +97,9 @@ export function CategorySelect<T extends Record<string, any>>({
       )
       setCategories(updated)
       if (form.getValues(name) === editingCategory) {
-        form.setValue(name, newCategoryName as PathValue<T, Path<T>>, { shouldValidate: true })
+        form.setValue(name, newCategoryName as PathValue<T, Path<T>>, {
+          shouldValidate: true,
+        })
       }
     }
     setEditingCategory(null)
@@ -108,6 +112,7 @@ export function CategorySelect<T extends Record<string, any>>({
       render={({ field }) => (
         <FormItem className={className}>
           {label && <FormLabel>{label}</FormLabel>}
+
           <div className="flex justify-between w-full">
             <Select onValueChange={(value) => {
               const selected = categories.find(c => c.name === value)
@@ -121,15 +126,18 @@ export function CategorySelect<T extends Record<string, any>>({
               <SelectContent>
                 {categories.length > 0 ? (
                   categories.map((category) => (
+
                     <div key={category.id} className="flex items-center justify-between px-2 py-1">
                       {editingCategory === category.name ? (
                         <Input
                           value={newCategoryName}
                           onChange={(e) => setNewCategoryName(e.target.value)}
                           onBlur={handleSaveEdit}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
+                          onKeyDown={(e) =>
+                            e.key === 'Enter' && handleSaveEdit()
+                          }
                           autoFocus
-                          className="flex-1 mr-2"
+                          className="mr-2 flex-1"
                         />
                       ) : (
                         <SelectItem value={category.name} key={category.id} className="flex-1">
@@ -169,7 +177,7 @@ export function CategorySelect<T extends Record<string, any>>({
                     </div>
                   ))
                 ) : (
-                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground px-2 py-1.5 text-sm">
                     Aucune catégorie disponible
                   </div>
                 )}

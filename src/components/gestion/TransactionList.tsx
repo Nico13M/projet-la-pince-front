@@ -8,91 +8,77 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { SavedBudget, Transaction } from '@/types/budget'
+import { Transaction } from '@/types/transaction'
+
+
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
-import { BudgetEditor } from './GestiontEditor'
+import { TransactionEditor } from './TransactionEditor'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { Pagination } from '../Pagination'
+import {
+  fetchGetTransactions,
+  fetchDeleteTransactions,
+} from '@/app/_actions/transactions/fetchTransactions'
 
-import { fetchGetTransactions } from '@/app/_actions/transactions/fetchTransactions'
+export default function TransactionList() {
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(
+    null,
+  )
+  const [isLoading, setIsLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
-function capitalize(str: string) {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export default function BudgetList() {
-  
-  const [budgets, setBudgets] = useState<SavedBudget[]>([]);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [budgetToDelete, setBudgetToDelete] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const mapTransactionToBudget = (transaction: Transaction): SavedBudget => ({
-    id: transaction.id,
-    budget: capitalize(transaction.name || ''),
-    category: capitalize(transaction.transactionType || ''),
-    date: transaction.dateOfExpense
-      ? new Date(transaction.dateOfExpense).toLocaleDateString('fr-FR')
-      : '',
-    amount:
-      typeof transaction.amount === 'number'
-        ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
-        : transaction.amount || '',
-  });
-
-  const handleSaveBudget = (
+  const handleSaveTransaction = (
     id: string,
-    updatedBudget: Partial<SavedBudget>,
+    updatedTransaction: Partial<Transaction>,
   ) => {
-    const updatedBudgets = budgets.map((b: { id: string }) => {
+    const updatedTransactions = transactions.map((b: { id: string }) => {
+
       if (b.id === id) {
-        return { ...b, ...updatedBudget }
+        return { ...b, ...updatedTransaction }
       }
       return b
     })
-    setBudgets(updatedBudgets)
-    
-  }
-
-  const handleConfirmDelete = async () => {
-    if (!budgetToDelete) return
-    try {
-      setBudgets((prev: SavedBudget[]) => prev.filter((b: any) => b.id !== budgetToDelete))
-      setDeleteDialogOpen(false)
-      setBudgetToDelete(null)
-      
-    } catch (err) {
-      
-    }
+    setTransactions(updatedTransactions)
   }
 
   const getAndSetTransactions = async (pageNumber = 1) => {
     try {
       setIsLoading(true)
       const data = await fetchGetTransactions(pageNumber)
-      setBudgets(data.data.map(mapTransactionToBudget))
+
+      setTransactions(data.data)
       setPage(data.page)
       setTotalPages(data.totalPages)
     } catch (err) {
-      
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleConfirmDelete = async () => {
+    if (!transactionToDelete) return
+    try {
+      await fetchDeleteTransactions(transactionToDelete)
+      setTransactions((prev) =>
+        prev.filter((b) => b.id !== transactionToDelete),
+      )
+      setDeleteDialogOpen(false)
+      setTransactionToDelete(null)
+    } catch (err) {}
+  }
+
   const handleDeleteClick = (id: string) => {
-    setBudgetToDelete(id)
+    setTransactionToDelete(id)
     setDeleteDialogOpen(true)
   }
 
   useEffect(() => {
     getAndSetTransactions(page)
-    
   }, [page])
 
   const handlePageChange = (newPage: number) => {
@@ -111,29 +97,46 @@ export default function BudgetList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Titre budget</TableHead>
+              <TableHead>Titre transaction</TableHead>
+              <TableHead>Type de transaction</TableHead>
+
+
               <TableHead>Date</TableHead>
               <TableHead>Catégorie</TableHead>
               <TableHead>Montant</TableHead>
-              <TableHead className="w-[120px]">Actions</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {budgets.length > 0 ? (
-              budgets.map((budget: SavedBudget) => (
-                <TableRow key={budget.id}>
-                  <TableCell className="font-medium">{budget.budget}</TableCell>
-                  <TableCell>{budget.date}</TableCell>
-                  <TableCell>{budget.category}</TableCell>
-                  <TableCell>{budget.amount}</TableCell>
-                  <TableCell className="text-right">
+            {transactions.length > 0 ? (
+              transactions.map((transaction: Transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell>{transaction.name}</TableCell>
+                  <TableCell>{transaction.transactionType}</TableCell>
+                  <TableCell>
+                    {transaction.dateOfExpense
+                      ? new Date(transaction.dateOfExpense).toLocaleDateString(
+                          'fr-FR',
+                        )
+                      : ''}
+                  </TableCell>
+                  <TableCell>{transaction.category?.name}</TableCell>
+                  <TableCell>
+                    {typeof transaction.amount === 'number'
+                      ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
+                      : transaction.amount || ''}
+                  </TableCell>
+                  <TableCell>
                     <div className="flex justify-end gap-2">
-                      <BudgetEditor budget={budget} onSave={handleSaveBudget} />
+                      <TransactionEditor
+                        transaction={transaction}
+                        onSave={handleSaveTransaction}
+                      />
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-red-600 hover:bg-red-50"
-                        onClick={() => handleDeleteClick(budget.id)}
+                        onClick={() => handleDeleteClick(transaction.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Supprimer</span>
@@ -145,7 +148,7 @@ export default function BudgetList() {
             ) : (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
-                  Aucun budget disponible
+                  Aucune transaction disponible
                 </TableCell>
               </TableRow>
             )}
@@ -163,7 +166,7 @@ export default function BudgetList() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        description="Cette action est irréversible. Le budget sera définitivement supprimé."
+        description="Cette action est irréversible. La transaction sera définitivement supprimé."
       />
     </>
   )
