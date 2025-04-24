@@ -4,7 +4,7 @@ import { CreditCard, DollarSign, PieChart, PiggyBank, TrendingUp } from 'lucide-
 import { useEffect, useState } from 'react'
 import { CardSkeleton } from '../ui/skeleton/skeleton-card'
 import { StatCardContent } from './StatCardContent'
-import { fetchOneBudgetSummary } from '@/app/_actions/dashbord/fetchOneBudgetSummary'
+import { fetchOneBudgetSummary } from '@/app/_actions/dashboard/fetchOneBudgetSummary'
 
 interface BudgetSummary {
   remainingBalance: number
@@ -16,7 +16,7 @@ interface BudgetSummary {
 export function StatCards() {
   const [isLoading, setIsLoading] = useState(true)
   const [budgetSummaryData, setBudgetSummaryData] = useState<BudgetSummary | null>(null)
-  
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -57,13 +57,13 @@ export function StatCards() {
               </div>
             </CardHeader>
             <CardContent>
-              <StatCardContent 
-                value={budgetSummaryData?.remainingBalance || 0} 
-                percentage={2.5} 
+              <StatCardContent
+                value={budgetSummaryData?.remainingBalance || 0}
+                percentage={2.5}
               />
             </CardContent>
           </Card>
-          
+
           <Card className="border-accent/20 shadow-md bg-white overflow-hidden">
             <div className="absolute h-2 top-0 left-0 right-0 bg-gradient-to-r from-blue-400 to-blue-300"></div>
             <CardHeader className="flex flex-row items-center justify-between pt-6">
@@ -83,7 +83,7 @@ export function StatCards() {
               />
             </CardContent>
           </Card>
-          
+
           <Card className="border-accent/20 shadow-md bg-white overflow-hidden">
             <div className="absolute h-2 top-0 left-0 right-0 bg-gradient-to-r from-purple-500 to-purple-400"></div>
             <CardHeader className="flex flex-row items-center justify-between pt-6">
@@ -96,13 +96,13 @@ export function StatCards() {
               </div>
             </CardHeader>
             <CardContent>
-              <StatCardContent 
-                value={budgetSummaryData?.totalInvestment || 0} 
-                percentage={12.3} 
+              <StatCardContent
+                value={budgetSummaryData?.totalInvestment || 0}
+                percentage={12.3}
               />
             </CardContent>
           </Card>
-          
+
           <Card className="border-accent/20 shadow-md bg-white overflow-hidden">
             <div className="absolute h-2 top-0 left-0 right-0 bg-gradient-to-r from-blue-300 to-cyan-300"></div>
             <CardHeader className="flex flex-row items-center justify-between pt-6">
@@ -118,12 +118,11 @@ export function StatCards() {
               <div className="space-y-3">
                 <div className="text-2xl font-bold tracking-tight">{budgetUtilization}%</div>
                 <div className="bg-gray-100 h-3 w-full rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full rounded-full transition-all duration-700 ease-out ${
-                      budgetUtilization > 80 ? 'bg-red-500' : 
-                      budgetUtilization > 60 ? 'bg-amber-500' : 'bg-primary'
-                    }`}
-                    style={{ width: `${budgetUtilization}%` }} 
+                  <div
+                    className={`h-full rounded-full transition-all duration-700 ease-out ${budgetUtilization > 80 ? 'bg-red-500' :
+                        budgetUtilization > 60 ? 'bg-amber-500' : 'bg-primary'
+                      }`}
+                    style={{ width: `${budgetUtilization}%` }}
                   />
                 </div>
                 <div className="flex justify-between text-xs text-foreground/60">

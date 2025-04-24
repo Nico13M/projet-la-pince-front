@@ -2,23 +2,23 @@
 
 import { cookies } from "next/headers";
 
-export async function fetchUserBudget() {
+export async function fetchUserTransactions() {
     try {
-        
-        const API_LINK = "http://backend-la-pince:3000"
+
+        const API_LINK = "http://192.168.1.2:3000"
         const cookieStore = await cookies();
         const csrfToken = cookieStore.get('x-csrf-token')?.value;
         const accessToken = cookieStore.get('access_token')?.value;
 
         const cookieHeader = `x-csrf-token=${csrfToken}; access_token=${accessToken}`;
-    
+
         if (!csrfToken) {
             throw new Error("CSRF Token non trouvé");
         }
-    
-        const response = await fetch(API_LINK + '/budget', {
+
+        const response = await fetch(API_LINK + '/transaction/list', {
             method: 'GET',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
                 'x-csrf-token': csrfToken,
                 'Cookie': cookieHeader

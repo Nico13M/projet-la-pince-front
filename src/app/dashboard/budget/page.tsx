@@ -16,7 +16,7 @@ export default function BudgetPage() {
 
           <div className="mt-8">
             <h3 className="mb-4 text-lg font-medium">Tableau des Budget</h3>
-            <div className="rounded-md">
+            <div>
               <BudgetList />
             </div>
           </div>
