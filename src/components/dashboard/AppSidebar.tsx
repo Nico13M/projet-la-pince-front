@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  BarChart2,
-  CreditCard,
-  Home,
-  PieChart,
-  Settings,
-  Wallet,
-} from 'lucide-react'
+import { BarChart2, CreditCard, Home, PieChart, Settings } from 'lucide-react'
 
 import {
   Sidebar,
@@ -18,6 +11,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -29,14 +23,10 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/dashboard/home" className="flex items-center gap-2">
-                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-md">
-                  <Wallet className="size-5" />
-                </div>
-                <span className="text-lg font-semibold">La Pince</span>
-              </Link>
-            </SidebarMenuButton>
+            <Link href="/dashboard/home" className="flex items-center gap-2">
+              <Image src="/logo.webp" alt="Logo" width={32} height={32} />
+              <span className="text-lg font-semibold">La Pince</span>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

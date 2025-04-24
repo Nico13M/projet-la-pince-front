@@ -1,50 +1,84 @@
+'use client'
+
+import Image from 'next/image'
 import Link from 'next/link'
-import Logo from '../../components/Logo'
+import { useState } from 'react'
+import { BurgerMenu } from './BurgerMenu'
+import { BurgerMenuButton } from './BurgerMenuButton'
 
 export default function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   return (
     <header
       className={`dark absolute z-30 w-full bg-black/70 transition duration-300`}
     >
-      <div className="mx-auto max-w-6xl px-5 sm:px-6">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="flex h-16 items-center justify-between md:h-20">
-          <div className="mr-4 shrink-0">
-            <Logo />
-          </div>
-
-          <nav className="hidden md:flex md:grow">
-            <ul className="flex grow flex-wrap items-center justify-start space-x-5 lg:space-x-8">
-              {[
-                { label: 'Dashboard', href: '/dashboard' },
-                { label: 'Contact', href: '/contact' },
-              ].map(({ label, href }, index) => (
-                <li key={index}>
-                  <Link
-                    href={href}
-                    className="text-foreground hover:text-primary dark:text-muted-foreground dark:hover:text-primary flex items-center px-3 py-2 text-base font-medium transition duration-150 ease-in-out lg:px-5"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-
-            <ul className="flex grow flex-wrap items-center justify-end space-x-5 lg:space-x-8">
-              {[
-                { label: 'Se connecter', href: '/sign-in' },
-                { label: 'Créer un compte', href: '/sign-up' },
-              ].map(({ label, href }, index) => (
-                <li key={index}>
-                  <Link
-                    href={href}
-                    className="text-foreground hover:text-primary dark:text-muted-foreground dark:hover:text-primary flex items-center px-3 py-2 text-base font-medium transition duration-150 ease-in-out lg:px-5"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
+          <Link href="/">
+            <Image
+              className="mr-8"
+              src="/logo-white.webp"
+              alt="Logo"
+              width={70}
+              height={70}
+            />
+          </Link>
+          <nav className="hidden md:flex md:grow md:justify-between">
+            <ul className="flex flex-wrap items-center justify-start space-x-5 lg:space-x-8">
+              <li>
+                <Link
+                  href={'/dashboard'}
+                  className="text-foreground hover:text-primary dark:text-muted-foreground dark:hover:text-primary flex items-center px-3 py-2 text-base font-medium transition duration-150 ease-in-out lg:px-5"
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={'mailto:contact@lapince.fr'}
+                  className="text-foreground hover:text-primary dark:text-muted-foreground dark:hover:text-primary flex items-center px-3 py-2 text-base font-medium transition duration-150 ease-in-out lg:px-5"
+                >
+                  Contact
+                </Link>
+              </li>
             </ul>
           </nav>
+          <nav className="hidden md:flex md:w-1/3 md:justify-end">
+            <ul className="flex flex-wrap items-center space-x-5 lg:space-x-8">
+              <li>
+                <Link
+                  href={'/sign-in'}
+                  className="text-foreground hover:text-primary dark:text-muted-foreground dark:hover:text-primary flex items-center px-3 py-2 text-base font-medium transition duration-150 ease-in-out lg:px-5"
+                >
+                  Se connecter
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={'/sign-up'}
+                  className="text-foreground hover:text-primary dark:text-muted-foreground dark:hover:text-primary flex items-center px-3 py-2 text-base font-medium transition duration-150 ease-in-out lg:px-5"
+                >
+                  Créer un compte
+                </Link>
+              </li>
+            </ul>
+          </nav>
+
+          <div className="flex w-full items-center justify-between md:hidden">
+            <Link href="/" className="mr-4">
+              <Image src="/logo.webp" alt="Logo" width={50} height={50} />
+            </Link>
+
+            <BurgerMenuButton
+              mobileMenuOpen={mobileMenuOpen}
+              setMobileMenuOpen={setMobileMenuOpen}
+            />
+          </div>
+          <BurgerMenu
+            mobileMenuOpen={mobileMenuOpen}
+            setMobileMenuOpen={setMobileMenuOpen}
+          />
         </div>
       </div>
     </header>
