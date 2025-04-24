@@ -19,7 +19,7 @@ import { DescriptionPopover } from './DescriptionPopover'
 import { Pagination } from '../Pagination'
 
 import { SavedBudget, BudgetFormValues } from '@/types/budget'
-import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { fetchUserBudget, updateBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 
 function capitalize(str: string) {
   if (!str) return ''
@@ -94,18 +94,31 @@ export default function BudgetList() {
     }
   }, [])
 
-  const handleSaveBudget = (
+  const handleSaveBudget = async (
     id: string,
     updatedBudget: Partial<SavedBudget>
   ) => {
-    const updatedBudgets = budgets.map((b) =>
-      b.id === id ? { ...b, ...updatedBudget } : b
-    )
-    setBudgets(updatedBudgets)
-    showToast({
-      title: 'Budget modifié',
-      description: 'Les modifications ont été enregistrées.',
-    })
+    try {
+      const result = await updateBudget(id, updatedBudget)
+
+      if (!result) throw new Error('La mise à jour a échoué')
+
+      const updatedBudgets = budgets.map((b) =>
+        b.id === id ? { ...b, ...updatedBudget } : b
+      )
+      setBudgets(updatedBudgets)
+
+      showToast({
+        title: 'Budget modifié',
+        description: 'Les modifications ont été enregistrées.',
+      })
+    } catch (error) {
+      console.error('Erreur handleSaveBudget:', error)
+      showToast({
+        title: 'Erreur',
+        description: "La mise à jour du budget a échoué.",
+      })
+    }
   }
 
   const handleDeleteClick = (id: string) => {
