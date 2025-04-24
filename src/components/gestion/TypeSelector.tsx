@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-const types = ['Dépense', 'Revenu', 'Transfert']
+const types = ['Dépense', 'Revenu', 'Investissement']
 
 function TypeSelector({
   type,

@@ -15,7 +15,12 @@ import {
 } from '@/components/ui/select'
 import { BUDGET_CATEGORIES as initialCategories } from '@/utils/categoryBudget'
 import { Path, PathValue, UseFormReturn } from 'react-hook-form'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip'
 import { Button } from '../ui/button'
 import { Trash2, Pencil } from 'lucide-react'
 import CategoryModalButton from './CategoryModalButton'
@@ -51,7 +56,7 @@ export function CategorySelect<T extends Record<string, any>>({
     setCategories(categories.filter((c) => c !== category))
 
     if (form.getValues(name) === category) {
-      form.setValue(name, "" as PathValue<T, Path<T>>, { shouldValidate: true })
+      form.setValue(name, '' as PathValue<T, Path<T>>, { shouldValidate: true })
     }
   }
 
@@ -59,7 +64,9 @@ export function CategorySelect<T extends Record<string, any>>({
   const handleAddCategory = (newCategory: string) => {
     if (newCategory && !categories.includes(newCategory)) {
       setCategories([...categories, newCategory])
-      form.setValue(name, newCategory as PathValue<T, Path<T>>, { shouldValidate: true })
+      form.setValue(name, newCategory as PathValue<T, Path<T>>, {
+        shouldValidate: true,
+      })
     }
   }
 
@@ -71,10 +78,18 @@ export function CategorySelect<T extends Record<string, any>>({
 
   // Valider la modification
   const handleSaveEdit = () => {
-    if (editingCategory && newCategoryName.trim() !== '' && !categories.includes(newCategoryName)) {
-      setCategories(categories.map((c) => (c === editingCategory ? newCategoryName : c)))
+    if (
+      editingCategory &&
+      newCategoryName.trim() !== '' &&
+      !categories.includes(newCategoryName)
+    ) {
+      setCategories(
+        categories.map((c) => (c === editingCategory ? newCategoryName : c)),
+      )
       if (form.getValues(name) === editingCategory) {
-        form.setValue(name, newCategoryName as PathValue<T, Path<T>>, { shouldValidate: true })
+        form.setValue(name, newCategoryName as PathValue<T, Path<T>>, {
+          shouldValidate: true,
+        })
       }
     }
     setEditingCategory(null)
@@ -87,25 +102,30 @@ export function CategorySelect<T extends Record<string, any>>({
       render={({ field }) => (
         <FormItem className={className}>
           {label && <FormLabel>{label}</FormLabel>}
-          <div className="flex justify-between w-full">
-            <Select onValueChange={field.onChange} defaultValue={field.value} >
+          <div className="flex w-full justify-between">
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger className="w-full  text-slate-500 me-4">
+                <SelectTrigger className="me-4 w-full text-slate-500">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 {categories.length > 0 ? (
                   categories.map((category) => (
-                    <div key={category} className="flex items-center justify-between px-2 py-1">
+                    <div
+                      key={category}
+                      className="flex items-center justify-between px-2 py-1"
+                    >
                       {editingCategory === category ? (
                         <Input
                           value={newCategoryName}
                           onChange={(e) => setNewCategoryName(e.target.value)}
                           onBlur={handleSaveEdit}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
+                          onKeyDown={(e) =>
+                            e.key === 'Enter' && handleSaveEdit()
+                          }
                           autoFocus
-                          className="flex-1 mr-2"
+                          className="mr-2 flex-1"
                         />
                       ) : (
                         <SelectItem value={category} className="flex-1">
@@ -118,7 +138,7 @@ export function CategorySelect<T extends Record<string, any>>({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7 mr-1"
+                              className="mr-1 h-7 w-7"
                               onClick={() => handleEditCategory(category)}
                             >
                               <Pencil className="h-3.5 w-3.5" />
@@ -145,7 +165,7 @@ export function CategorySelect<T extends Record<string, any>>({
                     </div>
                   ))
                 ) : (
-                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground px-2 py-1.5 text-sm">
                     Aucune catégorie disponible
                   </div>
                 )}

@@ -7,13 +7,7 @@ export interface BudgetFormValues {
   amount: number
   description?: string
 }
-export interface Transaction {
-  id: string;
-  name?: string;
-  transactionType?: string;
-  dateOfExpense?: string | Date;
-  amount?: number | string;
-}
+
 export interface SavedBudget {
   id: string
   budget: string

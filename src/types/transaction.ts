@@ -1,10 +1,24 @@
 export interface Transaction {
-  id: number
-  description: string
-  montant: string
-  date: string
-  categorie: string
-  type: string
+  id: string
+  name?: string
+  transactionType?: string
+  dateOfExpense?: string | Date
+  amount?: number | string
+  category?: Category
+  categoryId?: string
+}
+
+export interface Category {
+  name: string
+}
+
+export type TransactionDisplayRow = {
+  id: string
+  name: string
+  transactionType: string
+  category: string
+  dateOfExpense: string
+  amount: string
 }
 
 export interface TransactionContextType {

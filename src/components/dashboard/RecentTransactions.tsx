@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { TransactionItem } from './TransactionItem'
-import { fetchUserTransactions } from '@/app/_actions/dashbord/fetchUserTransactions'
+import { fetchUserTransactions } from '@/app/_actions/dashboard/fetchUserTransactions'
 import { ArrowRight, Clock, Plus } from 'lucide-react'
 
 interface Transaction {
@@ -24,31 +24,38 @@ export function RecentTransactions() {
     async function fetchData() {
       try {
         setIsLoading(true)
-        const data = await fetchUserTransactions();
-        setTransactionData(data.data as Transaction[]);
+        const data = await fetchUserTransactions()
+        setTransactionData(data.data as Transaction[])
       } catch (error) {
-        console.error("Error fetching transaction data:", error);
+        console.error('Error fetching transaction data:', error)
       } finally {
         setIsLoading(false)
       }
     }
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   return (
-    <Card className="border-accent/20 shadow-md bg-white">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-accent/10">
+    <Card className="border-accent/20 bg-white shadow-md">
+      <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
         <div className="flex items-center gap-2">
-          <Clock className="h-5 w-5 text-primary/80" />
+          <Clock className="text-primary/80 h-5 w-5" />
           <CardTitle>Transactions récentes</CardTitle>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1 h-8 border-accent/20 text-sm font-medium">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-accent/20 h-8 gap-1 text-sm font-medium"
+          >
             <Plus className="h-3.5 w-3.5" />
             Nouvelle
           </Button>
-          <Button variant="link" className="h-8 cursor-pointer p-0 text-sm font-medium flex items-center gap-1 text-primary">
+          <Button
+            variant="link"
+            className="text-primary flex h-8 cursor-pointer items-center gap-1 p-0 text-sm font-medium"
+          >
             Voir tout
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>
@@ -71,11 +78,13 @@ export function RecentTransactions() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-8 text-center">
-            <div className="rounded-full bg-primary/10 p-3 mb-4">
-              <Clock className="h-6 w-6 text-primary" />
+            <div className="bg-primary/10 mb-4 rounded-full p-3">
+              <Clock className="text-primary h-6 w-6" />
             </div>
-            <h3 className="text-base font-medium mb-2">Aucune transaction récente</h3>
-            <p className="text-sm text-foreground/60 max-w-md mb-4">
+            <h3 className="mb-2 text-base font-medium">
+              Aucune transaction récente
+            </h3>
+            <p className="text-foreground/60 mb-4 max-w-md text-sm">
               Les transactions que vous effectuez apparaîtront ici.
             </p>
             <Button size="sm" className="gap-1">
