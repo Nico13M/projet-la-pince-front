@@ -21,6 +21,7 @@ import { DatePickerField } from './DatePickerField'
 import { MoneyInput } from './MoneyInput'
 import { useState } from "react"
 import { createBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { Plus } from 'lucide-react'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -38,7 +39,11 @@ const formSchema = z.object({
   description: z.string().optional(),
 })
 
-export default function BudgetForm({ userId }: { userId: string }) {
+export default function BudgetForm({ 
+  onBudgetAdded 
+}: { 
+  onBudgetAdded?: () => void 
+}) {
   const { showToast } = useToast()
   const [date, setDate] = useState<Date | null>(null)
 
@@ -54,7 +59,7 @@ export default function BudgetForm({ userId }: { userId: string }) {
 
   async function onSubmit(values: BudgetFormValues) {
     console.log('values', values)
-    const newBudget: SavedBudget = {
+    const newBudget: Partial<SavedBudget> = {
       name: values.name,
       category: values.category,
       threshold: values.threshold,
@@ -72,11 +77,15 @@ export default function BudgetForm({ userId }: { userId: string }) {
         description: 'Le budget a été ajouté avec succès',
       })
       form.reset()
+      
+      // Notifier le parent qu'un budget a été ajouté
+      if (onBudgetAdded) {
+        onBudgetAdded();
+      }
     } catch (err) {
       showToast({
         title: 'Erreur',
         description: 'Une erreur est survenue lors de l\'ajout du budget',
-
       })
     }
   }
@@ -85,50 +94,59 @@ export default function BudgetForm({ userId }: { userId: string }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 rounded-lg border p-6"
+        className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        suppressHydrationWarning
       >
-        <div className="flex space-x-4">
+        <div suppressHydrationWarning>
+          <h2 className="text-xl font-semibold text-slate-800">
+            Gestion des Budgets
+          </h2>
+          <p className="text-sm text-slate-500">
+            Ajoutez, modifiez ou supprimez vos budgets
+          </p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2" suppressHydrationWarning>
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Budget</FormLabel>
+              <FormItem>
+                <FormLabel>Nom du budget</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nom du budget" {...field} />
+                  <Input placeholder="Ex : Budget alimentation, voyage..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* <DatePickerField form={form} name="date" label="Date" /> */}
-        </div>
-
-        <div className="flex space-x-4">
+          <MoneyInput form={form} name="threshold" label="Plafond" />
           <CategorySelect form={form} name="category" label="Catégorie" className="flex-1" />
-          <MoneyInput form={form} name="threshold" label="Plafond" className="flex-1" />
-        </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Notes supplémentaires (optionnel)"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Notes supplémentaires (optionnel)"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button type="submit" className="w-full">
-          Ajouter le budget
+          <span className="flex items-center justify-center">
+            <Plus className="mr-2 h-4 w-4" />
+            Ajouter le budget
+          </span>
         </Button>
       </form>
     </Form>

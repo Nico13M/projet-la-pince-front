@@ -27,7 +27,11 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-export default function BudgetList() {
+export default function BudgetList({
+  refreshTrigger = 0,
+}: {
+  refreshTrigger?: number
+}) {
   const { showToast } = useToast()
 
   const [budgets, setBudgets] = useState<SavedBudget[]>([])
@@ -43,15 +47,12 @@ export default function BudgetList() {
       id: budget.id,
       name: capitalize(budget.name),
       description: budget.description || '',
-      category: capitalize(budget.category.name || 'Inconnu'),
-      // date: new Date(budget.createdAt || Date.now()).toLocaleDateString('fr-FR'),
-
+      category: {
+        id: budget.category?.id || '',
+        name: capitalize(budget.category?.name || 'Inconnu')
+      },
       threshold: typeof budget.threshold === 'number'
         ? budget.threshold : null
-      // `${budget.threshold.toLocaleString('fr-FR', {
-      //   style: 'currency',
-      //   currency: 'EUR'
-      // })}` : budget.threshold || '',
     }
   }
 
@@ -81,6 +82,12 @@ export default function BudgetList() {
   useEffect(() => {
     getAndSetBudgets(page)
   }, [page])
+
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      getAndSetBudgets(1)
+    }
+  }, [refreshTrigger])
 
   useEffect(() => {
     const handleNewBudget = (event: CustomEvent<SavedBudget>) => {
@@ -185,7 +192,7 @@ export default function BudgetList() {
                     />
                   </TableCell>
                   {/* <TableCell>{budget.date}</TableCell> */}
-                  <TableCell>{budget.category}</TableCell>
+                  <TableCell>{budget.category.name}</TableCell>
                   {/* <TableCell>{budget.availableAmount}</TableCell> */}
                   <TableCell>{budget.threshold !== null
                     ? formatEuro(budget.threshold)
