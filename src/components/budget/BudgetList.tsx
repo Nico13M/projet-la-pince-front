@@ -19,7 +19,7 @@ import { DescriptionPopover } from './DescriptionPopover'
 import { Pagination } from '../Pagination'
 
 import { SavedBudget, BudgetFormValues } from '@/types/budget'
-import { fetchUserBudget, updateBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { deleteBudget, fetchUserBudget, updateBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 
 function capitalize(str: string) {
   if (!str) return ''
@@ -125,18 +125,25 @@ export default function BudgetList() {
     setBudgetToDelete(id)
     setDeleteDialogOpen(true)
   }
+  const handleConfirmDelete = async () => {
+    if (!budgetToDelete) return;
 
-  const handleConfirmDelete = () => {
-    if (!budgetToDelete) return
+    try {
+      await deleteBudget(budgetToDelete);
+      setBudgets((prev) => prev.filter((b) => b.id !== budgetToDelete));
+      setDeleteDialogOpen(false);
 
-    setBudgets((prev) => prev.filter((b) => b.id !== budgetToDelete))
-    setDeleteDialogOpen(false)
-
-    showToast({
-      title: 'Budget supprimé',
-      description: 'Le budget a été supprimé avec succès.',
-    })
-  }
+      showToast({
+        title: 'Budget supprimé',
+        description: 'Le budget a été supprimé avec succès.',
+      });
+    } catch (error) {
+      showToast({
+        title: 'Erreur',
+        description: "La suppression du budget a échoué.",
+      });
+    }
+  };
 
   const handlePageChange = (newPage: number) => {
     if (newPage !== page && newPage >= 1 && newPage <= totalPages) {
