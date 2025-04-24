@@ -69,7 +69,7 @@ export default function TransactionList() {
       )
       setDeleteDialogOpen(false)
       setTransactionToDelete(null)
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const handleDeleteClick = (id: string) => {
@@ -116,8 +116,8 @@ export default function TransactionList() {
                   <TableCell>
                     {transaction.dateOfExpense
                       ? new Date(transaction.dateOfExpense).toLocaleDateString(
-                          'fr-FR',
-                        )
+                        'fr-FR',
+                      )
                       : ''}
                   </TableCell>
                   <TableCell>{transaction.category?.name}</TableCell>

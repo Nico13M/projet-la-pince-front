@@ -1,4 +1,5 @@
-use server'
+'use server'
+
 import { Data, SavedBudget } from '@/types/budget'
 import { Transaction, TransactionDisplayRow } from '@/types/transaction'
 

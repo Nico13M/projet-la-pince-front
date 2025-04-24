@@ -30,7 +30,10 @@ const formSchema = z.object({
     .number({ invalid_type_error: 'Le montant doit être un nombre' })
     .positive({ message: 'Le montant doit être supérieur à 0' }),
   date: z.date(),
-  category: z.string().min(1, { message: 'La catégorie est requise' }),
+  category: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
   type: z.string().min(1, { message: 'Le type est requis' }),
 })
 
@@ -58,7 +61,7 @@ export default function TransactionForm({
       description: '',
       amount: 0,
       date: new Date(),
-      category: '',
+      category: { id: '', name: '' },
       type: '',
     },
   })
@@ -66,7 +69,6 @@ export default function TransactionForm({
   useEffect(() => {
     fetchGetCategories()
       .then((categories) => {
-        console.log('Retour API /categories :', categories) // <= Ton log ici
         setCategories(categories)
       })
       .catch((e) => {
@@ -80,8 +82,9 @@ export default function TransactionForm({
   }, [])
 
   async function onSubmit(values: FormValues) {
+
     const selectedCategory = categories.find(
-      (cat) => cat.id === values.category || cat.name === values.category,
+      (cat) => cat.id === values.category.id || cat.name === values.category.name,
     )
 
     if (!selectedCategory) {
@@ -116,8 +119,6 @@ export default function TransactionForm({
       categoryId: selectedCategory.id,
       transactionType: mapTypeToTransactionType(values.type),
     }
-    console.log('🚀 🍒 ⛔ ☢️ ~ onSubmit ~ payload:', payload)
-
     try {
       const created = await fetchCreateTransaction(payload)
       showToast({
