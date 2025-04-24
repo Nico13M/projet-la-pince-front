@@ -13,7 +13,7 @@ interface DescriptionPopoverProps {
 
 export function DescriptionPopover({
   description,
-  maxLength = 50,
+  maxLength = 30,
 }: DescriptionPopoverProps) {
   if (!description) {
     return <span>Aucune description</span>

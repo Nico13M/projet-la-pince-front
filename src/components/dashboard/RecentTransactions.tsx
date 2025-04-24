@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { TransactionItem } from './TransactionItem'
-import { fetchUserTransactions } from '@/app/_actions/dashbord/fetchUserTransactions'
+import { fetchUserTransactions } from '@/app/_actions/dashboard/fetchUserTransactions'
 import { ArrowRight, Clock, Plus } from 'lucide-react'
 
 interface Transaction {

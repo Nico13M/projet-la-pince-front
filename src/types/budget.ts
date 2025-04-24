@@ -1,10 +1,9 @@
 import { BUDGET_CATEGORIES } from '@/utils/categoryBudget'
 
 export interface BudgetFormValues {
-  budget: string
-  date: Date
-  category: string
-  amount: number
+  name: string
+  category: { id: string, name: string },
+  threshold: number
   description?: string
 }
 export interface Transaction {
@@ -16,10 +15,10 @@ export interface Transaction {
 }
 export interface SavedBudget {
   id: string
-  budget: string
-  date: string
-  category: string
-  amount: string
+  name: string
+  category: { id: string, name: string },
+  description?: string
+  threshold: number
 }
 
 export interface Pagination {

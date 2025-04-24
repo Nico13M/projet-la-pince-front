@@ -1,11 +1,13 @@
 'use client'
-import { fetchUserBudget } from '@/app/_actions/dashbord/fetchUserBudget'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart3, ChevronRight, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetItem } from './BudgetItem'
+
+
 
 interface Budget {
   id: string | number

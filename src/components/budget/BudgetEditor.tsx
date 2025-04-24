@@ -1,3 +1,4 @@
+import { fetchCategories } from '@/app/_actions/dashboard/fetchCategories'
 import { Button } from '@/components/ui/button'
 // import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
@@ -19,27 +20,39 @@ import { parseStringToDate } from '@/utils/format'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Edit } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface BudgetEditorProps {
   budget: SavedBudget
-  onSave: (id: number, updatedBudget: Partial<SavedBudget>) => void
+  onSave: (id: string, updatedBudget: Partial<SavedBudget>) => void
 }
 
-type EditableBudget = Omit<SavedBudget, 'date'> & {
-  date: Date
+type EditableBudget = Omit<SavedBudget, 'date' | 'threshold'> & {
+  threshold: string;
 }
+
 
 export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
+
   const [isOpen, setIsOpen] = useState(false)
   const [editData, setEditData] = useState<EditableBudget | null>(null)
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const fetched = await fetchCategories();
+      setCategories(fetched);
+    };
+    loadCategories();
+  }, []);
+
 
   const handleOpen = (open: boolean) => {
     setIsOpen(open)
     if (open && !editData) {
       setEditData({
         ...budget,
-        date: parseStringToDate(budget.date),
+        threshold: String(budget.threshold),
       })
     }
   }
@@ -54,15 +67,19 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
     setEditData(null)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editData) return
 
     const updatedBudget: Partial<SavedBudget> = {
       ...editData,
-      date: format(editData.date, 'dd/MM/yyyy'),
+      // date: format(editData.date, 'dd/MM/yyyy'),
+      threshold: parseFloat(
+        String(editData.threshold).replace(',', '.')
+      ),
+
     }
 
-    onSave(budget.id, updatedBudget)
+    await onSave(budget.id, updatedBudget)
     setIsOpen(false)
     setEditData(null)
   }
@@ -85,8 +102,8 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
               <div className="grid grid-cols-3 items-center gap-4">
                 <label>Budget</label>
                 <Input
-                  value={editData.budget}
-                  onChange={(e) => handleChange('budget', e.target.value)}
+                  value={editData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
                   className="col-span-2 h-8"
                 />
               </div>
@@ -100,7 +117,7 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
                 />
               </div>
 
-              {/* Date */}
+              {/* Date 
               <div className="grid grid-cols-3 items-center gap-4">
                 <label>Date</label>
                 <Popover>
@@ -119,10 +136,10 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
                       onSelect={(date) => date && handleChange('date', date)}
                       initialFocus
                       locale={fr}
-                    /> */}
+                    /> 
                   </PopoverContent>
                 </Popover>
-              </div>
+              </div>*/}
 
               <div className="grid grid-cols-3 items-center gap-4">
                 <label>Catégorie</label>
@@ -134,9 +151,9 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
                     <SelectValue placeholder="Sélectionner" />
                   </SelectTrigger>
                   <SelectContent>
-                    {BUDGET_CATEGORIES.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -147,14 +164,14 @@ export function BudgetEditor({ budget, onSave }: BudgetEditorProps) {
                 <label>Montant</label>
                 <div className="relative col-span-2">
                   <Input
-                    value={editData.amount.replace(/[^0-9.,]/g, '')}
+                    value={String(editData.threshold).replace(/[^0-9.,]/g, '')}
                     onChange={(e) => {
                       const value = e.target.value
                       if (
                         /^[0-9]*[,.]?[0-9]{0,2}$/.test(value) ||
                         value === ''
                       ) {
-                        handleChange('amount', value)
+                        handleChange('threshold', value)
                       }
                     }}
                     className="h-8 pr-8"
