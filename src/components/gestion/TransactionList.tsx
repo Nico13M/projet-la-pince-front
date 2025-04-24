@@ -10,19 +10,37 @@ import {
 
 import { Transaction } from '@/types/transaction'
 
-
+import {
+  fetchDeleteTransactions,
+  fetchGetTransactions,
+} from '@/app/_actions/transactions/fetchTransactions'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { TableSkeleton } from '../ui/skeleton/skeleton-table'
-import { TransactionEditor } from './TransactionEditor'
-import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { Pagination } from '../Pagination'
-import {
-  fetchGetTransactions,
-  fetchDeleteTransactions,
-} from '@/app/_actions/transactions/fetchTransactions'
+import { TableSkeleton } from '../ui/skeleton/skeleton-table'
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
+import { TransactionEditor } from './TransactionEditor'
 
-export default function TransactionList() {
+const formatTransactionType = (type?: string): string => {
+  if (!type) return ''
+
+  switch (type.toLowerCase()) {
+    case 'income':
+      return 'Revenu'
+    case 'expense':
+      return 'Dépense'
+    case 'investment':
+      return 'Investissement'
+    default:
+      return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
+  }
+}
+
+export default function TransactionList({
+  refreshTrigger = 0,
+}: {
+  refreshTrigger?: number
+}) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(
@@ -37,7 +55,6 @@ export default function TransactionList() {
     updatedTransaction: Partial<Transaction>,
   ) => {
     const updatedTransactions = transactions.map((b: { id: string }) => {
-
       if (b.id === id) {
         return { ...b, ...updatedTransaction }
       }
@@ -55,6 +72,7 @@ export default function TransactionList() {
       setPage(data.page)
       setTotalPages(data.totalPages)
     } catch (err) {
+      console.error('Erreur lors du chargement des transactions:', err)
     } finally {
       setIsLoading(false)
     }
@@ -69,7 +87,9 @@ export default function TransactionList() {
       )
       setDeleteDialogOpen(false)
       setTransactionToDelete(null)
-    } catch (err) { }
+    } catch (err) {
+      console.error('Erreur lors de la suppression:', err)
+    }
   }
 
   const handleDeleteClick = (id: string) => {
@@ -80,6 +100,12 @@ export default function TransactionList() {
   useEffect(() => {
     getAndSetTransactions(page)
   }, [page])
+
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      getAndSetTransactions(1)
+    }
+  }, [refreshTrigger])
 
   const handlePageChange = (newPage: number) => {
     if (newPage !== page && newPage >= 1 && newPage <= totalPages) {
@@ -100,7 +126,6 @@ export default function TransactionList() {
               <TableHead>Titre transaction</TableHead>
               <TableHead>Type de transaction</TableHead>
 
-
               <TableHead>Date</TableHead>
               <TableHead>Catégorie</TableHead>
               <TableHead>Montant</TableHead>
@@ -112,12 +137,14 @@ export default function TransactionList() {
               transactions.map((transaction: Transaction) => (
                 <TableRow key={transaction.id}>
                   <TableCell>{transaction.name}</TableCell>
-                  <TableCell>{transaction.transactionType}</TableCell>
+                  <TableCell>
+                    {formatTransactionType(transaction.transactionType)}
+                  </TableCell>
                   <TableCell>
                     {transaction.dateOfExpense
                       ? new Date(transaction.dateOfExpense).toLocaleDateString(
-                        'fr-FR',
-                      )
+                          'fr-FR',
+                        )
                       : ''}
                   </TableCell>
                   <TableCell>{transaction.category?.name}</TableCell>

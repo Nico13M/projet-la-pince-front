@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import {
   fetchCreateTransaction,
   fetchGetCategories,
@@ -14,21 +13,24 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { DatePickerField } from './DatePickerField'
-import { CategorySelect } from './CategorySelect'
-import { MoneyInput } from './MoneyInput'
-import TypeSelector from '../gestion/TypeSelector'
 import { Transaction } from '@/types/transaction'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import TypeSelector from '../gestion/TypeSelector'
+import { CategorySelect } from './CategorySelect'
+import { DatePickerField } from './DatePickerField'
+import { MoneyInput } from './MoneyInput'
 
 const formSchema = z.object({
   description: z.string().min(1, { message: 'La description est requise' }),
   amount: z
     .number({ invalid_type_error: 'Le montant doit être un nombre' })
-    .positive({ message: 'Le montant doit être supérieur à 0' }),
+    .positive({ message: 'Le montant doit être supérieur à 0' })
+    .optional()
+    .transform((v) => (v === undefined ? 0 : v)),
   date: z.date(),
   category: z.object({
     id: z.string(),
@@ -59,7 +61,7 @@ export default function TransactionForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: '',
-      amount: 0,
+      amount: undefined,
       date: new Date(),
       category: { id: '', name: '' },
       type: '',
@@ -78,13 +80,12 @@ export default function TransactionForm({
           variant: 'destructive',
         })
       })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function onSubmit(values: FormValues) {
-
     const selectedCategory = categories.find(
-      (cat) => cat.id === values.category.id || cat.name === values.category.name,
+      (cat) =>
+        cat.id === values.category.id || cat.name === values.category.name,
     )
 
     if (!selectedCategory) {
@@ -115,18 +116,25 @@ export default function TransactionForm({
     const payload = {
       name: values.description,
       dateOfExpense: values.date.toISOString(),
-      amount: values.amount,
+      amount: values.amount || 0,
       categoryId: selectedCategory.id,
       transactionType: mapTypeToTransactionType(values.type),
     }
     try {
-      const created = await fetchCreateTransaction(payload)
+      const created = await fetchCreateTransaction(payload as any)
       showToast({
         title: 'Transaction ajoutée',
         description: 'La transaction a été enregistrée avec succès',
+        variant: 'success',
       })
       if (onAddTransaction) onAddTransaction(created)
-      form.reset()
+      form.reset({
+        description: '',
+        amount: undefined,
+        date: new Date(),
+        category: { id: '', name: '' },
+        type: '',
+      })
     } catch (e) {
       showToast({
         title: 'Erreur',
@@ -141,8 +149,9 @@ export default function TransactionForm({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        suppressHydrationWarning
       >
-        <div>
+        <div suppressHydrationWarning>
           <h2 className="text-xl font-semibold text-slate-800">
             Gestion des Transactions
           </h2>
@@ -151,7 +160,7 @@ export default function TransactionForm({
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2" suppressHydrationWarning>
           <FormField
             control={form.control}
             name="description"
@@ -168,12 +177,7 @@ export default function TransactionForm({
 
           <MoneyInput form={form} name="amount" label="Montant" />
           <DatePickerField form={form} name="date" label="Date" />
-          <CategorySelect
-            form={form}
-            name="category"
-            label="Catégorie"
-            categories={categories}
-          />
+          <CategorySelect form={form} name="category" label="Catégorie" />
 
           <TypeSelector
             type={form.watch('type')}

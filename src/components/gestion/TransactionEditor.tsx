@@ -1,4 +1,19 @@
+'use client'
+
+import {
+  fetchGetCategories,
+  fetchUpdateTransaction,
+} from '@/app/_actions/transactions/fetchTransactions'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
   Popover,
@@ -12,21 +27,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 import { Transaction } from '@/types/transaction'
-import { BUDGET_CATEGORIES } from '@/utils/categoryBudget'
-import { format, isValid, parseISO } from 'date-fns'
-import { Edit } from 'lucide-react'
-import { useState } from 'react'
-import { fetchUpdateTransaction } from '@/app/_actions/transactions/fetchTransactions'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { format, parseISO } from 'date-fns'
+import { fr } from 'date-fns/locale/fr'
+import { CalendarIcon, Edit, Save, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-function frToIsoFull(str: string): undefined | string | Date {
-  const [day, month, year] = str.split('/')
-  if (day && month && year) {
-    const d = new Date(Number(year), Number(month) - 1, Number(day))
-    return d.toISOString()
-  }
+const editFormSchema = z.object({
+  name: z.string().min(1, { message: 'Le nom est requis' }),
+  amount: z
+    .number({ invalid_type_error: 'Le montant doit être un nombre' })
+    .positive({ message: 'Le montant doit être supérieur à 0' }),
+  date: z.date(),
+  category: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+  transactionType: z.string().min(1, { message: 'Le type est requis' }),
+})
 
-  return new Date().toISOString()
+type EditFormValues = z.infer<typeof editFormSchema>
+
+type CategoryOption = {
+  id: string
+  name: string
+  transactionType: string
 }
 
 interface TransactionEditorProps {
@@ -34,201 +64,282 @@ interface TransactionEditorProps {
   onSave: (id: string, updatedTransaction: Partial<Transaction>) => void
 }
 
-type EditableTransaction = {
-  name: string
-  transactionType: string
-  dateOfExpense?: string | Date
-  amount: string
-  categoryId: string
-}
-
-function toEditable(transaction: Transaction): EditableTransaction {
-  let date: Date
-  if (!transaction.dateOfExpense) {
-    date = new Date()
-  } else if (transaction.dateOfExpense instanceof Date) {
-    date = transaction.dateOfExpense
-  } else {
-    const d = parseISO(transaction.dateOfExpense)
-    date = isValid(d) ? d : new Date()
-  }
-
-  return {
-    name: transaction.name ?? '',
-    transactionType: transaction.transactionType ?? '',
-    dateOfExpense: frToIsoFull(transaction.dateOfExpense),
-    amount:
-      transaction.amount !== undefined && transaction.amount !== null
-        ? String(transaction.amount).replace('.', ',')
-        : '',
-    categoryId: transaction.categoryId ?? '',
-  }
-}
-
 export function TransactionEditor({
   transaction,
   onSave,
 }: TransactionEditorProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [editData, setEditData] = useState<EditableTransaction>(
-    toEditable(transaction),
-  )
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [categories, setCategories] = useState<CategoryOption[]>([])
+  const { showToast } = useToast()
 
-  const handleOpen = (open: boolean) => {
-    setIsOpen(open)
-    setError(null)
-    if (open) {
-      setEditData(toEditable(transaction))
-    }
-  }
+  const getDefaultValues = (): EditFormValues => {
+    let date: Date
 
-  const handleChange = <K extends keyof EditableTransaction>(
-    field: K,
-    value: EditableTransaction[K],
-  ) => {
-    setEditData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
-  const handleCancel = () => {
-    setIsOpen(false)
-    setError(null)
-  }
-
-  const handleSave = async () => {
-    if (!editData) return
-    setLoading(true)
-    setError(null)
     try {
-      const patch = {
-        name: editData.name,
-        transactionType: editData.transactionType,
-        dateOfExpense: editData.dateOfExpense,
-        amount:
-          editData.amount !== ''
-            ? Number((editData.amount ?? '').replace(',', '.'))
-            : undefined,
-        categoryId:
-          editData.categoryId !== '' ? editData.categoryId : undefined,
+      if (transaction.dateOfExpense) {
+        if (typeof transaction.dateOfExpense === 'string') {
+          date = parseISO(transaction.dateOfExpense)
+        } else {
+          date = transaction.dateOfExpense
+        }
+      } else {
+        date = new Date()
       }
-      console.log('🚀 🍒 ⛔ ☢️ ~ handleSave ~ patch:', patch)
-      await fetchUpdateTransaction(transaction.id, patch)
-      onSave(transaction.id, patch)
-      setIsOpen(false)
-    } catch (err) {
-      setError('Erreur lors de la mise à jour de la transaction.')
+    } catch (error) {
+      date = new Date()
     }
-    setLoading(false)
+
+    const defaultCategory = {
+      id: transaction.categoryId || '',
+      name: transaction.category?.name || '',
+    }
+
+    return {
+      name: transaction.name || '',
+      amount:
+        typeof transaction.amount === 'number'
+          ? transaction.amount
+          : typeof transaction.amount === 'string'
+            ? parseFloat(transaction.amount.replace(',', '.'))
+            : 0,
+      date,
+      category: defaultCategory,
+      transactionType: transaction.transactionType || 'expense',
+    }
+  }
+
+  const form = useForm<EditFormValues>({
+    resolver: zodResolver(editFormSchema),
+    defaultValues: getDefaultValues(),
+  })
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchGetCategories()
+        .then((data) => {
+          setCategories(data)
+        })
+        .catch((error) => {
+          showToast({
+            title: 'Erreur',
+            description: 'Impossible de charger les catégories',
+          })
+        })
+    }
+  }, [isOpen, showToast])
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset(getDefaultValues())
+    }
+  }, [isOpen, form, transaction])
+
+  const onSubmit = async (values: EditFormValues) => {
+    setLoading(true)
+    try {
+      const updateData = {
+        name: values.name,
+        transactionType: values.transactionType,
+        categoryId: values.category.id,
+        dateOfExpense: values.date.toISOString(),
+        amount: values.amount,
+      }
+
+      await fetchUpdateTransaction(transaction.id, updateData as any)
+
+      onSave(transaction.id, {
+        ...updateData,
+        category: { name: values.category.name },
+      })
+
+      showToast({
+        title: 'Succès',
+        description: 'Transaction mise à jour',
+      })
+
+      setIsOpen(false)
+    } catch (error) {
+      showToast({
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour la transaction',
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <Popover open={isOpen} onOpenChange={handleOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="sm" className="p-2">
           <Edit size={16} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[350px]">
-        <div className="flex flex-col gap-4">
-          {/* Nom */}
-          <div>
-            <label htmlFor="edit-name">Nom</label>
-            <Input
-              id="edit-name"
-              value={editData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              disabled={loading}
-              className="h-8"
-            />
-          </div>
-          {/* Type */}
-          <div>
-            <label htmlFor="edit-type">Type</label>
-            <Select
-              value={editData.transactionType}
-              onValueChange={(value) => handleChange('transactionType', value)}
-              disabled={loading}
-            >
-              <SelectTrigger className="h-8">
-                <SelectValue placeholder="Sélectionner" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="expense">Dépense</SelectItem>
-                <SelectItem value="income">Revenu</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {/* Catégorie */}
-          <div>
-            <label htmlFor="edit-category">Catégorie</label>
-            <Input
-              id="edit-category"
-              value={editData.categoryId}
-              onChange={(e) => handleChange('categoryId', e.target.value)}
-              disabled={loading}
-              className="h-8"
-            />
-          </div>
-          {/* Date */}
-          <div>
-            <label htmlFor="edit-date">Date</label>
-            <Input
-              id="edit-date"
-              type="text"
-              placeholder="jj/mm/aaaa"
-              value={editData.dateOfExpense}
-              onChange={(e) => {
-                if (
-                  /^[0-9]{0,2}\/?[0-9]{0,2}\/?[0-9]{0,4}$/.test(
-                    e.target.value,
-                  ) ||
-                  e.target.value === ''
-                ) {
-                  handleChange('dateOfExpense', e.target.value)
-                }
-              }}
-              disabled={loading}
-              className="h-8"
-              maxLength={10}
-            />
-          </div>
-          {/* Montant */}
-          <div>
-            <label htmlFor="edit-amount">Montant</label>
-            <div className="relative">
-              <Input
-                id="edit-amount"
-                value={editData.amount}
-                onChange={(e) => {
-                  const value = e.target.value
-                  if (/^[0-9]*[,.]?[0-9]{0,2}$/.test(value) || value === '') {
-                    handleChange('amount', value)
-                  }
-                }}
-                className="h-8 pr-8"
-                disabled={loading}
-              />
-              <span className="text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2 text-sm">
-                €
-              </span>
-            </div>
-          </div>
+      <PopoverContent className="w-[350px] p-4">
+        <h3 className="mb-4 text-lg font-medium">Modifier la transaction</h3>
 
-          {/* Actions */}
-          <div className="mt-2 flex justify-end gap-2">
-            <Button variant="outline" onClick={handleCancel} disabled={loading}>
-              Annuler
-            </Button>
-            <Button onClick={handleSave} disabled={loading}>
-              {loading ? 'Enregistrement...' : 'Enregistrer'}
-            </Button>
-          </div>
-          {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nom</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nom de la transaction" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="transactionType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner le type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="expense">Dépense</SelectItem>
+                      <SelectItem value="income">Revenu</SelectItem>
+                      <SelectItem value="investment">Investissement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Catégorie</FormLabel>
+                  <Select
+                    value={field.value.id}
+                    onValueChange={(value) => {
+                      const selectedCategory = categories.find(
+                        (cat) => cat.id === value,
+                      )
+                      field.onChange({
+                        id: value,
+                        name: selectedCategory?.name || '',
+                      })
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner une catégorie">
+                          {field.value.name}
+                        </SelectValue>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground',
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, 'dd/MM/yyyy', { locale: fr })
+                          ) : (
+                            <span>Choisir une date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        locale={fr}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Montant</FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(parseFloat(value) || 0)
+                        }}
+                      />
+                    </FormControl>
+                    <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                      €
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end space-x-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsOpen(false)}
+                disabled={loading}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Annuler
+              </Button>
+              <Button type="submit" disabled={loading}>
+                <Save className="mr-2 h-4 w-4" />
+                {loading ? 'Enregistrement...' : 'Enregistrer'}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </PopoverContent>
     </Popover>
   )

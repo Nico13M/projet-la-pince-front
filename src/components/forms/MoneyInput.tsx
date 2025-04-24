@@ -39,10 +39,14 @@ export function MoneyInput<T extends Record<string, any>>({
                 placeholder={placeholder}
                 step="0.01"
                 min="0"
-                {...field}
-                onChange={(e) =>
-                  field.onChange(parseFloat(e.target.value) || 0)
-                }
+                value={field.value || ''}
+                onChange={(e) => {
+                  const value =
+                    e.target.value === ''
+                      ? undefined
+                      : parseFloat(e.target.value)
+                  field.onChange(value)
+                }}
                 className="pr-8"
               />
               <div className="text-muted-foreground absolute inset-y-0 right-3 flex items-center">

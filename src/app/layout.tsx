@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Poppins, Roboto } from 'next/font/google'
+import { Toaster } from 'sonner'
 import Footer from '../components/layouts/Footer'
 
 import './globals.css'
@@ -44,6 +45,7 @@ export default function RootLayout({
       >
         {children}
         <Footer />
+        <Toaster position="top-right" />
       </body>
     </html>
   )

@@ -2,49 +2,54 @@
 
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import TransactionForm from '@/components/forms/TransactionForm'
+import TransactionList from '@/components/gestion/TransactionList'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { FileTextIcon, PlusCircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Transaction } from '../../../types/transaction'
-import { Pagination } from '@/components/Pagination'
-import TransactionList from '@/components/gestion/TransactionList'
 
 export default function GestionPage() {
-  const [transactions, setTransactions] = useState([
-    {
-      id: 1,
-      description: 'Loyer',
-      montant: '650,00 €',
-      date: '05/03/2024',
-      categorie: 'Logement',
-      type: 'Dépense',
-    },
-    {
-      id: 2,
-      description: 'Salaire',
-      montant: '2340,00 €',
-      date: '01/03/2024',
-      categorie: 'Revenu',
-      type: 'Revenu',
-    },
-  ])
+  const [localTransactions, setLocalTransactions] = useState<Transaction[]>([])
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   const addTransaction = (transaction: Transaction) => {
-    setTransactions([...transactions, transaction])
+    setLocalTransactions([...localTransactions, transaction] as Transaction[])
+    setRefreshTrigger((prev) => prev + 1)
   }
 
   return (
     <>
       <DashboardHeader title="Gestion" />
-
       <div className="p-4 md:p-6">
-        <div className="mx-auto max-w-3xl">
-          <TransactionForm onAddTransaction={addTransaction} />
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-medium">
-              Tableau des Transactions
-            </h3>
-            <div className="rounded-md">
-              <TransactionList />
-            </div>
+        <div className="grid gap-6">
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card className="border-accent/20 col-span-4 bg-white shadow-md">
+              <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
+                <div className="flex items-center gap-2">
+                  <PlusCircleIcon className="text-primary/80 h-5 w-5" />
+                  <CardTitle>Ajouter une transaction</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <TransactionForm onAddTransaction={addTransaction} />
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-6">
+            <Card className="border-accent/20 bg-white shadow-md">
+              <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
+                <div className="flex items-center gap-2">
+                  <FileTextIcon className="text-primary/80 h-5 w-5" />
+                  <CardTitle>Tableau des Transactions</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="rounded-md">
+                  <TransactionList refreshTrigger={refreshTrigger} />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
