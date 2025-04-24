@@ -26,9 +26,8 @@ export function BudgetOverview() {
     async function fetchData() {
       try {
         setIsLoading(true)
-        const data = await fetchUserBudget()
-        setBudgetData(data as Budget[])
-
+        const response = await fetchUserBudget()
+        setBudgetData(response.data)
       } catch (error) {
         console.error('Error fetching budget data:', error)
       } finally {
