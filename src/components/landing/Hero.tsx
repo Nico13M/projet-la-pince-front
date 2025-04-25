@@ -69,27 +69,6 @@ const Hero = () => {
       <div className="absolute inset-0 overflow-hidden">
         <div className="bg-secondary bg-opacity-20 absolute -top-20 -right-20 h-80 w-80 rounded-full blur-3xl"></div>
         <div className="bg-primary bg-opacity-20 absolute -bottom-40 -left-40 h-96 w-96 rounded-full blur-3xl"></div>
-        <div className="particles-container absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="particle absolute rounded-full bg-white/30"
-              style={{
-                width: '10px',
-                height: '10px',
-                left: `${(i * 5) % 100}%`,
-                top: `${(i * 7) % 100}%`,
-                opacity: 0.3,
-                animationName: 'floatParticle',
-                animationDuration: '25s',
-                animationDelay: `${i}s`,
-                animationIterationCount: 'infinite',
-                animationTimingFunction: 'ease-in-out',
-                transform: `translate(${(i % 10) * 10}px, ${(i % 10) * 10}px)`,
-              }}
-            ></div>
-          ))}
-        </div>
       </div>
     </section>
   )

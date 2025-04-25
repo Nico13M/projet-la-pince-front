@@ -24,13 +24,13 @@ const PricingCard = ({
     <div
       className={`rounded-2xl p-8 text-left shadow-lg transition-all hover:-translate-y-1 ${
         isPremium
-          ? 'bg-primary text-white shadow-2xl'
+          ? 'bg-primary border-2 border-white/20 text-white shadow-2xl'
           : 'border-primary/20 border bg-white'
       } ${className}`}
     >
       <div className="mb-4 flex items-start justify-between">
         <h3
-          className={`text-lg font-bold ${isPremium ? 'text-white' : 'text-primary'}`}
+          className={`text-lg font-bold ${isPremium ? 'text-white shadow-[0_0_0.5px_rgba(0,0,0,0.5)]' : 'text-primary'}`}
         >
           {title}
         </h3>
@@ -44,7 +44,11 @@ const PricingCard = ({
         <p className="mb-4">
           <span className="text-3xl font-bold">{price.split('/')[0]}</span>
           <span
-            className={isPremium ? 'text-white/70' : 'text-muted-foreground'}
+            className={
+              isPremium
+                ? 'text-white shadow-[0_0_0.5px_rgba(0,0,0,0.4)]'
+                : 'text-muted-foreground'
+            }
           >
             /{price.split('/')[1]}
           </span>
@@ -54,12 +58,16 @@ const PricingCard = ({
         {features.map((feature, idx) => (
           <li key={idx} className="flex items-start">
             <span
-              className={`mr-2 ${isPremium ? 'text-white' : 'text-primary'}`}
+              className={`mr-2 ${isPremium ? 'text-white shadow-[0_0_0.5px_rgba(0,0,0,0.4)]' : 'text-primary'}`}
             >
               ✓
             </span>
             <span
-              className={isPremium ? 'text-white/90' : 'text-muted-foreground'}
+              className={
+                isPremium
+                  ? 'text-white shadow-[0_0_0.5px_rgba(0,0,0,0.4)]'
+                  : 'text-muted-foreground'
+              }
             >
               {feature}
             </span>
@@ -70,8 +78,8 @@ const PricingCard = ({
         href={buttonLink}
         className={`group flex w-full items-center justify-center rounded-lg px-6 py-3 font-medium transition-all ${
           isPremium
-            ? 'text-primary hover:bg-secondary-foreground bg-white'
-            : 'bg-primary hover:bg-primary/90 text-white'
+            ? 'text-primary hover:bg-secondary-foreground border-primary/10 border bg-white'
+            : 'bg-primary hover:bg-primary/90 border border-transparent text-white'
         }`}
       >
         <span>{buttonText}</span>

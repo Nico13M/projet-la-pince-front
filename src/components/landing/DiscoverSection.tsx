@@ -87,7 +87,7 @@ const DiscoverSection = () => {
                 >
                   <Image
                     src={feature.image}
-                    alt={feature.title}
+                    alt={`Aperçu de la fonctionnalité: ${feature.title}`}
                     fill
                     className="object-cover"
                   />
@@ -104,6 +104,7 @@ const DiscoverSection = () => {
                         ? 'bg-primary w-6'
                         : 'bg-muted-foreground'
                     }`}
+                    aria-label={`Afficher ${['Suivi', 'Budget', 'Analyse'][index]}`}
                   />
                 ))}
               </div>

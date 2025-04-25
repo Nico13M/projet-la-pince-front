@@ -15,7 +15,7 @@ export default function Header() {
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="flex h-16 items-center justify-between md:h-20">
-          <Link href="/">
+          <Link className="hidden md:block" href="/">
             <Image
               className="mr-8"
               src="/logo-white.webp"
@@ -67,9 +67,8 @@ export default function Header() {
 
           <div className="flex w-full items-center justify-between md:hidden">
             <Link href="/" className="mr-4">
-              <Image src="/logo.webp" alt="Logo" width={50} height={50} />
+              <Image src="/logo-white.webp" alt="Logo" width={50} height={50} />
             </Link>
-
             <BurgerMenuButton
               mobileMenuOpen={mobileMenuOpen}
               setMobileMenuOpen={setMobileMenuOpen}
