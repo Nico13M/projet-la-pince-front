@@ -78,7 +78,7 @@ export default function BudgetForm({
       })
       form.reset()
       
-      // Notifier le parent qu'un budget a été ajouté
+      
       if (onBudgetAdded) {
         onBudgetAdded();
       }

@@ -38,7 +38,7 @@ interface SavingsDataItem {
   threshold: number
 }
 
-// Configuration des mois pour le graphique
+
 const monthsLabels = {
   January: { shortLabel: 'Jan' },
   February: { shortLabel: 'Fév' },
