@@ -90,17 +90,22 @@ export function BudgetOverview() {
         onSave={handleAddBudget}
       />
 
-      <Card className="border-accent/20 bg-white shadow-md">
-        <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
+      <Card className="relative border-0 overflow-hidden bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl">
+        <div className="absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r from-primary/70 to-secondary/70"></div>
+        <div className="absolute -left-10 -bottom-16 h-32 w-32 rounded-full bg-primary/5 blur-2xl"></div>
+        
+        <CardHeader className="flex flex-row items-center justify-between pt-6 border-b border-accent/10 pb-3">
           <div className="flex items-center gap-2">
-            <BarChart3 className="text-primary/80 h-5 w-5" />
-            <CardTitle>Vue d&apos;ensemble des budgets</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-sm shadow-sm">
+              <BarChart3 className="text-primary h-4 w-4" />
+            </div>
+            <CardTitle className="font-medium tracking-wide text-base">Vue d&apos;ensemble des budgets</CardTitle>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="border-accent/20 h-8 gap-1 text-sm font-medium"
+              className="h-9 gap-1 text-sm font-medium border-accent/20 hover:bg-primary/5 transition-all"
               onClick={() => setShowModal(true)}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -108,7 +113,7 @@ export function BudgetOverview() {
             </Button>
             <Button
               variant="link"
-              className="text-primary flex h-8 cursor-pointer items-center gap-1 p-0 text-sm font-medium"
+              className="text-primary flex h-9 cursor-pointer items-center gap-1 p-0 text-sm font-medium hover:text-primary/80 transition-colors"
               onClick={() => router.push('/dashboard/budget')}
             >
               Gérer les budgets
@@ -116,7 +121,7 @@ export function BudgetOverview() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 pb-4">
           {isLoading ? (
             <TableSkeleton />
           ) : budgetData && budgetData.length > 0 ? (
@@ -133,7 +138,7 @@ export function BudgetOverview() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center p-8 text-center">
-              <div className="bg-primary/10 mb-4 rounded-full p-3">
+              <div className="mb-4 rounded-full p-3 bg-gradient-to-br from-primary/10 to-secondary/10">
                 <BarChart3 className="text-primary h-6 w-6" />
               </div>
               <h3 className="mb-2 text-base font-medium">Aucun budget défini</h3>
@@ -141,7 +146,7 @@ export function BudgetOverview() {
                 Créez des budgets pour suivre vos dépenses et optimiser votre
                 gestion financière.
               </p>
-              <Button size="sm" className="gap-1" onClick={() => setShowModal(true)}>
+              <Button size="sm" className="gap-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm transition-all duration-300" onClick={() => setShowModal(true)}>
                 <Plus className="h-3.5 w-3.5" />
                 Créer un budget
               </Button>

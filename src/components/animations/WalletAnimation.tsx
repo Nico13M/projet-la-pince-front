@@ -4,80 +4,107 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Wallet } from 'lucide-react'
 
-export default function WalletAnimation() {
-  const [isAnimating, setIsAnimating] = useState(false)
+export default function BudgetWalletAnimation() {
+  const [isActive, setIsActive] = useState(false)
 
   useEffect(() => {
-    const startAnimation = () => {
-      setIsAnimating(true)
-      setTimeout(() => setIsAnimating(false), 2000)
-    }
-
-    startAnimation()
-    const interval = setInterval(startAnimation, 4000)
+    const interval = setInterval(() => {
+      setIsActive(true)
+      setTimeout(() => setIsActive(false), 1200) // Durée réduite
+    }, 3000) // Intervalle plus court
+    
     return () => clearInterval(interval)
   }, [])
 
   return (
-    <div className="relative h-40 w-40 mx-auto my-4">
-      {/* Wallet */}
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
+    <div className="relative h-48 w-48 mx-auto my-8 group">
+      {/* Portefeuille */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
         <motion.div
           animate={{
-            scale: isAnimating ? 1.05 : 1,
-            y: isAnimating ? -2 : 0
+            y: isActive ? -8 : 0,
+            scale: isActive ? 1.03 : 1
           }}
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut"
+          transition={{ 
+            type: 'spring',
+            stiffness: 260,
+            damping: 15
           }}
         >
-          <Wallet className="w-24 h-24 text-primary" strokeWidth={1.5} />
+          <Wallet className="w-32 h-32 text-primary/90 stroke-[1.3]" />
+          
+          {/* Barre de progression */}
+          <motion.div
+            className="absolute top-4 left-4 right-4 h-1 bg-green-100 rounded-full"
+            animate={{ 
+              width: isActive ? ['40%', '85%'] : '40%',
+              opacity: isActive ? [0.8, 0.4] : 0 
+            }}
+            transition={{ duration: 0.8 }} // Animation plus rapide
+          />
         </motion.div>
       </div>
 
-      {/* Dollars */}
       <AnimatePresence>
-        {[0, 1, 2].map((index) => (
-          isAnimating && (
+        {isActive && (
+          <>
+            {/* Flux monétaire - apparition plus précoce */}
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute h-8 w-8 bg-green-50 rounded-lg border border-green-200"
+                initial={{ 
+                  opacity: 0,
+                  x: -60 + i * 60,
+                  y: -40,
+                  scale: 0.7,
+                  rotate: -15 + i * 15
+                }}
+                animate={{
+                  opacity: [0, 0.8, 0],
+                  y: 80,
+                  scale: [0.7, 1.1, 0.9],
+                  x: '50%'
+                }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: 1.0, // Durée réduite
+                  delay: i * 0.05, // Délai réduit
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              >
+                <div className="absolute inset-0 flex items-center justify-center text-green-600 font-medium">
+                  €
+                </div>
+              </motion.div>
+            ))}
+
+            {/* Compteur numérique positionné plus haut */}
             <motion.div
-              key={index}
-              className="absolute text-4xl font-bold text-green-600"
-              initial={{ 
-                top: -30,
-                left: `${50 + (index - 1) * 30}%`,
-                opacity: 0,
-                scale: 0
-              }}
+              className="absolute left-1/2 top-[15%] -translate-x-1/2 text-xl font-semibold text-green-700"
+              initial={{ opacity: 0, y: 0 }}
               animate={{ 
-                top: ['0%', '40%', '60%'],
-                left: ['50%', '50%', '50%'],
-                opacity: [0, 1, 0],
-                scale: [0.5, 1.2, 1]
+                opacity: [0, 1, 0], 
+                y: -20, // Déplacement vers le haut
+                scale: [0.9, 1.1, 1] 
               }}
-              exit={{ opacity: 0 }}
               transition={{ 
-                duration: 1,
-                delay: index * 0.2,
-                times: [0, 0.6, 1],
-                ease: "easeInOut"
+                duration: 1.2,
+                delay: 0.2 // Apparition plus précoce
               }}
             >
-              $
+              +2,345€
             </motion.div>
-          )
-        ))}
+          </>
+        )}
       </AnimatePresence>
 
-      {/* Shadow */}
+      {/* Fond animé */}
       <motion.div
-        className="absolute bottom-0 left-1/2 w-28 h-2 bg-black/10 rounded-full transform -translate-x-1/2"
-        animate={{
-          width: isAnimating ? '6rem' : '7rem',
-          opacity: isAnimating ? 0.15 : 0.1
-        }}
-        transition={{ duration: 0.4 }}
+        className="absolute inset-0 bg-gradient-to-b from-green-50/20 to-transparent rounded-2xl"
+        animate={{ opacity: isActive ? 1 : 0 }}
+        transition={{ duration: 0.4 }} // Transition plus rapide
       />
     </div>
   )
-} 
+}

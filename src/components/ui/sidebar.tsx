@@ -2,7 +2,7 @@
 
 import { Slot } from '@radix-ui/react-slot'
 import { VariantProps, cva } from 'class-variance-authority'
-import { PanelLeftIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, PanelLeftIcon } from 'lucide-react'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -273,7 +273,7 @@ function SidebarTrigger({
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<'button'>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, state } = useSidebar()
 
   return (
     <button
@@ -293,7 +293,15 @@ function SidebarRail({ className, ...props }: React.ComponentProps<'button'>) {
         className,
       )}
       {...props}
-    />
+    >
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-5 flex items-center justify-center rounded-sm bg-muted/40 hover:bg-muted/80 shadow-sm transition-colors z-30">
+        {state === 'expanded' ? (
+          <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        )}
+      </div>
+    </button>
   )
 }
 

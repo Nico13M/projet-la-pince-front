@@ -178,8 +178,18 @@ export function TransactionEditor({
   const onSubmit = async (values: EditFormValues) => {
     setLoading(true)
     try {
+      // Ensure we have a valid budget and category
+      if (!values.budget.id) {
+        showToast({
+          title: 'Erreur',
+          description: 'Veuillez sélectionner un budget',
+        });
+        setLoading(false);
+        return;
+      }
+
+      // If we don't have a selectedBudget with category info, try to fetch it
       if (!selectedBudget && values.budget.id) {
-        // Essayer de récupérer le budget sélectionné si non disponible
         const response = await fetchUserBudget();
         if (response && response.data) {
           const foundBudget = response.data.find(b => b.id === values.budget.id);
@@ -189,16 +199,20 @@ export function TransactionEditor({
         }
       }
       
-      const categoryId = selectedBudget?.category.id;
+      // Get categoryId from selectedBudget
+      const categoryId = selectedBudget?.category?.id;
+      
+      // If we still don't have a categoryId, show error and return
       if (!categoryId) {
         showToast({
           title: 'Erreur',
-          description: 'Impossible de déterminer la catégorie du budget',
+          description: 'Impossible de déterminer la catégorie du budget. Veuillez réessayer.',
         });
         setLoading(false);
         return;
       }
 
+      // Prepare update data with all required fields
       const updateData = {
         name: values.name,
         transactionType: values.transactionType.toLowerCase(),
@@ -207,27 +221,35 @@ export function TransactionEditor({
         dateOfExpense: values.date.toISOString(),
         amount: values.amount,
       }
+      console.log('updateDataaaaa', updateData)
 
-      await fetchUpdateTransaction(transaction.id, updateData as any)
+      // Call the update API
+      const result = await fetchUpdateTransaction(transaction.id, updateData as any);
+      
+      // if (!result.success) {
+      //   throw new Error(result.message || 'Erreur lors de la mise à jour');
+      // }
 
+      // Update the UI
       onSave(transaction.id, {
         ...updateData,
         budget: { id: values.budget.id, name: values.budget.name },
-      })
+      });
 
       showToast({
         title: 'Succès',
         description: 'Transaction mise à jour',
-      })
+      });
 
-      setOpen(false)
+      setOpen(false);
     } catch (error) {
+      console.error('Erreur lors de la mise à jour:', error);
       showToast({
         title: 'Erreur',
-        description: 'Impossible de mettre à jour la transaction',
-      })
+        description: error instanceof Error ? error.message : 'Impossible de mettre à jour la transaction',
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -301,7 +323,10 @@ export function TransactionEditor({
                         field.onChange(selectedBudget)
                       }}
                       onBudgetChange={(budget: { id: string, name: string, category?: { id: string, name: string, transactionType?: string } }) => {
-                        field.onChange(budget);
+                        field.onChange({
+                          id: budget.id,
+                          name: budget.name
+                        });
                         if (budget.category) {
                           setSelectedBudget(budget as SavedBudget);
                         }

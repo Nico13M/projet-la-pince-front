@@ -24,8 +24,8 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/dashboard/home" className="flex items-center gap-2">
-              <Image src="/logo.webp" alt="Logo" width={32} height={32} />
-              <span className="text-lg font-semibold">La Pince</span>
+              <Image src="/logo.webp" alt="Logo" width={150} height={150} className='m-auto' />
+              {/* <span className="text-lg font-semibold">La Pince</span> */}
             </Link>
           </SidebarMenuItem>
         </SidebarMenu>
