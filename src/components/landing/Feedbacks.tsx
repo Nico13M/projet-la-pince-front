@@ -6,7 +6,7 @@ import SectionTitle from './SectionTitle'
 import StatItem from './StatItem'
 import TestimonialCard from './TestimonialCard'
 
-// Données intégrées directement dans le composant
+
 const testimonials = [
   {
     testimonial:
