@@ -40,7 +40,7 @@ export default function PricingSection() {
   return (
     <Section
       id="pricing"
-      className="relative overflow-hidden"
+      className="border-primary/5 relative overflow-hidden border-t"
       bgColor="bg-background"
     >
       <div className="relative z-10 mx-auto max-w-4xl text-center">

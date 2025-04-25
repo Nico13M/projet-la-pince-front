@@ -1,3 +1,15 @@
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import {
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+  Twitter,
+} from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 const footerData = {
@@ -13,13 +25,22 @@ const footerData = {
       title: 'Contact',
       links: [
         {
-          label: 'Email: contact@lapince.fr',
+          label: 'Email',
           href: 'mailto:contact@lapince.fr',
+          icon: <Mail className="mr-2 h-4 w-4" />,
+          value: 'contact@lapince.fr',
         },
-        { label: 'Téléphone: 06 06 06 06 06', href: 'tel:0606060606' },
         {
-          label: 'Adresse: 75 rue du Budget, Paris',
+          label: 'Téléphone',
+          href: 'tel:0606060606',
+          icon: <Phone className="mr-2 h-4 w-4" />,
+          value: '06 06 06 06 06',
+        },
+        {
+          label: 'Adresse',
           href: 'https://maps.google.com/?q=Paris',
+          icon: <MapPin className="mr-2 h-4 w-4" />,
+          value: '75 rue du Budget, Paris',
         },
       ],
     },
@@ -36,22 +57,22 @@ const footerData = {
     {
       href: 'https://twitter.com/lapince',
       label: 'Twitter',
-      iconPath: 'M6.329 1l4.369 5...',
+      icon: <Twitter className="h-5 w-5" />,
     },
     {
       href: 'https://facebook.com/lapince',
       label: 'Facebook',
-      iconPath: 'M20 10.025C20 4.491...',
+      icon: <Facebook className="h-5 w-5" />,
     },
     {
       href: 'https://instagram.com/lapince',
       label: 'Instagram',
-      iconPath: 'M19.96 2.336a.421...',
+      icon: <Instagram className="h-5 w-5" />,
     },
     {
       href: 'https://linkedin.com/company/lapince',
       label: 'LinkedIn',
-      iconPath: 'M10.041 0C4.52 0...',
+      icon: <Linkedin className="h-5 w-5" />,
     },
   ],
 }
@@ -60,46 +81,65 @@ export default function FooterLanding() {
   const { footerLinks, socialLinks } = footerData
 
   return (
-    <footer className="bg-slate-50 dark:bg-slate-900">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid gap-8 py-8 sm:grid-cols-12 md:py-12">
-          <div className="sm:col-span-12 lg:col-span-4 lg:max-w-xs">
-            <div className="mb-2">
-              <Link
-                href="/"
-                className="inline-flex text-blue-600 transition duration-150 ease-in-out"
-                aria-label="LaPince"
-              >
-                <svg
-                  className="h-8 w-8 fill-current"
-                  viewBox="0 0 32 32"
-                  xmlns="http://www.w3.org/2000/svg"
+    <footer className="bg-muted/40">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+          <div className="col-span-1 md:col-span-2">
+            <Link
+              href="/"
+              className="inline-flex items-center space-x-2"
+              aria-label="LaPince"
+            >
+              <Image
+                src="/logo-white.webp"
+                alt="Logo La Pince"
+                width={32}
+                height={32}
+              />
+              <span className="text-primary text-xl font-bold">La Pince</span>
+            </Link>
+            <p className="text-muted-foreground mt-4 max-w-xs">
+              Gérez votre budget, maîtrisez vos finances et prenez le contrôle
+              de votre avenir financier.
+            </p>
+            <div className="mt-6 flex space-x-4">
+              {socialLinks.map((item, index) => (
+                <Button
+                  key={index}
+                  variant="ghost"
+                  size="icon"
+                  className="bg-primary/10 text-primary hover:bg-primary/20 h-9 w-9 rounded-full"
+                  asChild
                 >
-                  <path d="M15.25 4.116c.039..." />
-                </svg>
-              </Link>
-            </div>
-            <div className="text-lg font-bold text-slate-800 dark:text-slate-200">
-              Gérez votre budget, maîtrisez vos finances
+                  <Link href={item.href} aria-label={item.label}>
+                    {item.icon}
+                  </Link>
+                </Button>
+              ))}
             </div>
           </div>
 
           {footerLinks.map((section, index) => (
-            <div
-              key={index}
-              className="sm:col-span-6 md:col-span-3 lg:col-span-2"
-            >
-              <h6 className="mb-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                {section.title}
-              </h6>
-              <ul className="space-y-2 text-sm">
-                {section.links.map(({ label, href }, linkIndex) => (
+            <div key={index} className="col-span-1">
+              <h3 className="text-foreground font-medium">{section.title}</h3>
+              <ul className="mt-4 space-y-3">
+                {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
                     <Link
-                      href={href}
-                      className="text-slate-500 transition duration-150 ease-in-out hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-500"
+                      href={link.href}
+                      className="text-muted-foreground hover:text-primary flex items-center"
                     >
-                      {label}
+                      {'icon' in link && link.icon}
+                      <span>
+                        {'value' in link ? (
+                          <>
+                            <span className="font-medium">{link.label}:</span>{' '}
+                            {link.value}
+                          </>
+                        ) : (
+                          link.label
+                        )}
+                      </span>
                     </Link>
                   </li>
                 ))}
@@ -108,27 +148,7 @@ export default function FooterLanding() {
           ))}
         </div>
 
-        <div className="border-t border-slate-200 py-6 md:flex md:items-center md:justify-between md:py-8 dark:border-slate-700">
-          <ul className="mb-4 flex space-x-6 md:order-1 md:mb-0 md:ml-4">
-            {socialLinks.map(({ href, label, iconPath }, index) => (
-              <li key={index}>
-                <Link
-                  href={href}
-                  className="text-blue-500 transition duration-150 ease-in-out hover:text-blue-600"
-                  aria-label={label}
-                >
-                  <svg
-                    className="h-5 w-5 fill-current"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d={iconPath} />
-                  </svg>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Separator className="my-8" />
       </div>
     </footer>
   )
