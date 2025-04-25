@@ -11,9 +11,14 @@ export function BudgetItem({
   totalAmount: number
   color?: string
 }) {
-  const percentage = (currentAmount / totalAmount) * 100
-  const isOverBudget = currentAmount > totalAmount
-  const remainingAmount = totalAmount - currentAmount
+  // currentAmount représente le montant restant (disponible)
+  // On calcule le montant dépensé
+  const spentAmount = totalAmount - currentAmount
+  
+  const percentage = totalAmount > 0 ? (spentAmount / totalAmount) * 100 : 0
+  const isOverBudget = currentAmount < 0
+  const isNegative = totalAmount <= 0
+  const remainingAmount = currentAmount
 
   return (
     <div className="group relative rounded-xl p-6 transition-all duration-300 border bg-background hover:bg-accent/20 shadow-sm hover:shadow-lg border-accent/20">
@@ -22,10 +27,10 @@ export function BudgetItem({
           <h3 className="text-base font-semibold truncate max-w-[280px] text-foreground">
             {name}
           </h3>
-          {isOverBudget && (
+          {(isOverBudget || isNegative) && (
             <span className="bg-red-100/80 text-red-900 px-2.5 py-1 rounded-md text-xs font-medium backdrop-blur-sm flex items-center">
               <span className="w-1.5 h-1.5 bg-red-600 rounded-full mr-2 animate-pulse" />
-              Dépassé
+              Budget dépassé
             </span>
           )}
         </div>
@@ -33,7 +38,7 @@ export function BudgetItem({
         <div className="flex justify-between items-center">
           <p className="text-xs text-foreground/60">Budget alloué</p>
           <p className="text-sm font-semibold tabular-nums">
-            <span className={`text-lg ${isOverBudget ? 'text-red-600' : 'text-foreground'}`}>
+            <span className={`text-lg ${(isOverBudget || isNegative) ? 'text-red-600' : 'text-foreground'}`}>
               {formatEuro(currentAmount)}
             </span>
             <span className="mx-1.5 opacity-50 text-foreground/40">/</span>
@@ -45,15 +50,19 @@ export function BudgetItem({
       <div className="space-y-3">
         <div className="relative">
           <div className="bg-primary/10 h-3.5 w-full rounded-full overflow-hidden backdrop-blur-sm">
-            <div
-              className={`h-full ${color} transition-all duration-700 ease-out shadow-inner`}
-              style={{ 
-                width: `${Math.min(percentage, 100)}%`,
-                borderRadius: percentage >= 97 ? '9999px' : '9999px 0 0 9999px'
-              }}
-            />
+            {!isNegative && !isOverBudget ? (
+              <div
+                className={`h-full ${color} transition-all duration-700 ease-out shadow-inner`}
+                style={{ 
+                  width: `${Math.min(percentage, 100)}%`,
+                  borderRadius: percentage >= 97 ? '9999px' : '9999px 0 0 9999px'
+                }}
+              />
+            ) : (
+              <div className="h-full w-0"></div>
+            )}
           </div>
-          {!isOverBudget && (
+          {!isOverBudget && !isNegative && (
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-foreground/80">
               {percentage.toFixed(1)}%
             </span>
@@ -62,22 +71,22 @@ export function BudgetItem({
 
         <div className="flex justify-between items-center text-xs pt-1">
           <p className="text-foreground/70">
-            {!isOverBudget ? (
+            {!isOverBudget && !isNegative ? (
               <>
-                <span className="opacity-70">Restant:</span>{' '}
+                <span className="opacity-70">Dépense:</span>{' '}
                 <span className="text-foreground font-semibold ml-1">
-                  {formatEuro(remainingAmount)}
+                  {formatEuro(spentAmount)}
                 </span>
               </>
             ) : (
               <span className="text-red-600 font-medium flex items-center">
-                <span className="opacity-70 mr-1">Excédent:</span> {formatEuro(-remainingAmount)}
+                <span className="opacity-70 mr-1">Dépense:</span> {formatEuro(spentAmount)}
               </span>
             )}
           </p>
-          {isOverBudget && (
+          {isOverBudget && !isNegative && (
             <p className="text-red-600 font-medium tabular-nums bg-red-50/80 px-2.5 py-1 rounded-md">
-              +{percentage.toFixed(1)}%
+              +{(percentage > 100 ? (percentage - 100) : percentage).toFixed(1)}%
             </p>
           )}
         </div>

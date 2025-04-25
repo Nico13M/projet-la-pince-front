@@ -125,9 +125,8 @@ export default function TransactionList({
             <TableRow>
               <TableHead>Titre transaction</TableHead>
               <TableHead>Type de transaction</TableHead>
-
               <TableHead>Date</TableHead>
-              <TableHead>Catégorie</TableHead>
+              <TableHead>Budget</TableHead>
               <TableHead>Montant</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -147,7 +146,7 @@ export default function TransactionList({
                         )
                       : ''}
                   </TableCell>
-                  <TableCell>{transaction.category?.name}</TableCell>
+                  <TableCell>{transaction.budget?.name || '-'}</TableCell>
                   <TableCell>
                     {typeof transaction.amount === 'number'
                       ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`

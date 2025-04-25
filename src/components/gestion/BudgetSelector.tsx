@@ -21,7 +21,7 @@ function BudgetSelector({
 }: {
   budgetId: string
   setBudgetId: (budgetId: string) => void
-  onBudgetChange?: (budget: { id: string, name: string }) => void
+  onBudgetChange?: (budget: SavedBudget) => void
 }) {
   const [budgets, setBudgets] = useState<SavedBudget[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -64,16 +64,13 @@ function BudgetSelector({
     if (onBudgetChange) {
       const selectedBudget = budgets.find(b => b.id === value)
       if (selectedBudget) {
-        onBudgetChange({ id: selectedBudget.id, name: selectedBudget.name })
+        onBudgetChange(selectedBudget)
       }
     }
   }
 
   return (
     <div>
-      <label htmlFor="budget" className="mb-1.5 block text-sm font-medium text-slate-700">
-        Budget
-      </label>
       <div className="flex flex-col space-y-2">
         <Select value={budgetId} onValueChange={handleBudgetChange}>
           <SelectTrigger className="w-full border-slate-300 text-slate-500">

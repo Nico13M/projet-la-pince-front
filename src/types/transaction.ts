@@ -6,9 +6,16 @@ export interface Transaction {
   amount?: number | string
   category?: Category
   categoryId?: string
+  budget?: Budget
+  budgetId?: string
 }
 
 export interface Category {
+  name: string
+}
+
+export interface Budget {
+  id: string
   name: string
 }
 
@@ -16,7 +23,7 @@ export type TransactionDisplayRow = {
   id: string
   name: string
   transactionType: string
-  category: string
+  budget: string
   dateOfExpense: string
   amount: string
 }

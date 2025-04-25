@@ -1,6 +1,5 @@
 import {
   fetchCreateTransaction,
-  fetchGetCategories,
 } from '@/app/_actions/transactions/fetchTransactions'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,13 +15,14 @@ import { useToast } from '@/hooks/use-toast'
 import { Transaction } from '@/types/transaction'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import TypeSelector from '../gestion/TypeSelector'
-import { CategorySelect } from './CategorySelect'
+import { BudgetSelect } from './BudgetSelect'
 import { DatePickerField } from './DatePickerField'
 import { MoneyInput } from './MoneyInput'
+import { SavedBudget } from '@/types/budget'
 
 const formSchema = z.object({
   description: z.string().min(1, { message: 'La description est requise' }),
@@ -32,22 +32,15 @@ const formSchema = z.object({
     .optional()
     .transform((v) => (v === undefined ? 0 : v)),
   date: z.date(),
-  category: z.object({
+  budget: z.object({
     id: z.string(),
     name: z.string(),
+    categoryId: z.string().optional(),
   }),
   type: z.string().min(1, { message: 'Le type est requis' }),
 })
 
 type FormValues = z.infer<typeof formSchema>
-type Category = {
-  id: string
-  name: string
-  transactionType: string
-  createdAt: string
-  updatedAt: string
-  userId: string
-}
 
 export default function TransactionForm({
   onAddTransaction,
@@ -55,7 +48,7 @@ export default function TransactionForm({
   onAddTransaction: (transaction: Transaction) => void
 }) {
   const { showToast } = useToast()
-  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedBudget, setSelectedBudget] = useState<SavedBudget | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -63,35 +56,16 @@ export default function TransactionForm({
       description: '',
       amount: undefined,
       date: new Date(),
-      category: { id: '', name: '' },
+      budget: { id: '', name: '' },
       type: '',
     },
   })
 
-  useEffect(() => {
-    fetchGetCategories()
-      .then((categories) => {
-        setCategories(categories)
-      })
-      .catch((e) => {
-        showToast({
-          title: 'Erreur chargement catégories',
-          description: e.message,
-          variant: 'destructive',
-        })
-      })
-  }, [])
-
   async function onSubmit(values: FormValues) {
-    const selectedCategory = categories.find(
-      (cat) =>
-        cat.id === values.category.id || cat.name === values.category.name,
-    )
-
-    if (!selectedCategory) {
+    if (!selectedBudget) {
       showToast({
         title: 'Erreur',
-        description: 'Catégorie invalide sélectionnée',
+        description: 'Veuillez sélectionner un budget',
         variant: 'destructive',
       })
       return
@@ -117,7 +91,8 @@ export default function TransactionForm({
       name: values.description,
       dateOfExpense: values.date.toISOString(),
       amount: values.amount || 0,
-      categoryId: selectedCategory.id,
+      categoryId: selectedBudget.category.id,
+      budgetId: values.budget.id,
       transactionType: mapTypeToTransactionType(values.type),
     }
     try {
@@ -132,9 +107,10 @@ export default function TransactionForm({
         description: '',
         amount: undefined,
         date: new Date(),
-        category: { id: '', name: '' },
+        budget: { id: '', name: '' },
         type: '',
       })
+      setSelectedBudget(null)
     } catch (e) {
       showToast({
         title: 'Erreur',
@@ -177,7 +153,12 @@ export default function TransactionForm({
 
           <MoneyInput form={form} name="amount" label="Montant" />
           <DatePickerField form={form} name="date" label="Date" />
-          <CategorySelect form={form} name="category" label="Catégorie" />
+          <BudgetSelect 
+            form={form} 
+            name="budget" 
+            label="Budget" 
+            onBudgetSelect={(budget) => setSelectedBudget(budget)}
+          />
 
           <TypeSelector
             type={form.watch('type')}

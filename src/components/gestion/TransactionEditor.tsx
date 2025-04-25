@@ -1,9 +1,9 @@
 'use client'
 
 import {
-  fetchGetCategories,
   fetchUpdateTransaction,
 } from '@/app/_actions/transactions/fetchTransactions'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -36,7 +36,6 @@ import {
 } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import { Transaction } from '@/types/transaction'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale/fr'
@@ -44,6 +43,9 @@ import { CalendarIcon, Edit, Pencil, Save, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import BudgetSelector from './BudgetSelector'
+import { Transaction } from '@/types/transaction'
+import { SavedBudget } from '@/types/budget'
 
 const editFormSchema = z.object({
   name: z.string().min(1, { message: 'Le nom est requis' }),
@@ -51,7 +53,7 @@ const editFormSchema = z.object({
     .number({ invalid_type_error: 'Le montant doit être un nombre' })
     .positive({ message: 'Le montant doit être supérieur à 0' }),
   date: z.date(),
-  category: z.object({
+  budget: z.object({
     id: z.string(),
     name: z.string(),
   }),
@@ -60,15 +62,9 @@ const editFormSchema = z.object({
 
 type EditFormValues = z.infer<typeof editFormSchema>
 
-type CategoryOption = {
-  id: string
-  name: string
-  transactionType: string
-}
-
 interface TransactionEditorProps {
-  transaction: Transaction
-  onSave: (id: string, updatedTransaction: Partial<Transaction>) => void
+  transaction: Transaction;
+  onSave: (id: string, updatedTransaction: Partial<Transaction>) => void;
 }
 
 export function TransactionEditor({
@@ -77,7 +73,7 @@ export function TransactionEditor({
 }: TransactionEditorProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [categories, setCategories] = useState<CategoryOption[]>([])
+  const [selectedBudget, setSelectedBudget] = useState<SavedBudget | null>(null)
   const { showToast } = useToast()
 
   const getDefaultValues = (): EditFormValues => {
@@ -97,9 +93,9 @@ export function TransactionEditor({
       date = new Date()
     }
 
-    const defaultCategory = {
-      id: transaction.categoryId || '',
-      name: transaction.category?.name || '',
+    const defaultBudget = {
+      id: transaction.budgetId || '',
+      name: transaction.budget?.name || '',
     }
 
     return {
@@ -111,7 +107,7 @@ export function TransactionEditor({
             ? parseFloat(transaction.amount.replace(',', '.'))
             : 0,
       date,
-      category: defaultCategory,
+      budget: defaultBudget,
       transactionType: transaction.transactionType || 'expense',
     }
   }
@@ -123,21 +119,6 @@ export function TransactionEditor({
 
   useEffect(() => {
     if (open) {
-      fetchGetCategories()
-        .then((data) => {
-          setCategories(data)
-        })
-        .catch((error) => {
-          showToast({
-            title: 'Erreur',
-            description: 'Impossible de charger les catégories',
-          })
-        })
-    }
-  }, [open])
-
-  useEffect(() => {
-    if (open) {
       form.reset(getDefaultValues())
     }
   }, [open, form, transaction])
@@ -145,10 +126,32 @@ export function TransactionEditor({
   const onSubmit = async (values: EditFormValues) => {
     setLoading(true)
     try {
+      if (!selectedBudget && values.budget.id) {
+        // Essayer de récupérer le budget sélectionné si non disponible
+        const response = await fetchUserBudget();
+        if (response && response.data) {
+          const foundBudget = response.data.find(b => b.id === values.budget.id);
+          if (foundBudget) {
+            setSelectedBudget(foundBudget);
+          }
+        }
+      }
+      
+      const categoryId = selectedBudget?.category.id;
+      if (!categoryId) {
+        showToast({
+          title: 'Erreur',
+          description: 'Impossible de déterminer la catégorie du budget',
+        });
+        setLoading(false);
+        return;
+      }
+
       const updateData = {
         name: values.name,
         transactionType: values.transactionType,
-        categoryId: values.category.id,
+        budgetId: values.budget.id,
+        categoryId: categoryId,
         dateOfExpense: values.date.toISOString(),
         amount: values.amount,
       }
@@ -157,7 +160,7 @@ export function TransactionEditor({
 
       onSave(transaction.id, {
         ...updateData,
-        category: { name: values.category.name },
+        budget: { id: values.budget.id, name: values.budget.name },
       })
 
       showToast({
@@ -234,37 +237,26 @@ export function TransactionEditor({
 
               <FormField
                 control={form.control}
-                name="category"
+                name="budget"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Catégorie</FormLabel>
-                    <Select
-                      value={field.value.id}
-                      onValueChange={(value) => {
-                        const selectedCategory = categories.find(
-                          (cat) => cat.id === value,
-                        )
-                        field.onChange({
-                          id: value,
-                          name: selectedCategory?.name || '',
-                        })
+                    <FormLabel>Budget</FormLabel>
+                    <BudgetSelector
+                      budgetId={field.value.id}
+                      setBudgetId={(id: string) => {
+                        const selectedBudget = { 
+                          id,
+                          name: field.value.name
+                        }
+                        field.onChange(selectedBudget)
                       }}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner une catégorie">
-                            {field.value.name}
-                          </SelectValue>
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onBudgetChange={(budget: { id: string, name: string, category?: { id: string, name: string } }) => {
+                        field.onChange(budget);
+                        if (budget.category) {
+                          setSelectedBudget(budget as SavedBudget);
+                        }
+                      }}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

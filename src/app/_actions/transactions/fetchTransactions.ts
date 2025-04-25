@@ -109,6 +109,7 @@ export async function fetchUpdateTransaction(
 
 export async function fetchCreateTransaction(data: SavedBudget) {
   try {
+    console.log('data', data)
     const cookieStore = await cookies()
     const csrfSecret = cookieStore.get('x-csrf-token')?.value
     const csrfToken = cookieStore.get('XSRF-TOKEN')?.value
