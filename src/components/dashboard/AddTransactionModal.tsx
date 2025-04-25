@@ -1,8 +1,7 @@
 'use client'
 
-import { fetchGetCategories, fetchCreateTransaction } from '@/app/_actions/transactions/fetchTransactions'
+import { fetchCreateTransaction } from '@/app/_actions/transactions/fetchTransactions'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import {
   Dialog,
   DialogContent,
@@ -32,9 +31,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale/fr'
 import { CalendarIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { BudgetSelect } from '../forms/BudgetSelect'
+import { SavedBudget } from '@/types/budget'
+import { Calendar } from '../ui/calendar'
 
 const createFormSchema = z.object({
   name: z.string().min(1, { message: 'Le nom est requis' }),
@@ -42,20 +44,15 @@ const createFormSchema = z.object({
     .number({ invalid_type_error: 'Le montant doit être un nombre' })
     .positive({ message: 'Le montant doit être supérieur à 0' }),
   date: z.date(),
-  category: z.object({
+  budget: z.object({
     id: z.string(),
     name: z.string(),
+    categoryId: z.string().optional(),
   }),
   transactionType: z.string().min(1, { message: 'Le type est requis' }),
 })
 
 type CreateFormValues = z.infer<typeof createFormSchema>
-
-type CategoryOption = {
-  id: string
-  name: string
-  transactionType: string
-}
 
 interface AddTransactionModalProps {
   open: boolean
@@ -65,7 +62,6 @@ interface AddTransactionModalProps {
 
 export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionModalProps) {
   const [loading, setLoading] = useState(false)
-  const [categories, setCategories] = useState<CategoryOption[]>([])
   const { showToast } = useToast()
 
   const form = useForm<CreateFormValues>({
@@ -74,32 +70,19 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
       name: '',
       amount: "",
       date: new Date(),
-      category: { id: '', name: '' },
+      budget: { id: '', name: '' },
       transactionType: 'expense',
     }
   })
 
-  
-  useEffect(() => {
-    if (open) {
-      form.reset() 
-      fetchGetCategories().then((data) => setCategories(data))
-        .catch(() => showToast({
-          title: 'Erreur',
-          description: 'Impossible de charger les catégories',
-        }))
-    }
-  
-  }, [open])
-
-  
   const onSubmit = async (values: CreateFormValues) => {
     setLoading(true)
     try {
       const newTx = {
         name: values.name,
         transactionType: values.transactionType,
-        categoryId: values.category.id,
+        budgetId: values.budget.id,
+        categoryId: values.budget.categoryId, // à compléter si nécessaire
         dateOfExpense: values.date.toISOString(),
         amount: values.amount,
       }
@@ -110,6 +93,7 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
       })
       onClose()
       onAdded?.() 
+      form.reset()
     } catch (error) {
       showToast({
         title: 'Erreur',
@@ -166,41 +150,11 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
                   </FormItem>
                 )}
               />
-              {/* Catégorie */}
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Catégorie</FormLabel>
-                    <Select
-                      value={field.value.id}
-                      onValueChange={(value) => {
-                        const selectedCategory = categories.find((cat) => cat.id === value)
-                        field.onChange({
-                          id: value,
-                          name: selectedCategory?.name || '',
-                        })
-                      }}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner une catégorie">
-                            {field.value.name}
-                          </SelectValue>
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              {/* BUDGET : remplacement ici */}
+              <BudgetSelect 
+                form={form} 
+                name="budget"
+                label="Budget"
               />
               {/* Date */}
               <FormField
