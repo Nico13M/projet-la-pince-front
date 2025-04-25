@@ -67,12 +67,18 @@ export default function BudgetList({
         setTotalPages(data.totalPages)
       } else {
         console.error('Pas de données dans la réponse:', data)
+        setBudgets([])
+        setPage(1)
+        setTotalPages(1)
       }
     } catch (err) {
       showToast({
         title: 'Erreur',
         description: 'Impossible de charger les budgets.',
       })
+      setBudgets([])
+      setPage(1)
+      setTotalPages(1)
     } finally {
       setIsLoading(false)
     }
