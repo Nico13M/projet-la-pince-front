@@ -46,6 +46,7 @@ import { z } from 'zod'
 import BudgetSelector from './BudgetSelector'
 import { Transaction } from '@/types/transaction'
 import { SavedBudget } from '@/types/budget'
+import { transactionTypeIcons } from '@/utils/categoryIcons'
 
 const editFormSchema = z.object({
   name: z.string().min(1, { message: 'Le nom est requis' }),
@@ -57,7 +58,7 @@ const editFormSchema = z.object({
     id: z.string(),
     name: z.string(),
   }),
-  transactionType: z.string().min(1, { message: 'Le type est requis' }),
+  transactionType: z.string(),
 })
 
 type EditFormValues = z.infer<typeof editFormSchema>
@@ -123,6 +124,50 @@ export function TransactionEditor({
     }
   }, [open, form, transaction])
 
+  // Détermine le type de transaction par défaut en fonction de la catégorie
+  const determineDefaultType = (categoryName: string): string => {
+    // Mapping des catégories vers des types par défaut
+    const categoryToTypeMap: Record<string, string> = {
+      'Logement': 'expense',
+      'Alimentation': 'expense',
+      'Transport': 'expense',
+      'Loisirs': 'expense',
+      'Santé': 'expense',
+      'Études': 'expense',
+      'Salaire': 'income',
+      'Investissement': 'investment',
+      // Ajouter d'autres mappings si nécessaire
+    };
+    
+    return categoryToTypeMap[categoryName] || 'expense'; // Par défaut expense
+  }
+
+  // Set transaction type based on category's transactionType
+  useEffect(() => {
+    if (selectedBudget?.category) {
+      let transactionType = selectedBudget.category.transactionType;
+      
+      if (!transactionType && selectedBudget.category.name) {
+        // Si pas de transactionType, utiliser le nom de catégorie
+        transactionType = determineDefaultType(selectedBudget.category.name);
+      }
+      
+      if (transactionType) {
+        console.log('Setting transaction type to:', transactionType);
+        form.setValue('transactionType', transactionType, {
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true
+        });
+      }
+    }
+  }, [selectedBudget, form]);
+
+  const getTransactionTypeLabel = (type: string) => {
+    const typeInfo = transactionTypeIcons[type];
+    return typeInfo ? typeInfo.label : type;
+  };
+
   const onSubmit = async (values: EditFormValues) => {
     setLoading(true)
     try {
@@ -179,6 +224,10 @@ export function TransactionEditor({
     }
   }
 
+  const transactionType = form.watch('transactionType') || 'expense';
+  const typeInfo = transactionTypeIcons[transactionType] || { label: 'Dépense', icon: null };
+  const TypeIcon = typeInfo?.icon;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -218,18 +267,11 @@ export function TransactionEditor({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner le type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="expense">Dépense</SelectItem>
-                        <SelectItem value="income">Revenu</SelectItem>
-                        <SelectItem value="investment">Investissement</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="h-10 flex items-center border border-slate-200 rounded-md px-3 py-1.5 bg-slate-50">
+                      {TypeIcon && <TypeIcon className="h-4 w-4 mr-2" />}
+                      {getTransactionTypeLabel(field.value || 'expense')}
+                      <input type="hidden" {...field} />
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -250,7 +292,7 @@ export function TransactionEditor({
                         }
                         field.onChange(selectedBudget)
                       }}
-                      onBudgetChange={(budget: { id: string, name: string, category?: { id: string, name: string } }) => {
+                      onBudgetChange={(budget: { id: string, name: string, category?: { id: string, name: string, transactionType?: string } }) => {
                         field.onChange(budget);
                         if (budget.category) {
                           setSelectedBudget(budget as SavedBudget);

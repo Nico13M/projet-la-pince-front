@@ -15,14 +15,14 @@ import { useToast } from '@/hooks/use-toast'
 import { Transaction } from '@/types/transaction'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import TypeSelector from '../gestion/TypeSelector'
 import { BudgetSelect } from './BudgetSelect'
 import { DatePickerField } from './DatePickerField'
 import { MoneyInput } from './MoneyInput'
 import { SavedBudget } from '@/types/budget'
+import { transactionTypeIcons } from '@/utils/categoryIcons'
 
 const formSchema = z.object({
   description: z.string().min(1, { message: 'La description est requise' }),
@@ -37,7 +37,7 @@ const formSchema = z.object({
     name: z.string(),
     categoryId: z.string().optional(),
   }),
-  type: z.string().min(1, { message: 'Le type est requis' }),
+  type: z.string().optional(), // Rendre le type optionnel
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -49,6 +49,8 @@ export default function TransactionForm({
 }) {
   const { showToast } = useToast()
   const [selectedBudget, setSelectedBudget] = useState<SavedBudget | null>(null)
+  const [typeValue, setTypeValue] = useState('')
+  const [isFormValid, setIsFormValid] = useState(false)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,6 +63,116 @@ export default function TransactionForm({
     },
   })
 
+  // Vérifier manuellement si le formulaire est valide
+  useEffect(() => {
+    const checkFormValidity = async () => {
+      const description = form.getValues('description')
+      const budget = form.getValues('budget')
+      const amount = form.getValues('amount')
+      
+      // Considérer le formulaire valide si description, budget ID et montant sont présents
+      const valid = 
+        description && 
+        description.length > 0 && 
+        budget && 
+        budget.id && 
+        selectedBudget !== null &&
+        amount !== undefined && 
+        amount > 0
+      
+      setIsFormValid(!!valid) // Conversion explicite en boolean
+    }
+    
+    checkFormValidity()
+    
+    // S'abonner aux changements de formulaire
+    const subscription = form.watch(() => {
+      checkFormValidity()
+    })
+    
+    return () => subscription.unsubscribe()
+  }, [form, selectedBudget])
+
+  // Détermine le type de transaction par défaut en fonction de la catégorie
+  const determineDefaultType = (categoryName: string): string => {
+    // Mapping des catégories vers des types par défaut
+    const categoryToTypeMap: Record<string, string> = {
+      'Logement': 'expense',
+      'Alimentation': 'expense',
+      'Transport': 'expense',
+      'Loisirs': 'expense',
+      'Santé': 'expense',
+      'Études': 'expense',
+      'Salaire': 'income',
+      'Investissement': 'investment',
+      // Ajouter d'autres mappings si nécessaire
+    };
+    
+    return categoryToTypeMap[categoryName] || 'expense'; // Par défaut expense
+  }
+
+  // Map API transactionType to UI type
+  const mapTransactionTypeToType = (transactionType?: string) => {
+    if (!transactionType) return 'Dépense' // Valeur par défaut
+    
+    switch (transactionType.toLowerCase()) {
+      case 'expense':
+        return 'Dépense'
+      case 'income':
+        return 'Revenu'
+      case 'investment':
+        return 'Investissement'
+      default:
+        return 'Dépense'
+    }
+  }
+
+  // Handle budget selection
+  const handleBudgetSelect = (budget: SavedBudget) => {
+    console.log('Budget sélectionné:', budget);
+    setSelectedBudget(budget)
+    
+    // Auto-set transaction type based on category's transactionType or category name
+    let transactionType = budget.category?.transactionType;
+    
+    if (!transactionType && budget.category.name) {
+      // Si pas de transactionType, utiliser le nom de catégorie pour déterminer un type par défaut
+      transactionType = determineDefaultType(budget.category.name);
+    }
+    
+    // Convertir le type API en type UI
+    const uiType = mapTransactionTypeToType(transactionType);
+    console.log('Type déterminé:', uiType, 'à partir de:', transactionType);
+    
+    form.setValue('type', uiType);
+    setTypeValue(uiType);
+    
+    // Forcer une vérification de validité
+    form.trigger();
+  }
+
+  // Get icon for current transaction type
+  const getTransactionTypeInfo = () => {
+    const apiType = mapTypeToTransactionType(typeValue || 'Dépense');
+    return transactionTypeIcons[apiType] || { label: typeValue || 'Dépense', icon: null };
+  };
+
+  const mapTypeToTransactionType = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'dépense':
+      case 'expense':
+        return 'expense'
+      case 'revenu':
+      case 'income':
+        return 'income'
+      case 'investissement':
+      case 'investment':
+        return 'investment'
+      default:
+        return 'expense'
+    }
+  }
+
   async function onSubmit(values: FormValues) {
     if (!selectedBudget) {
       showToast({
@@ -71,29 +183,16 @@ export default function TransactionForm({
       return
     }
 
-    const mapTypeToTransactionType = (type: string) => {
-      switch (type.toLowerCase()) {
-        case 'dépense':
-        case 'expense':
-          return 'expense'
-        case 'revenu':
-        case 'income':
-          return 'income'
-        case 'investissement':
-        case 'investment':
-          return 'investment'
-        default:
-          return 'expense'
-      }
-    }
-
+    // Assurer qu'il y a un type même si vide
+    const type = values.type || 'Dépense';
+    
     const payload = {
       name: values.description,
       dateOfExpense: values.date.toISOString(),
       amount: values.amount || 0,
       categoryId: selectedBudget.category.id,
       budgetId: values.budget.id,
-      transactionType: mapTypeToTransactionType(values.type),
+      transactionType: mapTypeToTransactionType(type),
     }
     try {
       const created = await fetchCreateTransaction(payload as any)
@@ -111,6 +210,8 @@ export default function TransactionForm({
         type: '',
       })
       setSelectedBudget(null)
+      setTypeValue('')
+      setIsFormValid(false)
     } catch (e) {
       showToast({
         title: 'Erreur',
@@ -119,6 +220,9 @@ export default function TransactionForm({
       })
     }
   }
+
+  const typeInfo = getTransactionTypeInfo();
+  const TypeIcon = typeInfo.icon;
 
   return (
     <Form {...form}>
@@ -144,7 +248,17 @@ export default function TransactionForm({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex : Courses, salaire..." {...field} />
+                  <Input 
+                    placeholder="Ex : Courses, salaire..." 
+                    {...field} 
+                    onChange={(e) => {
+                      field.onChange(e);
+                      // Forcer la validation
+                      setTimeout(() => {
+                        form.trigger();
+                      }, 0);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -157,16 +271,37 @@ export default function TransactionForm({
             form={form} 
             name="budget" 
             label="Budget" 
-            onBudgetSelect={(budget) => setSelectedBudget(budget)}
+            onBudgetSelect={handleBudgetSelect}
           />
 
-          <TypeSelector
-            type={form.watch('type')}
-            setType={(value) => form.setValue('type', value)}
-          />
+          {/* Affichage du type de transaction automatique */}
+          <FormItem>
+            <FormLabel>Type de transaction</FormLabel>
+            <div className="h-10 flex items-center">
+              {selectedBudget ? (
+                <div className="border border-slate-200 rounded-md px-3 py-1.5 text-sm flex items-center gap-2 bg-slate-50 text-slate-700">
+                  {TypeIcon && <TypeIcon className="h-4 w-4" />}
+                  {typeInfo.label || 'Dépense'}
+                </div>
+              ) : (
+                <div className="text-sm text-slate-500">
+                  Sélectionnez un budget pour définir le type
+                </div>
+              )}
+            </div>
+            {/* Input caché pour gérer la valeur dans le formulaire */}
+            <input 
+              type="hidden" 
+              {...form.register('type')}
+            />
+          </FormItem>
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button 
+          type="submit" 
+          className="w-full" 
+          disabled={!isFormValid}
+        >
           <span className="flex items-center justify-center">
             <Plus className="mr-2 h-4 w-4" />
             Ajouter la transaction

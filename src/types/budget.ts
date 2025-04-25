@@ -16,7 +16,7 @@ export interface Transaction {
 export interface SavedBudget {
   id: string
   name: string
-  category: { id: string, name: string },
+  category: { id: string, name: string, transactionType?: string },
   description?: string
   threshold: number
 }
