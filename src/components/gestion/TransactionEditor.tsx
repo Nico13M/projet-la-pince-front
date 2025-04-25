@@ -154,7 +154,7 @@ export function TransactionEditor({
       
       if (transactionType) {
         console.log('Setting transaction type to:', transactionType);
-        form.setValue('transactionType', transactionType, {
+        form.setValue('transactionType', transactionType.toLowerCase(), {
           shouldValidate: true,
           shouldDirty: true,
           shouldTouch: true
@@ -164,7 +164,14 @@ export function TransactionEditor({
   }, [selectedBudget, form]);
 
   const getTransactionTypeLabel = (type: string) => {
-    const typeInfo = transactionTypeIcons[type];
+    if (!type) return 'Dépense';
+    
+    // Normaliser le type en minuscules
+    const normalizedType = type.toLowerCase();
+    const typeInfo = transactionTypeIcons[normalizedType];
+    
+    console.log('Getting label for type:', type, 'normalized:', normalizedType, 'result:', typeInfo?.label);
+    
     return typeInfo ? typeInfo.label : type;
   };
 
@@ -194,7 +201,7 @@ export function TransactionEditor({
 
       const updateData = {
         name: values.name,
-        transactionType: values.transactionType,
+        transactionType: values.transactionType.toLowerCase(),
         budgetId: values.budget.id,
         categoryId: categoryId,
         dateOfExpense: values.date.toISOString(),
@@ -225,7 +232,8 @@ export function TransactionEditor({
   }
 
   const transactionType = form.watch('transactionType') || 'expense';
-  const typeInfo = transactionTypeIcons[transactionType] || { label: 'Dépense', icon: null };
+  const normalizedType = transactionType.toLowerCase();
+  const typeInfo = transactionTypeIcons[normalizedType] || { label: 'Dépense', icon: null };
   const TypeIcon = typeInfo?.icon;
 
   return (

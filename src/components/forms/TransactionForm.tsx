@@ -115,7 +115,11 @@ export default function TransactionForm({
   const mapTransactionTypeToType = (transactionType?: string) => {
     if (!transactionType) return 'Dépense' // Valeur par défaut
     
-    switch (transactionType.toLowerCase()) {
+    // Normaliser en minuscules pour la cohérence
+    const type = transactionType.toLowerCase();
+    console.log('Mapping transaction type:', type);
+    
+    switch (type) {
       case 'expense':
         return 'Dépense'
       case 'income':
@@ -123,7 +127,15 @@ export default function TransactionForm({
       case 'investment':
         return 'Investissement'
       default:
-        return 'Dépense'
+        // Si le type n'est pas reconnu, essayer de vérifier s'il contient des mots-clés
+        if (type.includes('revenu') || type.includes('income') || type.includes('salaire')) {
+          return 'Revenu';
+        } else if (type.includes('invest')) {
+          return 'Investissement';
+        } else {
+          // Par défaut
+          return 'Dépense'
+        }
     }
   }
 
@@ -140,12 +152,24 @@ export default function TransactionForm({
       transactionType = determineDefaultType(budget.category.name);
     }
     
+    // S'assurer que transactionType est en minuscules pour la cohérence
+    if (transactionType) {
+      transactionType = transactionType.toLowerCase();
+    }
+    
+    console.log('Transaction type déterminé:', transactionType);
+    
     // Convertir le type API en type UI
     const uiType = mapTransactionTypeToType(transactionType);
-    console.log('Type déterminé:', uiType, 'à partir de:', transactionType);
+    console.log('Type UI déterminé:', uiType, 'à partir de:', transactionType);
     
-    form.setValue('type', uiType);
+    // Mettre à jour immédiatement l'état et le formulaire
     setTypeValue(uiType);
+    form.setValue('type', uiType, {
+      shouldDirty: true,
+      shouldTouch: true, 
+      shouldValidate: true
+    });
     
     // Forcer une vérification de validité
     form.trigger();
@@ -153,8 +177,16 @@ export default function TransactionForm({
 
   // Get icon for current transaction type
   const getTransactionTypeInfo = () => {
-    const apiType = mapTypeToTransactionType(typeValue || 'Dépense');
-    return transactionTypeIcons[apiType] || { label: typeValue || 'Dépense', icon: null };
+    // Si pas de type sélectionné, utiliser Dépense par défaut
+    if (!typeValue) {
+      return transactionTypeIcons['expense'] || { label: 'Dépense', icon: null };
+    }
+    
+    // Convertir le type UI en type API
+    const apiTypeForIcon = mapTypeToTransactionType(typeValue);
+    console.log('Getting icon for type:', typeValue, '-> API type:', apiTypeForIcon);
+    
+    return transactionTypeIcons[apiTypeForIcon] || { label: typeValue, icon: null };
   };
 
   const mapTypeToTransactionType = (type: string) => {
@@ -172,6 +204,29 @@ export default function TransactionForm({
         return 'expense'
     }
   }
+
+  // Réagir aux changements de budget
+  useEffect(() => {
+    if (selectedBudget?.category) {
+      // Auto-set transaction type based on category's transactionType
+      let transactionType = selectedBudget.category.transactionType;
+      
+      if (!transactionType && selectedBudget.category.name) {
+        // Si pas de transactionType, utiliser le nom de catégorie
+        transactionType = determineDefaultType(selectedBudget.category.name);
+      }
+      
+      if (transactionType) {
+        transactionType = transactionType.toLowerCase();
+        console.log('Effect: Setting transaction type to:', transactionType);
+        
+        // Convertir le type API en type UI
+        const uiType = mapTransactionTypeToType(transactionType);
+        setTypeValue(uiType);
+        form.setValue('type', uiType);
+      }
+    }
+  }, [selectedBudget, form]);
 
   async function onSubmit(values: FormValues) {
     if (!selectedBudget) {
@@ -279,8 +334,14 @@ export default function TransactionForm({
             <FormLabel>Type de transaction</FormLabel>
             <div className="h-10 flex items-center">
               {selectedBudget ? (
-                <div className="border border-slate-200 rounded-md px-3 py-1.5 text-sm flex items-center gap-2 bg-slate-50 text-slate-700">
-                  {TypeIcon && <TypeIcon className="h-4 w-4" />}
+                <div className={`w-full border rounded-md px-3 py-2 text-sm font-medium flex items-center gap-2 ${
+                  typeValue.toLowerCase().includes('revenu') 
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
+                    : typeValue.toLowerCase().includes('invest') 
+                      ? 'bg-blue-50 border-blue-200 text-blue-700'
+                      : 'bg-red-50 border-red-200 text-red-700'
+                }`}>
+                  {TypeIcon && <TypeIcon className="h-5 w-5" />}
                   {typeInfo.label || 'Dépense'}
                 </div>
               ) : (
@@ -293,6 +354,7 @@ export default function TransactionForm({
             <input 
               type="hidden" 
               {...form.register('type')}
+              value={typeValue} 
             />
           </FormItem>
         </div>
