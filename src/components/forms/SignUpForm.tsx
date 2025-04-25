@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -74,43 +74,57 @@ export default function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/2 space-y-8">
-        <FormField
-          control={form.control}
-          name="firstName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Prénom</FormLabel>
-              <FormControl>
-                <Input placeholder="Jimmy" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom</FormLabel>
-              <FormControl>
-                <Input placeholder="Dupont" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Prénom</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Jimmy" 
+                    {...field} 
+                    className="bg-background/50 transition-all focus-visible:bg-background/80 placeholder:text-gray-300"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Nom</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Dupont" 
+                    {...field} 
+                    className="bg-background/50 transition-all focus-visible:bg-background/80 placeholder:text-gray-300"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-sm font-medium">Email</FormLabel>
               <FormControl>
-                <Input placeholder="jimmy@gmail.com" {...field} />
+                <Input 
+                  placeholder="jimmy@gmail.com" 
+                  {...field} 
+                  className="bg-background/50 transition-all focus-visible:bg-background/80 placeholder:text-gray-300"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
@@ -119,29 +133,40 @@ export default function SignUpForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
+              <FormLabel className="text-sm font-medium">Mot de passe</FormLabel>
               <div className="relative">
                 <Input
                   placeholder="91@a1b2c3d4"
                   type={passwordVisible ? 'text' : 'password'}
                   {...field}
+                  className="bg-background/50 transition-all focus-visible:bg-background/80 placeholder:text-gray-300"
                 />
                 <Button
                   type="button"
                   onClick={() => setPasswordVisible(!passwordVisible)}
-                  className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-500"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   variant="ghost"
+                  size="icon"
                 >
-                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
                 </Button>
               </div>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          {isLoading ? 'Inscription en cours' : "S'inscrire"}
+        {errorMessage && <p className="text-destructive text-sm">{errorMessage}</p>}
+        <Button 
+          className="w-full group transition-all bg-primary hover:bg-primary/90 focus:ring-2 focus:ring-primary/50" 
+          type="submit" 
+          disabled={isLoading}
+        >
+          {isLoading ? 'Inscription en cours...' : (
+            <>
+              <span>S'inscrire</span>
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </>
+          )}
         </Button>
       </form>
     </Form>

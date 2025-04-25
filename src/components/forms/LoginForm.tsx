@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, LogIn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -76,17 +76,21 @@ export default function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} method="POST" action="#" className="w-1/2 space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} method="POST" action="#" className="w-full space-y-5">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-sm font-medium">Email</FormLabel>
               <FormControl>
-                <Input placeholder="jimmy@gmail.com" {...field} />
+                <Input 
+                  placeholder="jimmy@gmail.com" 
+                  {...field} 
+                  className="bg-background/50 transition-all focus-visible:bg-background/80 placeholder:text-gray-300"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
@@ -95,31 +99,42 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
+              <FormLabel className="text-sm font-medium">Mot de passe</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
                     placeholder="91@a1b2c3d4"
                     type={passwordVisible ? 'text' : 'password'}
                     {...field}
+                    className="bg-background/50 transition-all focus-visible:bg-background/80 placeholder:text-gray-300"
                   />
                   <Button
                     type="button"
                     onClick={() => setPasswordVisible(!passwordVisible)}
-                    className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-500"
+                    className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     variant="ghost"
+                    size="icon"
                   >
-                    {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
                   </Button>
                 </div>
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          {isLoading ? 'Connexion en cours' : 'Se connecter'}
+        {errorMessage && <p className="text-destructive text-sm">{errorMessage}</p>}
+        <Button 
+          className="w-full group transition-all bg-primary hover:bg-primary/90 focus:ring-2 focus:ring-primary/50"
+          type="submit" 
+          disabled={isLoading}
+        >
+          {isLoading ? 'Connexion en cours...' : (
+            <>
+              <span>Se connecter</span>
+              <LogIn className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </>
+          )}
         </Button>
       </form>
     </Form>
