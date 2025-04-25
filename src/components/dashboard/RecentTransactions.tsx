@@ -7,7 +7,7 @@ import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { TransactionItem } from './TransactionItem'
 import { fetchUserTransactions } from '@/app/_actions/dashboard/fetchUserTransactions'
 import { ArrowRight, Clock, Plus } from 'lucide-react'
-import { AddTransactionModal } from './AddTransactionModal' // adapte le chemin selon ton arborescence
+import { AddTransactionModal } from './AddTransactionModal' 
 import { useRouter } from 'next/navigation'
 
 interface Transaction {
@@ -16,7 +16,7 @@ interface Transaction {
   amount: number
   dateOfExpense: Date
   transactionType: 'income' | 'expense' | 'investment'
-  // ajoute category etc. si besoin
+  
 }
 
 export function RecentTransactions() {
@@ -26,7 +26,7 @@ export function RecentTransactions() {
 
   const router = useRouter()
 
-  // Rafraîchit la liste
+  
   const fetchAndSetTransactions = async () => {
     setIsLoading(true)
     try {
@@ -43,7 +43,7 @@ export function RecentTransactions() {
     fetchAndSetTransactions()
   }, [])
 
-  // Au retour du formulaire ajout, refresh
+  
   const handleAdded = () => {
     fetchAndSetTransactions()
   }
