@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Path, PathValue, UseFormReturn } from 'react-hook-form'
+import { Path, UseFormReturn } from 'react-hook-form'
 import { Input } from '../ui/input'
 import { SavedBudget } from '@/types/budget'
 import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
@@ -64,7 +64,7 @@ export function BudgetSelect<T extends Record<string, any>>({
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = budgets.filter(budget => 
+      const filtered = budgets.filter(budget =>
         budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         budget.category.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
@@ -83,7 +83,7 @@ export function BudgetSelect<T extends Record<string, any>>({
           {label && <FormLabel>{label}</FormLabel>}
 
           <div className="flex w-full">
-            <Select 
+            <Select
               onValueChange={(value) => {
                 const selectedBudget = budgets.find(b => b.id === value)
                 if (selectedBudget) {
@@ -118,14 +118,16 @@ export function BudgetSelect<T extends Record<string, any>>({
                   </div>
                 ) : filteredBudgets.length > 0 ? (
                   filteredBudgets.map((budget) => (
-                    <SelectItem key={budget.id} value={budget.id} className="flex-1">
+                    <SelectItem key={budget.id} value={budget.id}>
                       <div className="flex flex-col">
                         <span>{budget.name}</span>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-slate-500 group-hover:text-white group-data-[highlighted]:text-white group-data-[state=checked]:text-white">
                           {budget.category.name} - {budget.threshold}€
                         </span>
                       </div>
                     </SelectItem>
+
+
                   ))
                 ) : (
                   <div className="px-2 py-1.5 text-sm text-muted-foreground">
@@ -140,4 +142,4 @@ export function BudgetSelect<T extends Record<string, any>>({
       )}
     />
   )
-} 
+}
