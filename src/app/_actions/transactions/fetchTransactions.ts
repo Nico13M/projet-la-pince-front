@@ -1,7 +1,7 @@
 'use server'
 
-import { Data, SavedBudget } from '@/types/budget'
-import { Transaction, TransactionDisplayRow } from '@/types/transaction'
+import { SavedBudget } from '@/types/budget'
+import { TransactionDisplayRow } from '@/types/transaction'
 
 import { cookies } from 'next/headers'
 const API_LINK = process.env.API_LINK

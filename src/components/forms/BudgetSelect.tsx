@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import {
   FormControl,
   FormField,
@@ -15,11 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Path, PathValue, UseFormReturn } from 'react-hook-form'
-import { Input } from '../ui/input'
 import { SavedBudget } from '@/types/budget'
-import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Path, UseFormReturn } from 'react-hook-form'
+import { Input } from '../ui/input'
 
 interface BudgetSelectProps<T extends Record<string, any>> {
   form: UseFormReturn<T>
@@ -64,9 +64,10 @@ export function BudgetSelect<T extends Record<string, any>>({
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = budgets.filter(budget => 
-        budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        budget.category.name.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = budgets.filter(
+        (budget) =>
+          budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          budget.category.name.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredBudgets(filtered)
     } else {
@@ -83,11 +84,15 @@ export function BudgetSelect<T extends Record<string, any>>({
           {label && <FormLabel>{label}</FormLabel>}
 
           <div className="flex w-full">
-            <Select 
+            <Select
               onValueChange={(value) => {
-                const selectedBudget = budgets.find(b => b.id === value)
+                const selectedBudget = budgets.find((b) => b.id === value)
                 if (selectedBudget) {
-                  field.onChange({ id: selectedBudget.id, name: selectedBudget.name, categoryId: selectedBudget.category.id })
+                  field.onChange({
+                    id: selectedBudget.id,
+                    name: selectedBudget.name,
+                    categoryId: selectedBudget.category.id,
+                  })
                   if (onBudgetSelect) {
                     onBudgetSelect(selectedBudget)
                   }
@@ -96,14 +101,14 @@ export function BudgetSelect<T extends Record<string, any>>({
               value={field.value.id}
             >
               <FormControl>
-                <SelectTrigger className="w-full text-slate-500">
+                <SelectTrigger className="text-muted-foreground w-full">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
-                <div className="py-2 px-2 sticky top-0 bg-white z-10">
+              <SelectContent align="start" className="w-full">
+                <div className="bg-background sticky top-0 z-10 px-2 py-2">
                   <div className="relative">
-                    <Search className="absolute left-2 top-3 h-4 w-4 text-slate-400" />
+                    <Search className="text-muted-foreground absolute top-3 left-2 h-4 w-4 opacity-50" />
                     <Input
                       placeholder="Rechercher un budget..."
                       value={searchTerm}
@@ -113,22 +118,26 @@ export function BudgetSelect<T extends Record<string, any>>({
                   </div>
                 </div>
                 {isLoading ? (
-                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground px-2 py-1.5 text-left text-sm">
                     Chargement des budgets...
                   </div>
                 ) : filteredBudgets.length > 0 ? (
                   filteredBudgets.map((budget) => (
-                    <SelectItem key={budget.id} value={budget.id} className="flex-1">
-                      <div className="flex flex-col">
-                        <span>{budget.name}</span>
-                        <span className="text-xs text-slate-500">
+                    <SelectItem
+                      key={budget.id}
+                      value={budget.id}
+                      className="flex-1 text-left"
+                    >
+                      <div className="flex w-full flex-col items-start">
+                        <span className="text-left">{budget.name}</span>
+                        <span className="text-left text-xs">
                           {budget.category.name} - {budget.threshold}€
                         </span>
                       </div>
                     </SelectItem>
                   ))
                 ) : (
-                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground px-2 py-1.5 text-left text-sm">
                     Aucun budget disponible
                   </div>
                 )}
@@ -140,4 +149,4 @@ export function BudgetSelect<T extends Record<string, any>>({
       )}
     />
   )
-} 
+}

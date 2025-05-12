@@ -16,9 +16,11 @@ export function StatCardContent({
 
   return (
     <div className="space-y-3">
-      <div className="text-2xl font-bold tracking-tight">{formatEuro(value || 0)}</div>
+      <div className="text-2xl font-bold tracking-tight">
+        {formatEuro(value || 0)}
+      </div>
       <div className="flex items-center gap-1.5">
-        <div className={`${bgColorClass} rounded-md p-1 flex items-center`}>
+        <div className={`${bgColorClass} flex items-center rounded-md p-1`}>
           <ArrowIcon className={`h-3.5 w-3.5 ${colorClass}`} />
         </div>
         <div className="flex items-center text-xs">
@@ -26,7 +28,7 @@ export function StatCardContent({
             {isPositive ? '+' : ''}
             {percentage}%
           </span>
-          <span className="ml-1.5 text-foreground/60">vs mois dernier</span>
+          <span className="text-foreground/60 ml-1.5">vs mois dernier</span>
         </div>
       </div>
     </div>
