@@ -90,7 +90,7 @@ export default function BudgetWalletAnimation() {
                 delay: 0.2,
               }}
             >
-              {formatEuro(Math.floor(Math.random() * 10000), true)}
+              {`+ ${formatEuro(Math.floor(Math.random() * 10000), true)}`}
             </motion.div>
           </>
         )}
