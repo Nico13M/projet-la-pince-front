@@ -17,7 +17,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -35,7 +39,6 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { BudgetSelect } from '../forms/BudgetSelect'
-import { SavedBudget } from '@/types/budget'
 import { Calendar } from '../ui/calendar'
 
 const createFormSchema = z.object({
@@ -57,10 +60,14 @@ type CreateFormValues = z.infer<typeof createFormSchema>
 interface AddTransactionModalProps {
   open: boolean
   onClose: () => void
-  onAdded?: () => void 
+  onAdded?: () => void
 }
 
-export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionModalProps) {
+export function AddTransactionModal({
+  open,
+  onClose,
+  onAdded,
+}: AddTransactionModalProps) {
   const [loading, setLoading] = useState(false)
   const { showToast } = useToast()
 
@@ -68,11 +75,11 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
     resolver: zodResolver(createFormSchema),
     defaultValues: {
       name: '',
-      amount: "",
+      amount: undefined,
       date: new Date(),
       budget: { id: '', name: '' },
       transactionType: 'expense',
-    }
+    },
   })
 
   const onSubmit = async (values: CreateFormValues) => {
@@ -82,7 +89,7 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
         name: values.name,
         transactionType: values.transactionType,
         budgetId: values.budget.id,
-        categoryId: values.budget.categoryId, // à compléter si nécessaire
+        categoryId: values.budget.categoryId,
         dateOfExpense: values.date.toISOString(),
         amount: values.amount,
       }
@@ -92,12 +99,12 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
         description: 'Transaction ajoutée',
       })
       onClose()
-      onAdded?.() 
+      onAdded?.()
       form.reset()
     } catch (error) {
       showToast({
         title: 'Erreur',
-        description: 'Impossible d\'ajouter la transaction',
+        description: "Impossible d'ajouter la transaction",
       })
     } finally {
       setLoading(false)
@@ -113,7 +120,6 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid gap-5 md:grid-cols-2">
-              {/* Nom */}
               <FormField
                 control={form.control}
                 name="name"
@@ -127,7 +133,6 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
                   </FormItem>
                 )}
               />
-              {/* Type */}
               <FormField
                 control={form.control}
                 name="transactionType"
@@ -143,20 +148,16 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
                       <SelectContent>
                         <SelectItem value="expense">Dépense</SelectItem>
                         <SelectItem value="income">Revenu</SelectItem>
-                        <SelectItem value="investment">Investissement</SelectItem>
+                        <SelectItem value="investment">
+                          Investissement
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {/* BUDGET : remplacement ici */}
-              <BudgetSelect 
-                form={form} 
-                name="budget"
-                label="Budget"
-              />
-              {/* Date */}
+              <BudgetSelect form={form} name="budget" label="Budget" />
               <FormField
                 control={form.control}
                 name="date"
@@ -195,7 +196,6 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
                   </FormItem>
                 )}
               />
-              {/* Montant */}
               <FormField
                 control={form.control}
                 name="amount"
@@ -223,7 +223,6 @@ export function AddTransactionModal({ open, onClose, onAdded }: AddTransactionMo
                 )}
               />
             </div>
-            {/* Boutons */}
             <div className="flex justify-end space-x-4 pt-2">
               <Button
                 type="button"
