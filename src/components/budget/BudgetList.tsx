@@ -33,7 +33,7 @@ function capitalize(str: string) {
 // In a real implementation, you might want to fetch the actual transaction types associated with each budget
 const getTransactionTypeForBudget = (budgetName?: string, categoryName?: string): string => {
   if (!budgetName && !categoryName) return 'expense';
-  
+
   // Vérifier le nom du budget en premier (prioritaire)
   if (budgetName) {
     const name = budgetName.toLowerCase();
@@ -44,7 +44,7 @@ const getTransactionTypeForBudget = (budgetName?: string, categoryName?: string)
       return 'investment';
     }
   }
-  
+
   // Ensuite vérifier le nom de la catégorie
   if (categoryName) {
     const catName = categoryName.toLowerCase();
@@ -55,29 +55,29 @@ const getTransactionTypeForBudget = (budgetName?: string, categoryName?: string)
       return 'investment';
     }
   }
-  
+
   return 'expense';
 }
 
 const getTransactionTypeBadge = (type: string) => {
   switch (type) {
     case 'income':
-      return { 
+      return {
         icon: <MoveUp className="h-4 w-4 text-emerald-500" />,
         label: 'Revenu',
         style: 'bg-emerald-50 text-emerald-700 border-emerald-200'
       };
     case 'investment':
-      return { 
+      return {
         icon: <Coins className="h-4 w-4 text-blue-500" />,
         label: 'Investissement',
         style: 'bg-blue-50 text-blue-700 border-blue-200'
       };
     default:
-      return { 
+      return {
         icon: <MoveDown className="h-4 w-4 text-red-500" />,
         label: 'Dépense',
-        style: 'bg-red-50 text-red-700 border-red-200'
+        style: 'bg-red-50 text-red-700'
       };
   }
 }
@@ -263,7 +263,7 @@ export default function BudgetList({
                       {(() => {
                         const transactionType = getTransactionTypeForBudget(budget.name, budget.category?.name);
                         const badge = getTransactionTypeBadge(transactionType);
-                        
+
                         return (
                           <Badge variant="outline" className={`flex items-center gap-0.5 px-1.5 py-0.5 text-xs whitespace-nowrap ${badge.style}`}>
                             {badge.icon}
