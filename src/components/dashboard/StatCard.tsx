@@ -1,7 +1,9 @@
 'use client'
 import { fetchOneBudgetSummary } from '@/app/_actions/dashboard/fetchOneBudgetSummary'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { fetchUser } from '@/app/_actions/user/fetchUser'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { SavedBudget } from '@/types/budget'
 import { User } from '@/types/user'
 import { formatEuro } from '@/utils/format'
 import { CreditCard, PieChart, PiggyBank } from 'lucide-react'
@@ -20,19 +22,36 @@ export function StatCards() {
   const [budgetSummaryData, setBudgetSummaryData] =
     useState<BudgetSummary | null>(null)
   const [userData, setUserData] = useState<User | null>(null)
+  const [budgetUtilizationAverage, setBudgetUtilizationAverage] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
 
       try {
-        const [budgetData, userData] = await Promise.all([
+        const [budgetData, userData, userBudgets] = await Promise.all([
           fetchOneBudgetSummary(),
           fetchUser(),
+          fetchUserBudget(),
         ])
 
         setBudgetSummaryData(budgetData)
         setUserData(userData)
+
+        if (userBudgets?.data && userBudgets.data.length > 0) {
+          const budgetsUtilization = userBudgets.data.map(
+            (budget: SavedBudget) => {
+              const used = budget.threshold - budget.availableAmount
+              const percentage = (used / budget.threshold) * 100
+              return Math.min(Math.max(percentage, 0), 100)
+            },
+          )
+
+          const average =
+            budgetsUtilization.reduce((acc, curr) => acc + curr, 0) /
+            budgetsUtilization.length
+          setBudgetUtilizationAverage(Math.round(average))
+        }
       } catch (error) {
         console.error('Erreur lors de la récupération des données:', error)
       } finally {
@@ -42,8 +61,6 @@ export function StatCards() {
 
     fetchData()
   }, [])
-
-  const budgetUtilization = budgetSummaryData?.budgetUtilization || 68
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -148,9 +165,6 @@ export function StatCards() {
                   Dépenses mensuelles
                 </span>
               </CardTitle>
-              <div className="from-primary/10 to-secondary/10 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br shadow-sm backdrop-blur-sm">
-                <CreditCard className="text-primary h-4 w-4" />
-              </div>
             </CardHeader>
             <CardContent className="pt-4 pb-6">
               <div className="space-y-3">
@@ -203,9 +217,6 @@ export function StatCards() {
                   Économies mensuelles
                 </span>
               </CardTitle>
-              <div className="from-primary/10 to-secondary/10 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br shadow-sm backdrop-blur-sm">
-                <PiggyBank className="text-primary h-4 w-4" />
-              </div>
             </CardHeader>
             <CardContent className="pt-4 pb-6">
               <div className="space-y-3">
@@ -260,25 +271,22 @@ export function StatCards() {
                   État du budget
                 </span>
               </CardTitle>
-              <div className="from-primary/10 to-secondary/10 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br shadow-sm backdrop-blur-sm">
-                <PieChart className="text-primary h-4 w-4" />
-              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="text-3xl font-bold tracking-tight">
-                  {budgetUtilization}%
+                  {budgetUtilizationAverage}%
                 </div>
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
                   <div
                     className={`h-full rounded-full transition-all duration-700 ease-out ${
-                      budgetUtilization > 80
+                      budgetUtilizationAverage > 80
                         ? 'bg-gradient-to-r from-red-400 to-red-500'
-                        : budgetUtilization > 60
+                        : budgetUtilizationAverage > 60
                           ? 'bg-gradient-to-r from-amber-400 to-amber-500'
                           : 'from-primary/80 to-primary bg-gradient-to-r'
                     }`}
-                    style={{ width: `${budgetUtilization}%` }}
+                    style={{ width: `${budgetUtilizationAverage}%` }}
                   />
                 </div>
                 <div className="text-foreground/60 flex justify-between text-xs font-medium">
