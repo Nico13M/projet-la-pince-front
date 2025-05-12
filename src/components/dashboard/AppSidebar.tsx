@@ -77,17 +77,6 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem className="mx-3">
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === '/dashboard/settings'}
-            >
-              <Link href="/dashboard/settings">
-                <Settings className="size-5" />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
       <SidebarRail />
