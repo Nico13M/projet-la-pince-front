@@ -40,18 +40,16 @@ export function BudgetOverview() {
     try {
       setIsLoading(true)
       const response = await fetchUserBudget()
-
-      if (response && response.data) {
+      if (response?.data) {
         const transformedData: Budget[] = response.data.map(
           (budget: SavedBudget) => ({
             id: budget.id,
             name: budget.name,
-            availableAmount: 0,
+            availableAmount: budget.availableAmount,
             threshold: budget.threshold,
             category: budget.category,
           }),
         )
-
         setBudgetData(transformedData)
       }
     } catch (error) {

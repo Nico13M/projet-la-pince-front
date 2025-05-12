@@ -43,8 +43,8 @@ type AddBudgetValues = z.infer<typeof formSchema>
 interface AddBudgetModalProps {
   open: boolean
   onClose: () => void
-  onAdded?: () => void 
-  onSave: (budgetData: AddBudgetValues) => Promise<void> 
+  onAdded?: () => void
+  onSave: (budgetData: AddBudgetValues) => Promise<void>
 }
 
 export function AddBudgetModal({
@@ -54,7 +54,7 @@ export function AddBudgetModal({
   onSave,
 }: AddBudgetModalProps) {
   const [loading, setLoading] = useState(false)
-  
+
   const form = useForm<AddBudgetValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,9 +71,9 @@ export function AddBudgetModal({
       await onSave(values)
       if (onAdded) onAdded()
       onClose()
-      form.reset() 
-    } catch (e) {
-      
+      form.reset()
+    } catch (error) {
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -86,7 +86,10 @@ export function AddBudgetModal({
           <DialogTitle>Nouveau budget</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             <div className="grid gap-5 md:grid-cols-2">
               {/* Nom du budget */}
               <FormField
@@ -107,7 +110,12 @@ export function AddBudgetModal({
               <MoneyInput form={form} name="threshold" label="Plafond" />
 
               {/* Catégorie */}
-              <CategorySelect form={form} name="category" label="Catégorie" className="flex-1" />
+              <CategorySelect
+                form={form}
+                name="category"
+                label="Catégorie"
+                className="flex-1"
+              />
 
               {/* Description */}
               <FormField
@@ -130,9 +138,9 @@ export function AddBudgetModal({
 
             {/* Boutons */}
             <div className="flex justify-end space-x-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 disabled={loading}
                 onClick={onClose}
               >
