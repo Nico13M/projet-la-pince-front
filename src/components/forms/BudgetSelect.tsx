@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
 import { SavedBudget } from '@/types/budget'
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -64,10 +65,10 @@ export function BudgetSelect<T extends Record<string, any>>({
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = budgets.filter(
-        (budget) =>
-          budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          budget.category.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      const filtered = budgets.filter(budget =>
+        budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        budget.category.name.toLowerCase().includes(searchTerm.toLowerCase())
+
       )
       setFilteredBudgets(filtered)
     } else {
@@ -123,18 +124,16 @@ export function BudgetSelect<T extends Record<string, any>>({
                   </div>
                 ) : filteredBudgets.length > 0 ? (
                   filteredBudgets.map((budget) => (
-                    <SelectItem
-                      key={budget.id}
-                      value={budget.id}
-                      className="flex-1 text-left"
-                    >
-                      <div className="flex w-full flex-col items-start">
-                        <span className="text-left">{budget.name}</span>
-                        <span className="text-left text-xs">
+                    <SelectItem key={budget.id} value={budget.id}>
+                      <div className="flex flex-col">
+                        <span>{budget.name}</span>
+                        <span className="text-xs text-slate-500 group-hover:text-white group-data-[highlighted]:text-white group-data-[state=checked]:text-white">
                           {budget.category.name} - {budget.threshold}€
                         </span>
                       </div>
                     </SelectItem>
+
+
                   ))
                 ) : (
                   <div className="text-muted-foreground px-2 py-1.5 text-left text-sm">
