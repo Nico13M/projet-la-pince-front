@@ -144,7 +144,22 @@ export function CategorySelect<T extends Record<string, any>>({
                           {category.name}
                         </SelectItem>
                       )}
-                      {/* <TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 mr-1"
+                              onClick={() => handleEditCategory(category.name)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Éditer</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -158,16 +173,17 @@ export function CategorySelect<T extends Record<string, any>>({
                           </TooltipTrigger>
                           <TooltipContent>Supprimer</TooltipContent>
                         </Tooltip>
-                      </TooltipProvider> */}
+                      </TooltipProvider>
                     </div>
                   ))
                 ) : (
                   <div className="text-muted-foreground px-2 py-1.5 text-sm">
+                    Aucune catégorie disponible
                   </div>
                 )}
               </SelectContent>
             </Select>
-            {/* <CategoryModalButton onAddCategory={handleAddCategory} /> */}
+            <CategoryModalButton onAddCategory={handleAddCategory} />
           </div>
           <FormMessage />
         </FormItem>
