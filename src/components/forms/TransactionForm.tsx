@@ -246,7 +246,7 @@ export default function TransactionForm({
       dateOfExpense: values.date.toISOString(),
       amount: values.amount || 0,
       categoryId: selectedBudget.category.id,
-      budgetId: values.budget.id,
+      budgetId: values.budget.name,
       transactionType: mapTypeToTransactionType(type),
     }
     try {

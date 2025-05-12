@@ -149,6 +149,8 @@ export default function TransactionList({
     return <TableSkeleton />
   }
 
+  console.log(transactions, "tran")
+
   return (
     <>
       <div className="overflow-x-auto rounded-md border shadow-sm">
@@ -185,16 +187,16 @@ export default function TransactionList({
                       : '-'}
                   </TableCell>
                   <TableCell>
-                    {transaction.budget ? (
+                    {transaction.budgetId ? (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
                             <Badge variant="secondary" className="px-2 py-1">
-                              {transaction.budget.name}
+                              {transaction.budgetId}
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Budget: {transaction.budget.name}</p>
+                            <p>Budget: {transaction.budgetId}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
