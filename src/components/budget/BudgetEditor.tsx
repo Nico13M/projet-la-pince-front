@@ -76,7 +76,7 @@ export function BudgetEditor({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-slate-700 hover:bg-slate-100"
+          className="h-8 w-8 text-slate-700 hover:bg-slate-100 hover:text-blue-700"
         >
           <Pencil className="h-4 w-4" />
           <span className="sr-only">Modifier</span>
@@ -125,9 +125,9 @@ export function BudgetEditor({
             </div>
 
             <div className="flex justify-end space-x-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setOpen(false)}
               >
                 Annuler
