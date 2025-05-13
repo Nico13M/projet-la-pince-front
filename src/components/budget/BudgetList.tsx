@@ -104,7 +104,8 @@ export default function BudgetList({
       description: budget.description || '',
       category: {
         id: budget.category?.id || '',
-        name: capitalize(budget.category?.name || 'Inconnu')
+        name: capitalize(budget.category?.name || 'Inconnu'),
+        transactionType: budget.category?.transactionType || 'expense'
       },
       threshold: typeof budget.threshold === 'number'
         ? budget.threshold : null
@@ -224,7 +225,7 @@ export default function BudgetList({
   if (isLoading) {
     return <TableSkeleton />
   }
-
+ console.log(budgets, "BUD")
   return (
     <>
       <div className="overflow-x-auto rounded-md border shadow-sm">
@@ -260,17 +261,24 @@ export default function BudgetList({
                       )}
                     </TableCell>
                     <TableCell>
-                      {(() => {
-                        const transactionType = getTransactionTypeForBudget(budget.name, budget.category?.name);
-                        const badge = getTransactionTypeBadge(transactionType);
-
-                        return (
-                          <Badge variant="outline" className={`flex items-center gap-0.5 px-1.5 py-0.5 text-xs whitespace-nowrap ${badge.style}`}>
-                            {badge.icon}
-                            <span>{badge.label}</span>
-                          </Badge>
-                        );
-                      })()}
+                      {budget.category ? (
+                        (() => {
+                          const { icon, label, style } = getTransactionTypeBadge(
+                            budget.category.transactionType
+                          )
+                          return (
+                            <Badge
+                              variant="outline"
+                              className={`flex items-center gap-0.5 px-1.5 py-0.5 text-xs whitespace-nowrap ${style}`}
+                            >
+                              {icon}
+                              <span>{label}</span>
+                            </Badge>
+                          )
+                        })()
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       {budget.category && budget.category.name ? (

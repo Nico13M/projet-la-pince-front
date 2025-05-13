@@ -3,11 +3,10 @@
 import { fetchUserTransactions } from '@/app/_actions/dashboard/fetchUserTransactions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowRight, Clock, Plus } from 'lucide-react'
+import { ArrowRight, Clock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
-import { AddTransactionModal } from './AddTransactionModal'
 import { TransactionItem } from './TransactionItem'
 
 interface Transaction {
@@ -21,7 +20,6 @@ interface Transaction {
 export function RecentTransactions() {
   const [isLoading, setIsLoading] = useState(true)
   const [transactionData, setTransactionData] = useState<Transaction[]>([])
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const router = useRouter()
 
@@ -47,12 +45,6 @@ export function RecentTransactions() {
 
   return (
     <>
-      <AddTransactionModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAdded={handleAdded}
-      />
-
       <Card className="relative overflow-hidden rounded-2xl border-0 bg-white/80 shadow-lg backdrop-blur-sm">
         <div className="from-primary/60 to-secondary/60 absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r"></div>
         <div className="bg-primary/5 absolute -right-10 -bottom-16 h-32 w-32 rounded-full blur-2xl"></div>
@@ -68,15 +60,6 @@ export function RecentTransactions() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 gap-1 text-sm font-medium"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Nouvelle
-            </Button>
             <Button
               variant="link"
               className="text-primary hover:text-primary/80 flex h-9 cursor-pointer items-center gap-1 p-0 text-sm font-medium transition-colors"
@@ -113,14 +96,6 @@ export function RecentTransactions() {
               <p className="text-foreground/60 mb-4 max-w-md text-sm">
                 Les transactions que vous effectuez apparaîtront ici.
               </p>
-              <Button
-                size="sm"
-                className="from-primary to-primary/90 hover:from-primary/90 hover:to-primary gap-1 bg-gradient-to-r shadow-sm transition-all duration-300"
-                onClick={() => setIsModalOpen(true)}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Ajouter une transaction
-              </Button>
             </div>
           )}
         </CardContent>

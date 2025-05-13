@@ -4,11 +4,10 @@ import {
   createBudget,
   fetchUserBudget,
 } from '@/app/_actions/dashboard/fetchUserBudget'
-import { AddBudgetModal } from '@/components/dashboard/AddBudgetModal'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { SavedBudget } from '@/types/budget'
-import { BarChart3, ChevronRight, Plus } from 'lucide-react'
+import { BarChart3, ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
@@ -33,7 +32,6 @@ interface Budget {
 export function BudgetOverview() {
   const [isLoading, setIsLoading] = useState(true)
   const [budgetData, setBudgetData] = useState<Budget[]>([])
-  const [showModal, setShowModal] = useState(false)
   const router = useRouter()
 
   async function fetchBudgets() {
@@ -74,7 +72,6 @@ export function BudgetOverview() {
       }
       await createBudget(budgetToCreate, params)
       await fetchBudgets()
-      setShowModal(false)
     } catch (error) {
       console.error('Erreur lors de la création du budget:', error)
     } finally {
@@ -93,12 +90,6 @@ export function BudgetOverview() {
 
   return (
     <>
-      <AddBudgetModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onSave={handleAddBudget}
-      />
-
       <Card className="relative overflow-hidden rounded-2xl border-0 bg-white/80 shadow-lg backdrop-blur-sm">
         <div className="from-primary/70 to-secondary/70 absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r"></div>
         <div className="bg-primary/5 absolute -bottom-16 -left-10 h-32 w-32 rounded-full blur-2xl"></div>
@@ -113,15 +104,6 @@ export function BudgetOverview() {
             </CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 gap-1 text-sm font-medium transition-all"
-              onClick={() => setShowModal(true)}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Nouveau
-            </Button>
             <Button
               variant="link"
               className="text-primary hover:text-primary/80 flex h-9 cursor-pointer items-center gap-1 p-0 text-sm font-medium transition-colors"
@@ -159,14 +141,6 @@ export function BudgetOverview() {
                 Créez des budgets pour suivre vos dépenses et optimiser votre
                 gestion financière.
               </p>
-              <Button
-                size="sm"
-                className="from-primary to-primary/90 hover:from-primary/90 hover:to-primary gap-1 bg-gradient-to-r shadow-sm transition-all duration-300"
-                onClick={() => setShowModal(true)}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Créer un budget
-              </Button>
             </div>
           )}
         </CardContent>
