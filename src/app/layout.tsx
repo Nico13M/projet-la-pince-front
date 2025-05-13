@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import Footer from '../components/layouts/Footer'
 
 import './globals.css'
+import Head from 'next/head'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,6 +31,9 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: 'La Pince',
   description: 'Application pour améliorer la gestion de budget',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
