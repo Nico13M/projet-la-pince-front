@@ -24,8 +24,8 @@ export default function Header() {
               height={70}
             />
           </Link>
-          <nav className="hidden md:flex md:grow md:justify-between">
-            <ul className="flex flex-wrap items-center justify-start space-x-5 lg:space-x-8">
+          <nav className="hidden md:flex md:grow justify-end">
+            <ul className="flex flex-wrap items-center justify-end space-x-5 lg:space-x-8">
               <li>
                 <Link
                   href={'/dashboard'}
@@ -42,10 +42,6 @@ export default function Header() {
                   Contact
                 </Link>
               </li>
-            </ul>
-          </nav>
-          <nav className="hidden md:flex md:w-1/3 md:justify-end">
-            <ul className="flex flex-wrap items-center space-x-5 lg:space-x-8">
               <li>
                 <Link
                   href={'/sign-in'}
@@ -64,6 +60,7 @@ export default function Header() {
               </li>
             </ul>
           </nav>
+
 
           <div className="flex w-full items-center justify-between md:hidden">
             <Link href="/" className="mr-4">

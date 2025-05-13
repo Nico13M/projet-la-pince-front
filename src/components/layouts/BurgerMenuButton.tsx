@@ -18,7 +18,7 @@ export const BurgerMenuButton = ({
           className="text-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          <XIcon />
+          <XIcon className="!w-8 !h-8" />
         </Button>
       ) : (
         <Button
@@ -28,7 +28,7 @@ export const BurgerMenuButton = ({
           className="text-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          <MenuIcon />
+          <MenuIcon className="!w-8 !h-8" />
         </Button>
       )}
     </>
