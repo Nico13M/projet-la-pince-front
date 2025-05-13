@@ -191,7 +191,7 @@ export function StatCards() {
                   </div>
                   <div className="flex items-center text-xs">
                     <span className="font-semibold text-red-500">{4.3}%</span>
-                    <span className="text-foreground/60 ml-1.5">
+                    <span className="text-foreground/70 ml-1.5">
                       vs mois dernier
                     </span>
                   </div>
@@ -245,7 +245,7 @@ export function StatCards() {
                     <span className="font-semibold text-green-500">
                       +{12.3}%
                     </span>
-                    <span className="text-foreground/60 ml-1.5">
+                    <span className="text-foreground/70 ml-1.5">
                       vs mois dernier
                     </span>
                   </div>
@@ -279,17 +279,16 @@ export function StatCards() {
                 </div>
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
                   <div
-                    className={`h-full rounded-full transition-all duration-700 ease-out ${
-                      budgetUtilizationAverage > 80
-                        ? 'bg-gradient-to-r from-red-400 to-red-500'
-                        : budgetUtilizationAverage > 60
-                          ? 'bg-gradient-to-r from-amber-400 to-amber-500'
-                          : 'from-primary/80 to-primary bg-gradient-to-r'
-                    }`}
+                    className={`h-full rounded-full transition-all duration-700 ease-out ${budgetUtilizationAverage > 80
+                      ? 'bg-gradient-to-r from-red-400 to-red-500'
+                      : budgetUtilizationAverage > 60
+                        ? 'bg-gradient-to-r from-amber-400 to-amber-500'
+                        : 'from-primary/80 to-primary bg-gradient-to-r'
+                      }`}
                     style={{ width: `${budgetUtilizationAverage}%` }}
                   />
                 </div>
-                <div className="text-foreground/60 flex justify-between text-xs font-medium">
+                <div className="text-foreground/70 flex justify-between text-xs font-medium">
                   <span>0%</span>
                   <span>50%</span>
                   <span>100%</span>
