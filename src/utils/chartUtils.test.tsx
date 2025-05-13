@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import  filterDataByTimeframe  from './chartUtils'
+import  {filterDataByTimeframe}  from './chartUtils'
 
 
 const monthsConfig = {
