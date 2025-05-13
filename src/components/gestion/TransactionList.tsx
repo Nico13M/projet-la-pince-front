@@ -181,9 +181,9 @@ export default function TransactionList({
                   <TableCell className="text-slate-600">
                     {transaction.dateOfExpense
                       ? new Date(transaction.dateOfExpense).toLocaleDateString(
-                          'fr-FR',
-                          { day: '2-digit', month: '2-digit', year: 'numeric' }
-                        )
+                        'fr-FR',
+                        { day: '2-digit', month: '2-digit', year: 'numeric' }
+                      )
                       : '-'}
                   </TableCell>
                   <TableCell>
@@ -204,13 +204,12 @@ export default function TransactionList({
                       <span className="text-slate-400">-</span>
                     )}
                   </TableCell>
-                  <TableCell className={`text-right font-medium ${
-                    transaction.transactionType?.toLowerCase() === 'income' 
-                      ? 'text-emerald-600' 
-                      : transaction.transactionType?.toLowerCase() === 'expense' 
-                        ? 'text-red-600' 
-                        : 'text-blue-600'
-                  }`}>
+                  <TableCell className={`text-right font-medium ${transaction.transactionType?.toLowerCase() === 'income'
+                    ? 'text-emerald-700'
+                    : transaction.transactionType?.toLowerCase() === 'expense'
+                      ? 'text-red-600'
+                      : 'text-blue-600'
+                    }`}>
                     {typeof transaction.amount === 'number'
                       ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
                       : transaction.amount || '-'}
