@@ -88,14 +88,14 @@ export function BudgetItem({
           <p className="text-foreground/70">
             {!isOverBudget && !isNegative ? (
               <>
-                <span className="opacity-80">Dépense:</span>{' '}
+                <span >Dépense:</span>{' '}
                 <span className="text-foreground font-semibold ml-1">
                   {formatEuro(spentAmount)}
                 </span>
               </>
             ) : (
               <span className="text-red-600 font-medium flex items-center">
-                <span className="opacity-80 mr-1">Dépense:</span> {formatEuro(spentAmount)}
+                <span className=" mr-1">Dépense:</span> {formatEuro(spentAmount)}
               </span>
             )}
           </p>
