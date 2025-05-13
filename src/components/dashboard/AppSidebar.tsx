@@ -1,6 +1,6 @@
 'use client'
 
-import { BarChart2, CreditCard, Home, PieChart, Settings } from 'lucide-react'
+import { BarChart2, CreditCard, Home, PieChart } from 'lucide-react'
 
 import {
   Sidebar,
@@ -24,8 +24,13 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/dashboard/home" className="flex items-center gap-2">
-              <Image src="/logo.webp" alt="Logo" width={150} height={150} className='m-auto' />
-              {/* <span className="text-lg font-semibold">La Pince</span> */}
+              <Image
+                src="/logo.webp"
+                alt="Logo"
+                width={150}
+                height={150}
+                className="m-auto"
+              />
             </Link>
           </SidebarMenuItem>
         </SidebarMenu>

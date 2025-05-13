@@ -105,8 +105,6 @@ export function BudgetItem({
           )}
         </div>
       </div>
-
-      <div className="from-accent/0 via-accent/5 to-accent/0 pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
     </div>
   )
 }

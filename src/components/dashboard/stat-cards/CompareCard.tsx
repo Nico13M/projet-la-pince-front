@@ -1,39 +1,47 @@
-'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatEuro } from '@/utils/format'
-import { PiggyBank } from 'lucide-react'
 
-export function SavingCards({
-  totalInvestment,
+export default function CompareCard({
+  totalAmount,
   comparePercentage,
+  title,
+  icon,
+  type,
   isLoading,
 }: {
-  totalInvestment: number
+  totalAmount: number
   comparePercentage: number
+  title: string
+  icon: React.ReactNode
+  type: 'expense' | 'income' | 'investment'
   isLoading: boolean
 }) {
   if (isLoading) return null
 
-  // Pour les économies, une augmentation (valeur positive) est positive pour l'utilisateur
-  const isPositive = comparePercentage >= 0
+  let isPositive = false
+  if (type === 'expense') {
+    isPositive = comparePercentage <= 0
+  } else if (type === 'income') {
+    isPositive = comparePercentage >= 0
+  } else if (type === 'investment') {
+    isPositive = comparePercentage >= 0
+  }
 
   return (
     <Card className="relative overflow-hidden rounded-2xl border-0 bg-white/80 shadow-lg backdrop-blur-sm">
-      <div className="from-primary/70 to-secondary/70 absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r"></div>
-      <div className="bg-primary/5 absolute -bottom-16 -left-10 h-32 w-32 rounded-full blur-2xl"></div>
+      <div className="from-primary/80 to-secondary/80 absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r"></div>
+      <div className="bg-primary/5 absolute -right-10 -bottom-16 h-32 w-32 rounded-full blur-2xl"></div>
 
       <CardHeader className="flex flex-row items-center justify-between pt-6">
         <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
-          <PiggyBank className="text-primary h-4 w-4" />
-          <span className="font-medium tracking-wide">
-            Économies mensuelles
-          </span>
+          {icon}
+          <span className="font-medium tracking-wide">{title}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-4 pb-6">
         <div className="space-y-3">
           <div className="text-3xl font-bold tracking-tight">
-            {formatEuro(totalInvestment)}
+            {formatEuro(totalAmount)}
           </div>
           <div className="flex items-center gap-1.5">
             <div
