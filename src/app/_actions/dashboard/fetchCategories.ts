@@ -2,20 +2,17 @@
 
 import { cookies } from 'next/headers'
 
-import { Data, SavedBudget } from '@/types/budget'
-
 export async function fetchCategories() {
   const API_LINK = process.env.API_LINK
   try {
+    const cookieStore = await cookies()
+    const csrfToken = cookieStore.get('x-csrf-token')?.value
+    const accessToken = cookieStore.get('access_token')?.value
 
-    const cookieStore = await cookies();
-    const csrfToken = cookieStore.get('x-csrf-token')?.value;
-    const accessToken = cookieStore.get('access_token')?.value;
-
-    const cookieHeader = `x-csrf-token=${csrfToken}; access_token=${accessToken}`;
+    const cookieHeader = `x-csrf-token=${csrfToken}; access_token=${accessToken}`
 
     if (!csrfToken) {
-      throw new Error("CSRF Token non trouvé");
+      throw new Error('CSRF Token non trouvé')
     }
 
     const response = await fetch(API_LINK + '/categories', {
@@ -23,8 +20,8 @@ export async function fetchCategories() {
       headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,
-        'Cookie': cookieHeader
-      }
+        Cookie: cookieHeader,
+      },
     })
     const data = await response.json()
     return data
