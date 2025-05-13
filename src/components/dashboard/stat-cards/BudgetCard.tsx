@@ -41,7 +41,7 @@ export function BudgetCard({
               style={{ width: `${budgetUtilizationAverage}%` }}
             />
           </div>
-          <div className="text-foreground/60 flex justify-between text-xs font-medium">
+          <div className="text-foreground/70 flex justify-between text-xs font-medium">
             <span>0%</span>
             <span>50%</span>
             <span>100%</span>

@@ -63,7 +63,7 @@ export function ExpenseCard({
                 {comparePercentage > 0 ? '+' : ''}
                 {comparePercentage}%
               </span>
-              <span className="text-foreground/60 ml-1.5">
+              <span className="text-foreground/70 ml-1.5">
                 par rapport au mois dernier
               </span>
             </div>

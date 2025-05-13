@@ -137,7 +137,7 @@ export function BudgetOverview() {
               <h3 className="mb-2 text-base font-medium">
                 Aucun budget défini
               </h3>
-              <p className="text-foreground/60 mb-4 max-w-md text-sm">
+              <p className="text-foreground/70 mb-4 max-w-md text-sm">
                 Créez des budgets pour suivre vos dépenses et optimiser votre
                 gestion financière.
               </p>

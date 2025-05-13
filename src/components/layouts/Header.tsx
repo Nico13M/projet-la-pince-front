@@ -11,7 +11,7 @@ export default function Header() {
 
   return (
     <header
-      className={`dark absolute z-30 w-full bg-black/70 transition duration-300`}
+      className={`dark absolute z-30 h-[75px] md:h-auto w-full bg-black/70 transition duration-300`}
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="flex h-16 items-center justify-between md:h-20">
@@ -24,8 +24,8 @@ export default function Header() {
               height={70}
             />
           </Link>
-          <nav className="hidden md:flex md:grow md:justify-between">
-            <ul className="flex flex-wrap items-center justify-start space-x-5 lg:space-x-8">
+          <nav className="hidden md:flex md:grow justify-end">
+            <ul className="flex flex-wrap items-center justify-end space-x-5 lg:space-x-8">
               <li>
                 <Link
                   href={'/dashboard'}
@@ -42,10 +42,6 @@ export default function Header() {
                   Contact
                 </Link>
               </li>
-            </ul>
-          </nav>
-          <nav className="hidden md:flex md:w-1/3 md:justify-end">
-            <ul className="flex flex-wrap items-center space-x-5 lg:space-x-8">
               <li>
                 <Link
                   href={'/sign-in'}
@@ -65,10 +61,20 @@ export default function Header() {
             </ul>
           </nav>
 
-          <div className="flex w-full items-center justify-between md:hidden">
-            <Link href="/" className="mr-4">
-              <Image src="/logo-white.webp" alt="Logo" width={50} height={50} />
+
+          <div className="relative flex w-full items-center justify-end md:hidden">
+            <Link
+              href="/"
+              className="absolute left-1/2 pt-3 -translate-x-1/2"
+            >
+              <Image
+                src="/logo-white.webp"
+                alt="Logo"
+                width={80}
+                height={80}
+              />
             </Link>
+
             <BurgerMenuButton
               mobileMenuOpen={mobileMenuOpen}
               setMobileMenuOpen={setMobileMenuOpen}
