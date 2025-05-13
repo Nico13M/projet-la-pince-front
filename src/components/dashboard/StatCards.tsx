@@ -45,6 +45,7 @@ export function StatCards() {
 
         setBudgetSummary(budgetData)
         setUserData(userData)
+        localStorage.setItem('userId', userData?.id);
 
         // Calcul des pourcentages de comparaison entre mois
         if (compareMonthlyBudget) {
