@@ -7,36 +7,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { CategoryComparisonPoint, CategoryExpenseItem } from '@/types/analytics'
 import { formatEuro } from '@/utils/format'
 import { ChartColumnBig } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
-
-interface BudgetItem {
-  id: string
-  name: string
-  description: string
-  threshold: number
-  availableAmount: number
-  userId: string
-  categoryId: string
-  createdAt: string
-  updatedAt: string
-  category: {
-    id: string
-    name: string
-    createdAt: string
-    updatedAt: string
-    transactionType: string
-    userId: string
-  }
-}
-interface CategoryData {
-  categorie: string
-  lastMonthExpense: number
-  currentMonthExpense: number
-}
 
 const chartConfig = {
   lastMonthExpense: {
@@ -51,16 +27,18 @@ const chartConfig = {
 
 export function CategoryAnalysis() {
   const [isLoading, setIsLoading] = useState(false)
-  const [categoryData, setCategoryData] = useState<CategoryData[]>([])
+  const [categoryData, setCategoryData] = useState<CategoryComparisonPoint[]>(
+    [],
+  )
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true)
         const response = await fetchUserCompareMonthlyBudget()
-        const categories: Record<string, CategoryData> = {}
+        const categories: Record<string, CategoryComparisonPoint> = {}
 
-        response.currentBudgetSummary.forEach((item: BudgetItem) => {
+        response.currentBudgetSummary.forEach((item: CategoryExpenseItem) => {
           const categoryName = item.category.name
           if (!categories[categoryName]) {
             categories[categoryName] = {
@@ -78,7 +56,7 @@ export function CategoryAnalysis() {
           }
         })
 
-        response.lastMonthBudgetSummary.forEach((item: BudgetItem) => {
+        response.lastMonthBudgetSummary.forEach((item: CategoryExpenseItem) => {
           const categoryName = item.category.name
           if (!categories[categoryName]) {
             categories[categoryName] = {

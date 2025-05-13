@@ -14,47 +14,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { filterDataByTimeframe } from '@/utils/chartUtils'
+import { monthsLabels, timeframeOptions } from '@/constants/analytics'
+import { BudgetSummary, SavingsChartPoint, Timeframe } from '@/types/analytics'
+import {
+  calculateTotalOfArray,
+  createEmptyMonthsData,
+  filterDataByTimeframe,
+} from '@/utils/chartUtils'
 import { formatEuro } from '@/utils/format'
 import { ChartLine, PieChartIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
 
-interface Budget {
-  id: string
-  name: string
-  description: string
-  threshold: number
-  availableAmount: number
-  userId: string
-  categoryId: string
-  createdAt: Date
-}
-
-interface SavingsDataItem {
-  month: string
-  availableAmount: number
-  threshold: number
-}
-
-
-const monthsLabels = {
-  January: { shortLabel: 'Jan' },
-  February: { shortLabel: 'Fév' },
-  March: { shortLabel: 'Mar' },
-  April: { shortLabel: 'Avr' },
-  May: { shortLabel: 'Mai' },
-  June: { shortLabel: 'Juin' },
-  July: { shortLabel: 'Juil' },
-  August: { shortLabel: 'Aoû' },
-  September: { shortLabel: 'Sep' },
-  October: { shortLabel: 'Oct' },
-  November: { shortLabel: 'Nov' },
-  December: { shortLabel: 'Déc' },
-}
-
-const chartConfig = {
+const savingsChartConfig = {
   availableAmount: {
     label: 'Montant dépensé',
     color: 'hsl(var(--chart-1))',
@@ -67,102 +40,51 @@ const chartConfig = {
 
 export function SavingsProgress() {
   const [isLoading, setIsLoading] = useState(true)
-  const [budgetData, setBudgetData] = useState<Budget[]>([])
-  const [timeframe, setTimeframe] = useState<'year' | '6months' | '3months'>(
-    'year',
-  )
-  const [savingsData, setSavingsData] = useState<SavingsDataItem[]>([])
+  const [budgetData, setBudgetData] = useState<BudgetSummary[]>([])
+  const [timeframe, setTimeframe] = useState<Timeframe>('year')
+  const [savingsData, setSavingsData] = useState<SavingsChartPoint[]>([])
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true)
         const response = await fetchUserBudget()
-        setBudgetData(response.data)
+        if (response) {
+          setBudgetData(response.data as unknown as BudgetSummary[])
 
-        const monthsConfig: Record<
-          string,
-          {
-            shortLabel: string
-            data: { threshold: number[]; availableAmount: number[] }
-          }
-        > = {
-          January: {
-            shortLabel: 'Jan',
-            data: { threshold: [], availableAmount: [] },
-          },
-          February: {
-            shortLabel: 'Fév',
-            data: { threshold: [], availableAmount: [] },
-          },
-          March: {
-            shortLabel: 'Mar',
-            data: { threshold: [], availableAmount: [] },
-          },
-          April: {
-            shortLabel: 'Avr',
-            data: { threshold: [], availableAmount: [] },
-          },
-          May: {
-            shortLabel: 'Mai',
-            data: { threshold: [], availableAmount: [] },
-          },
-          June: {
-            shortLabel: 'Juin',
-            data: { threshold: [], availableAmount: [] },
-          },
-          July: {
-            shortLabel: 'Juil',
-            data: { threshold: [], availableAmount: [] },
-          },
-          August: {
-            shortLabel: 'Aoû',
-            data: { threshold: [], availableAmount: [] },
-          },
-          September: {
-            shortLabel: 'Sep',
-            data: { threshold: [], availableAmount: [] },
-          },
-          October: {
-            shortLabel: 'Oct',
-            data: { threshold: [], availableAmount: [] },
-          },
-          November: {
-            shortLabel: 'Nov',
-            data: { threshold: [], availableAmount: [] },
-          },
-          December: {
-            shortLabel: 'Déc',
-            data: { threshold: [], availableAmount: [] },
-          },
-        }
+          const monthsConfig = createEmptyMonthsData([
+            'threshold',
+            'availableAmount',
+          ])
 
-        response.data.forEach((element: Budget) => {
-          const monthIndex = new Date(element.createdAt).getUTCMonth()
-          const monthKey = Object.keys(monthsConfig)[monthIndex]
+          response.data.forEach((element) => {
+            if (element.createdAt) {
+              const monthIndex = new Date(element.createdAt).getUTCMonth()
+              const monthKey = Object.keys(monthsConfig)[monthIndex]
 
-          if (monthsConfig[monthKey]) {
-            monthsConfig[monthKey].data.threshold.push(element.threshold)
-            monthsConfig[monthKey].data.availableAmount.push(
-              element.threshold - element.availableAmount,
-            )
-          }
-        })
-
-        const processedData = Object.entries(monthsConfig).map(
-          ([_, config]) => {
-            const calculateTotal = (array: number[]) =>
-              array.reduce((sum, value) => sum + value, 0)
-
-            return {
-              month: config.shortLabel,
-              availableAmount: calculateTotal(config.data.availableAmount),
-              threshold: calculateTotal(config.data.threshold),
+              if (monthsConfig[monthKey]) {
+                monthsConfig[monthKey].data.threshold.push(element.threshold)
+                monthsConfig[monthKey].data.availableAmount.push(
+                  element.threshold - element.availableAmount,
+                )
+              }
             }
-          },
-        )
+          })
 
-        setSavingsData(processedData)
+          const processedData = Object.entries(monthsConfig).map(
+            ([_, config]) => {
+              return {
+                month: config.shortLabel,
+                availableAmount: calculateTotalOfArray(
+                  config.data.availableAmount,
+                ),
+                threshold: calculateTotalOfArray(config.data.threshold),
+              }
+            },
+          )
+
+          setSavingsData(processedData)
+        }
       } catch (error) {
         console.error('Error fetching budget data:', error)
       } finally {
@@ -191,23 +113,26 @@ export function SavingsProgress() {
         </div>
         <Select
           value={timeframe}
-          onValueChange={(value) =>
-            setTimeframe(value as 'year' | '6months' | '3months')
-          }
+          onValueChange={(value) => setTimeframe(value as Timeframe)}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sélectionner une période" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="year">Année en cours</SelectItem>
-            <SelectItem value="6months">6 derniers mois</SelectItem>
-            <SelectItem value="3months">3 derniers mois</SelectItem>
+            {timeframeOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </CardHeader>
       <CardContent>
         {budgetData.length > 0 ? (
-          <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+          <ChartContainer
+            config={savingsChartConfig}
+            className="min-h-[300px] w-full"
+          >
             <AreaChart accessibilityLayer data={displayData}>
               <defs>
                 <linearGradient
@@ -261,7 +186,9 @@ export function SavingsProgress() {
                   <ChartTooltipContent
                     formatter={(value, name) => {
                       const label =
-                        chartConfig[name as keyof typeof chartConfig]?.label
+                        savingsChartConfig[
+                          name as keyof typeof savingsChartConfig
+                        ]?.label
                       return `${label} : ${formatEuro(value as number)}`
                     }}
                   />

@@ -1,6 +1,6 @@
 'use client'
 
-import { fetchUserBudget } from '@/app/_actions/analytics/fetchUserBudget'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -9,78 +9,54 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { BudgetDistributionItem, PieChartSegment } from '@/types/analytics'
+import { generateColors } from '@/utils/chartUtils'
 import { formatEuro } from '@/utils/format'
 import { PieChart as PieChartIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Cell, Pie, PieChart, PieLabelRenderProps } from 'recharts'
+import { Cell, Pie, PieChart } from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
 
-
-function generateColors(count: number): string[] {
-  const baseHues = [
-    0,    // rouge clair
-    210,  // gris froid (désaturé)
-    220,  // bleu lavande    
-    340,  // rose doux
-    200,  // bleu doux
-    20,   // saumon
-    210,  // azur
-    120,  //vert pastel
-    0,    // gris chaud (désaturé)
-    230,  // bleu pastel
-    265,  //bleu violet
-  ]
-
-  return Array.from({ length: count }, (_, i) => {
-    const hue = baseHues[i % baseHues.length] // cyclique si + de 9
-    const saturation = 60                     // saturation moyenne
-    const lightness = 50                     // luminosité douce
-
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`
-  })
-}
-
-interface ChartData {
-  name: string
-  value: number
-  fill: string
-}
-
-const chartConfig = {
-}
+const chartConfig = {}
 
 export function BudgetDistribution() {
   const [isLoading, setIsLoading] = useState(true)
-  const [budgetData, setBudgetData] = useState<ChartData[]>([])
+  const [budgetData, setBudgetData] = useState<PieChartSegment[]>([])
 
   useEffect(() => {
-  async function fetchData() {
-    setIsLoading(true)
-    try {
-      const budgets = await fetchUserBudget(1, 10);
-      console.log(budgets);
-      const colors = generateColors(budgets?.data.length);
+    async function fetchData() {
+      try {
+        setIsLoading(true)
 
-      if (Array.isArray(budgets?.data) && budgets.data.length > 0) {
-        const chartData = budgets.data.map((budget: Budget, index: number) => ({
-          name: `${budget.name}`,
-          value: budget.threshold,
-          fill: colors[index],
-        }))
-        setBudgetData(chartData)
-      } else {
+        const response = await fetchUserBudget()
+
+        if (response?.data && Array.isArray(response?.data)) {
+          const colors = generateColors(response?.data.length)
+          const chartData = response.data.map(
+            (budget: BudgetDistributionItem, index: number) => ({
+              name: budget.name,
+              value: budget.threshold,
+              fill: colors[index],
+            }),
+          )
+
+          setBudgetData(chartData)
+        } else {
+          setBudgetData([])
+        }
+      } catch (error) {
+        console.error(
+          'Erreur lors de la récupération des données de budget:',
+          error,
+        )
         setBudgetData([])
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error) {
-      console.error('Erreur de budget:', error)
-      setBudgetData([])
-    } finally {
-      setIsLoading(false)
     }
-  }
 
-  fetchData()
-}, [])
+    fetchData()
+  }, [])
 
   if (isLoading) {
     return <AnalyticsSkeleton />
@@ -98,23 +74,23 @@ export function BudgetDistribution() {
         {budgetData.length > 0 ? (
           <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
             <PieChart accessibilityLayer>
-            <Pie
-              data={budgetData}
-              cx="50%"
-              cy="50%"
-              outerRadius={90}
-              innerRadius={40}
-              dataKey="value"
-              nameKey="name"
-              labelLine={false}
-              label={({ name, percent }) =>
-                percent > 0.03 ? `${name} ${(percent * 100).toFixed(0)}%` : ''
-              }
-            >
-              {budgetData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Pie>
+              <Pie
+                data={budgetData}
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                innerRadius={40}
+                dataKey="value"
+                nameKey="name"
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
+                labelLine={false}
+              >
+                {budgetData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
               <ChartTooltip
                 content={
                   <ChartTooltipContent
