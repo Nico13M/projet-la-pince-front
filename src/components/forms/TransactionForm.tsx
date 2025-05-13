@@ -247,6 +247,7 @@ export default function TransactionForm({
       amount: values.amount || 0,
       categoryId: selectedBudget.category.id,
       budgetId: values.budget.id,
+      budgetName: values.budget.name,
       transactionType: mapTypeToTransactionType(type),
     }
     try {

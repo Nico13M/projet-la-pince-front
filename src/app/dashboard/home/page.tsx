@@ -1,7 +1,7 @@
 import { BudgetOverview } from '@/components/dashboard/BudgetOverview'
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import { RecentTransactions } from '@/components/dashboard/RecentTransactions'
-import { StatCards } from '@/components/dashboard/StatCard'
+import { StatCards } from '@/components/dashboard/StatCards'
 
 export default function HomePage() {
   return (

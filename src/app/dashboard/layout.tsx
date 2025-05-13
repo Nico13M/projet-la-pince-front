@@ -2,7 +2,11 @@ import { AppSidebar } from '@/components/dashboard/AppSidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { CsrfProvider } from '@/context/CsrfContext'
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <CsrfProvider>
       <SidebarProvider>
