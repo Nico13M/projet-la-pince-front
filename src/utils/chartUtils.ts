@@ -1,4 +1,4 @@
-export function filterDataByTimeframe<T extends { month: string }>(
+export default function filterDataByTimeframe<T extends { month: string }>(
   data: T[],
   timeframe: 'year' | '6months' | '3months',
   monthsConfig: Record<string, { shortLabel: string }>,
