@@ -138,7 +138,7 @@ export function TransactionEditor({
       'Investissement': 'investment',
       // Ajouter d'autres mappings si nécessaire
     };
-    
+
     return categoryToTypeMap[categoryName] || 'expense'; // Par défaut expense
   }
 
@@ -146,12 +146,12 @@ export function TransactionEditor({
   useEffect(() => {
     if (selectedBudget?.category) {
       let transactionType = selectedBudget.category.transactionType;
-      
+
       if (!transactionType && selectedBudget.category.name) {
         // Si pas de transactionType, utiliser le nom de catégorie
         transactionType = determineDefaultType(selectedBudget.category.name);
       }
-      
+
       if (transactionType) {
         console.log('Setting transaction type to:', transactionType);
         form.setValue('transactionType', transactionType.toLowerCase(), {
@@ -165,13 +165,13 @@ export function TransactionEditor({
 
   const getTransactionTypeLabel = (type: string) => {
     if (!type) return 'Dépense';
-    
+
     // Normaliser le type en minuscules
     const normalizedType = type.toLowerCase();
     const typeInfo = transactionTypeIcons[normalizedType];
-    
+
     console.log('Getting label for type:', type, 'normalized:', normalizedType, 'result:', typeInfo?.label);
-    
+
     return typeInfo ? typeInfo.label : type;
   };
 
@@ -198,10 +198,10 @@ export function TransactionEditor({
           }
         }
       }
-      
+
       // Get categoryId from selectedBudget
       const categoryId = selectedBudget?.category?.id;
-      
+
       // If we still don't have a categoryId, show error and return
       if (!categoryId) {
         showToast({
@@ -225,7 +225,7 @@ export function TransactionEditor({
 
       // Call the update API
       const result = await fetchUpdateTransaction(transaction.id, updateData as any);
-      
+
       // if (!result.success) {
       //   throw new Error(result.message || 'Erreur lors de la mise à jour');
       // }
@@ -264,7 +264,7 @@ export function TransactionEditor({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-slate-700 hover:bg-slate-100"
+          className="h-8 w-8 text-slate-700 hover:bg-slate-100 hover:text-blue-700"
         >
           <Pencil className="h-4 w-4" />
           <span className="sr-only">Modifier</span>
@@ -316,7 +316,7 @@ export function TransactionEditor({
                     <BudgetSelector
                       budgetId={field.value.id}
                       setBudgetId={(id: string) => {
-                        const selectedBudget = { 
+                        const selectedBudget = {
                           id,
                           name: field.value.name
                         }
