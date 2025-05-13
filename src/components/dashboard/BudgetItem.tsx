@@ -11,103 +11,104 @@ export function BudgetItem({
   totalAmount: number
   color?: string
 }) {
-  // currentAmount représente le montant restant (disponible)
-  // On calcule le montant dépensé
   const spentAmount = totalAmount - currentAmount
-  
+
   const percentage = totalAmount > 0 ? (spentAmount / totalAmount) * 100 : 0
   const isOverBudget = currentAmount < 0
   const isNegative = totalAmount <= 0
-  const remainingAmount = currentAmount
 
-  const gradientColor = color === 'bg-primary' 
-    ? 'from-primary/80 to-primary' 
-    : color === 'bg-blue-500' 
-      ? 'from-blue-400 to-blue-500'
-      : color === 'bg-purple-500'
-        ? 'from-purple-400 to-purple-500'
-        : color === 'bg-amber-500'
-          ? 'from-amber-400 to-amber-500'
-          : color === 'bg-emerald-500'
-            ? 'from-emerald-400 to-emerald-500'
-            : 'from-indigo-400 to-indigo-500';
+  const gradientColor =
+    color === 'bg-primary'
+      ? 'from-primary/80 to-primary'
+      : color === 'bg-blue-500'
+        ? 'from-blue-400 to-blue-500'
+        : color === 'bg-purple-500'
+          ? 'from-purple-400 to-purple-500'
+          : color === 'bg-amber-500'
+            ? 'from-amber-400 to-amber-500'
+            : color === 'bg-emerald-500'
+              ? 'from-emerald-400 to-emerald-500'
+              : 'from-indigo-400 to-indigo-500'
 
   return (
-    <div className="group relative rounded-xl p-6 transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm shadow-md hover:shadow-lg">
-      <div className="absolute inset-0 bg-white/5 rounded-xl"></div>
-      <div className="absolute -right-5 -top-10 h-20 w-20 rounded-full bg-primary/5 blur-xl"></div>
-      
-      <div className="flex flex-col mb-4 relative z-10">
-        <div className="flex items-center gap-3 mb-2">
-          <h3 className="text-base font-semibold truncate max-w-[280px] text-foreground">
+    <div className="group relative rounded-xl border-0 bg-white/90 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg">
+      <div className="absolute inset-0 rounded-xl bg-white/5"></div>
+      <div className="bg-primary/5 absolute -top-10 -right-5 h-20 w-20 rounded-full blur-xl"></div>
+
+      <div className="relative z-10 mb-4 flex flex-col">
+        <div className="mb-2 flex items-center gap-3">
+          <h3 className="text-foreground max-w-[280px] truncate text-base font-semibold">
             {name}
           </h3>
           {(isOverBudget || isNegative) && (
-            <span className="bg-red-100/90 text-red-900 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm flex items-center shadow-sm">
-              <span className="w-1.5 h-1.5 bg-red-600 rounded-full mr-2 animate-pulse" />
+            <span className="flex items-center rounded-full bg-red-100/90 px-2.5 py-1 text-xs font-medium text-red-900 shadow-sm backdrop-blur-sm">
+              <span className="mr-2 h-1.5 w-1.5 animate-pulse rounded-full bg-red-600" />
               Budget dépassé
             </span>
           )}
         </div>
-        
-        <div className="flex justify-between items-center">
-          <p className="text-xs text-foreground/60 font-medium">Budget alloué</p>
+
+        <div className="flex items-center justify-between">
+          <p className="text-foreground/60 text-xs font-medium">
+            Budget alloué
+          </p>
           <p className="text-sm font-semibold tabular-nums">
-            <span className={`text-lg ${(isOverBudget || isNegative) ? 'text-red-600' : 'text-foreground'}`}>
+            <span
+              className={`text-lg ${isOverBudget || isNegative ? 'text-red-600' : 'text-foreground'}`}
+            >
               {formatEuro(currentAmount)}
             </span>
-            <span className="mx-1.5 opacity-50 text-foreground/40">/</span>
-            <span className="text-foreground/70">{formatEuro(totalAmount)}</span>
+            <span className="text-foreground/40 mx-1.5 opacity-50">/</span>
+            <span className="text-foreground/70">
+              {formatEuro(totalAmount)}
+            </span>
           </p>
         </div>
       </div>
 
-      <div className="space-y-3 relative z-10">
+      <div className="relative z-10 space-y-3">
         <div className="relative">
-          <div className="bg-primary/10 h-2.5 w-full rounded-full overflow-hidden backdrop-blur-sm">
-            {!isNegative && !isOverBudget ? (
-              <div
-                className={`h-full bg-gradient-to-r ${gradientColor} transition-all duration-700 ease-out shadow-inner`}
-                style={{ 
-                  width: `${Math.min(percentage, 100)}%`,
-                  borderRadius: percentage >= 97 ? '9999px' : '9999px 0 0 9999px'
-                }}
-              />
-            ) : (
-              <div className="h-full w-0"></div>
-            )}
+          <div className="bg-primary/10 h-2.5 w-full overflow-hidden rounded-full backdrop-blur-sm">
+            <div
+              className={`h-full bg-gradient-to-r ${gradientColor} shadow-inner transition-all duration-700 ease-out`}
+              style={{
+                width: `${Math.min(percentage, 100)}%`,
+                borderRadius: percentage >= 97 ? '9999px' : '9999px 0 0 9999px',
+              }}
+            />
           </div>
           {!isOverBudget && !isNegative && (
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium text-white bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-sm">
+            <span className="absolute top-1/2 right-2 -translate-y-1/2 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
               {percentage.toFixed(1)}%
             </span>
           )}
         </div>
 
-        <div className="flex justify-between items-center text-xs pt-1">
+        <div className="flex items-center justify-between pt-1 text-xs">
           <p className="text-foreground/70">
             {!isOverBudget && !isNegative ? (
               <>
                 <span className="opacity-70">Dépense:</span>{' '}
-                <span className="text-foreground font-semibold ml-1">
+                <span className="text-foreground ml-1 font-semibold">
                   {formatEuro(spentAmount)}
                 </span>
               </>
             ) : (
-              <span className="text-red-600 font-medium flex items-center">
-                <span className="opacity-70 mr-1">Dépense:</span> {formatEuro(spentAmount)}
+              <span className="flex items-center font-medium text-red-600">
+                <span className="mr-1 opacity-70">Dépense:</span>{' '}
+                {formatEuro(spentAmount)}
               </span>
             )}
           </p>
           {isOverBudget && !isNegative && (
-            <p className="text-red-600 font-medium tabular-nums bg-red-50/90 px-2.5 py-1 rounded-full text-[10px] shadow-sm">
-              +{(percentage > 100 ? (percentage - 100) : percentage).toFixed(1)}%
+            <p className="rounded-full bg-red-50/90 px-2.5 py-1 text-[10px] font-medium text-red-600 tabular-nums shadow-sm">
+              +{(percentage > 100 ? percentage - 100 : percentage).toFixed(1)}%
             </p>
           )}
         </div>
       </div>
-      
-      <div className="absolute inset-0 rounded-xl transition-opacity duration-300 opacity-0 pointer-events-none bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 group-hover:opacity-100"></div>
+
+      <div className="from-accent/0 via-accent/5 to-accent/0 pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
     </div>
   )
 }
