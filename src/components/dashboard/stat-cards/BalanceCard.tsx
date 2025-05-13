@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { User } from '@/types/user'
 import { formatEuro } from '@/utils/format'
+import { CreditCard } from 'lucide-react'
 
 export function BalanceCard({
   remainingBalance,
@@ -26,42 +27,7 @@ export function BalanceCard({
           </span>
         </CardTitle>
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-          <svg
-            viewBox="0 0 48 48"
-            height="24"
-            width="24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="48" height="48" fill="white" fillOpacity="0.01" />
-            <path
-              d="M44 11H4V37H44V11Z"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M4 19H44"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M10 29H20"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M4 11L16 11"
-              stroke="#FFD666"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <CreditCard className="h-5 w-5 text-white" />
         </div>
       </CardHeader>
       <CardContent className="z-10 flex flex-col gap-5">

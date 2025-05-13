@@ -48,8 +48,10 @@ export function BudgetItem({
           )}
         </div>
 
-        <div className="flex justify-between items-center">
-          <p className="text-xs text-foreground/70 font-medium">Budget alloué</p>
+        <div className="flex items-center justify-between">
+          <p className="text-foreground/70 text-xs font-medium">
+            Budget alloué
+          </p>
           <p className="text-sm font-semibold tabular-nums">
             <span
               className={`text-lg ${isOverBudget || isNegative ? 'text-red-600' : 'text-foreground'}`}
@@ -93,8 +95,7 @@ export function BudgetItem({
               </>
             ) : (
               <span className="flex items-center font-medium text-red-600">
-                <span className="mr-1">Dépense:</span>{' '}
-                {formatEuro(spentAmount)}
+                <span className="mr-1">Dépense:</span> {formatEuro(spentAmount)}
               </span>
             )}
           </p>
@@ -105,8 +106,6 @@ export function BudgetItem({
           )}
         </div>
       </div>
-
-      <div className="from-accent/0 via-accent/5 to-accent/0 pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
     </div>
   )
 }

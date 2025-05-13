@@ -5,12 +5,12 @@ import { fetchUserCompareMonthlyBudget } from '@/app/_actions/dashboard/fetchUse
 import { fetchUser } from '@/app/_actions/user/fetchUser'
 import { SavedBudget } from '@/types/budget'
 import { User } from '@/types/user'
+import { CreditCard, PiggyBank } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CardSkeleton } from '../ui/skeleton/skeleton-card'
 import { BalanceCard } from './stat-cards/BalanceCard'
 import { BudgetCard } from './stat-cards/BudgetCard'
-import { ExpenseCard } from './stat-cards/ExpenseCard'
-import { SavingCards } from './stat-cards/SavingCards'
+import CompareCard from './stat-cards/CompareCard'
 
 interface BudgetSummary {
   remainingBalance: number
@@ -172,15 +172,21 @@ export function StatCards() {
             isLoading={isLoading}
           />
 
-          <ExpenseCard
-            totalExpense={budgetSummary?.totalExpense || 0}
+          <CompareCard
+            totalAmount={budgetSummary?.totalExpense || 0}
             comparePercentage={expenseComparePercentage}
+            title="Dépenses mensuelles"
+            icon={<CreditCard className="text-primary h-4 w-4" />}
+            type="expense"
             isLoading={isLoading}
           />
 
-          <SavingCards
-            totalInvestment={budgetSummary?.totalInvestment || 0}
+          <CompareCard
+            totalAmount={budgetSummary?.totalInvestment || 0}
             comparePercentage={investmentComparePercentage}
+            title="Investissements mensuels"
+            icon={<PiggyBank className="text-primary h-4 w-4" />}
+            type="investment"
             isLoading={isLoading}
           />
 
