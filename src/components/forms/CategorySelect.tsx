@@ -25,10 +25,15 @@ import { Trash2, Pencil } from 'lucide-react'
 import CategoryModalButton from './CategoryModalButton'
 import { Input } from '../ui/input'
 import { fetchCategories } from '@/app/_actions/dashboard/fetchCategories'
+import { addCategories } from '@/app/_actions/dashboard/addCategories'
+import { TransactionContextType } from '@/types/transaction'
+import { updateCategory } from '@/app/_actions/dashboard/updateCategory'
+import { deleteCategory } from '@/app/_actions/dashboard/deteleteCategory'
 
 interface Category {
-  id: string | number
-  name: string
+  id: string | number;
+  name: string;
+  transactionType: 'income' | 'investment' | 'expense';
 }
 
 interface CategorySelectProps<T extends Record<string, any>> {
@@ -60,50 +65,63 @@ export function CategorySelect<T extends Record<string, any>>({
     loadCategories()
   }, [])
 
-  const handleDeleteCategory = (categoryName: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (onCategoryDelete) onCategoryDelete(categoryName)
-    setCategories(categories.filter((c) => c.name !== categoryName))
-
-
-    if (form.getValues(name) === categoryName) {
-      form.setValue(name, '' as PathValue<T, Path<T>>, { shouldValidate: true })
+  const handleDeleteCategory = async (
+  categoryId: string | number,
+  e: React.MouseEvent
+) => {
+  e.stopPropagation()
+  try {
+    await deleteCategory(categoryId)
+    setCategories((cats) => cats.filter(c => c.id !== categoryId))
+    const current = form.getValues(name)
+    if (current?.id === categoryId) {
+      form.setValue(name, { id: '', name: '', transactionType: undefined } as any, {
+        shouldValidate: true,
+      })
     }
+  } catch (err) {
+    console.error(err)
   }
+}
 
-  const handleAddCategory = (newCategory: string) => {
-
-    const alreadyExists = categories.some((c) => c.name === newCategory)
-    if (newCategory && !alreadyExists) {
-      const newCat = { id: Date.now(), name: newCategory }
-      setCategories([...categories, newCat])
-      form.setValue(name, newCategory as PathValue<T, Path<T>>, { shouldValidate: true })
-    }
-  }
+  const handleAddCategory = async (payload: {
+  name: string;
+  transactionType: TransactionContextType;
+}) => {
+  const created = await addCategories(payload);
+  setCategories((cats) => [...cats, created]);
+  form.setValue(name, created, { shouldValidate: true });
+}
 
   const handleEditCategory = (categoryName: string) => {
     setEditingCategory(categoryName)
     setNewCategoryName(categoryName)
   }
 
-  const handleSaveEdit = () => {
-    if (
-      editingCategory &&
-      newCategoryName.trim() !== '' &&
-      !categories.some((c) => c.name === newCategoryName)
-    ) {
-      const updated = categories.map((c) =>
-        c.name === editingCategory ? { ...c, name: newCategoryName } : c
-      )
-      setCategories(updated)
-      if (form.getValues(name) === editingCategory) {
-        form.setValue(name, newCategoryName as PathValue<T, Path<T>>, {
-          shouldValidate: true,
-        })
-      }
+  const handleSaveEdit = async () => {
+  if (
+    editingCategory &&
+    newCategoryName.trim() !== '' &&
+    !categories.some(c => c.name === newCategoryName)
+  ) {
+    const current = categories.find(c => c.name === editingCategory)!
+    const payload = {
+      ...current,
+      name: newCategoryName,
+      transactionType: current.transactionType, 
     }
-    setEditingCategory(null)
+    try {
+      const updated = await updateCategory(payload)
+      setCategories(categories.map(c => c.id === updated.id ? updated : c))
+      if (form.getValues(name)?.id === updated.id) {
+        form.setValue(name, updated as any, { shouldValidate: true })
+      }
+      setEditingCategory(null)
+    } catch (err) {
+      console.error(err)
+    }
   }
+}
 
   return (
     <FormField
@@ -117,7 +135,7 @@ export function CategorySelect<T extends Record<string, any>>({
             <Select onValueChange={(value) => {
               const selected = categories.find(c => c.name === value)
               field.onChange(selected ? { id: selected.id, name: selected.name } : { id: '', name: '' })
-            }} defaultValue={field.value?.name}>
+            }} value={field.value?.name}>
               <FormControl>
                 <SelectTrigger className="w-full text-slate-500 me-4">
                   <SelectValue placeholder={placeholder} />
@@ -129,45 +147,66 @@ export function CategorySelect<T extends Record<string, any>>({
 
                     <div key={category.id} className="flex items-center justify-between px-2 py-1">
                       {editingCategory === category.name ? (
-                        <Input
-                          value={newCategoryName}
-                          onChange={(e) => setNewCategoryName(e.target.value)}
-                          onBlur={handleSaveEdit}
-                          onKeyDown={(e) =>
-                            e.key === 'Enter' && handleSaveEdit()
-                          }
-                          autoFocus
-                          className="mr-2 flex-1"
-                        />
+                         <div className="flex flex-1 items-center">
+                          <Input
+                            value={newCategoryName}
+                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            autoFocus
+                            className="flex-1 mr-2"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={handleSaveEdit}
+                            disabled={newCategoryName.trim() === '' || categories.some(c => c.name === newCategoryName)}
+                          >
+                            Sauvegarder
+                          </Button>
+                        </div>
                       ) : (
                         <SelectItem value={category.name} key={category.id} className="flex-1">
                           {category.name}
                         </SelectItem>
                       )}
-                      {/* <TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 mr-1"
+                              onClick={() => handleEditCategory(category.name)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Éditer</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7"
-                              onClick={(e) => handleDeleteCategory(category.name, e)}
+                              onClick={(e) => handleDeleteCategory(category.id, e)}
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>Supprimer</TooltipContent>
                         </Tooltip>
-                      </TooltipProvider> */}
+                      </TooltipProvider>
                     </div>
                   ))
                 ) : (
                   <div className="text-muted-foreground px-2 py-1.5 text-sm">
+                    Aucune catégorie disponible
                   </div>
                 )}
               </SelectContent>
             </Select>
-            {/* <CategoryModalButton onAddCategory={handleAddCategory} /> */}
+            <CategoryModalButton onAddCategory={handleAddCategory} />
           </div>
           <FormMessage />
         </FormItem>
