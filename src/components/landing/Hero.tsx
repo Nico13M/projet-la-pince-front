@@ -31,7 +31,7 @@ const Hero = () => {
               </Link>
               <Link
                 href="#features"
-                className="hover:bg-opacity-10 flex items-center justify-center rounded-full border border-white bg-transparent px-8 py-4 font-medium transition-all hover:bg-white hover:text-black"
+                className="hover:bg-opacity-10 flex items-center justify-center !font-bold rounded-full border border-white bg-transparent px-8 py-4 transition-all hover:bg-white hover:text-black"
               >
                 En savoir plus
               </Link>
