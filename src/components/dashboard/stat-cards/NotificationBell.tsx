@@ -78,8 +78,7 @@ const [notifications, setNotifications] = useState<Notification[]>([])
       
       try {
         const evt = typeof data === 'string' ? JSON.parse(data) : data;
-        console.log('Événement parsé:', evt);
-
+    
         let message = 'Notification budget';
         
         if (evt.type === 'THRESHOLD_80') {
@@ -99,9 +98,6 @@ const [notifications, setNotifications] = useState<Notification[]>([])
           isRead: false,     
         };
 
-        console.log('Notification créée:', notification);
-
-        // Mettre à jour l'état
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(count => count + 1);
       } catch (err) {
@@ -110,8 +106,6 @@ const [notifications, setNotifications] = useState<Notification[]>([])
     }
 
     evtSource.onmessage = (e) => {
-      console.log('Event SSE brut reçu:', e);
-      console.log('Données brutes du message:', e.data);
       
       try {
         handleEventData(e.data);
