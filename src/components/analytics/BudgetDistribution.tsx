@@ -1,6 +1,6 @@
 'use client'
 
-import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { fetchUserBudget } from '@/app/_actions/analytics/fetchUserBudget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -28,7 +28,7 @@ export function BudgetDistribution() {
       try {
         setIsLoading(true)
 
-        const response = await fetchUserBudget()
+        const response = await fetchUserBudget(1, 10)
 
         if (response?.data && Array.isArray(response?.data)) {
           const colors = generateColors(response?.data.length)
