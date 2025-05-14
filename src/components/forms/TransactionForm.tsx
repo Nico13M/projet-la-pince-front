@@ -253,7 +253,7 @@ export default function TransactionForm({
             onBudgetSelect={handleBudgetSelect}
           />
 
-          <FormItem>
+          <FormItem className={`${selectedBudget ? 'flex' : 'hidden'}`}>
             <FormLabel>Type de transaction</FormLabel>
             <div className="flex h-10 items-center">
               {selectedBudget ? (

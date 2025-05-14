@@ -1,5 +1,6 @@
 'use client'
 
+import { createBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -12,16 +13,13 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
 import { BudgetFormValues, SavedBudget } from '@/types/budget'
-import { formatDate, formatEuro } from '@/utils/format'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { CategorySelect } from './CategorySelect'
-import { DatePickerField } from './DatePickerField'
 import { MoneyInput } from './MoneyInput'
-import { useState } from "react"
-import { createBudget } from '@/app/_actions/dashboard/fetchUserBudget'
-import { Plus } from 'lucide-react'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -31,18 +29,17 @@ const formSchema = z.object({
     id: z.string(),
     name: z.string(),
   }),
-  threshold: z
-    .number({
-      required_error: 'Le montant est requis',
-      invalid_type_error: 'Le montant doit être un nombre',
-    }),
+  threshold: z.number({
+    required_error: 'Le montant est requis',
+    invalid_type_error: 'Le montant doit être un nombre',
+  }),
   description: z.string().optional(),
 })
 
-export default function BudgetForm({ 
-  onBudgetAdded 
-}: { 
-  onBudgetAdded?: () => void 
+export default function BudgetForm({
+  onBudgetAdded,
+}: {
+  onBudgetAdded?: () => void
 }) {
   const { showToast } = useToast()
   const [date, setDate] = useState<Date | null>(null)
@@ -58,7 +55,6 @@ export default function BudgetForm({
   })
 
   async function onSubmit(values: BudgetFormValues) {
-    console.log('values', values)
     const newBudget: Partial<SavedBudget> = {
       name: values.name,
       category: values.category,
@@ -68,24 +64,21 @@ export default function BudgetForm({
     const params = {
       categoryId: values.category.id,
     }
-    console.log(params)
     try {
-      console.log('test')
-      await createBudget(newBudget, params);
+      await createBudget(newBudget, params)
       showToast({
         title: 'Budget ajouté',
         description: 'Le budget a été ajouté avec succès',
       })
       form.reset()
-      
-      
+
       if (onBudgetAdded) {
-        onBudgetAdded();
+        onBudgetAdded()
       }
     } catch (err) {
       showToast({
         title: 'Erreur',
-        description: 'Une erreur est survenue lors de l\'ajout du budget',
+        description: "Une erreur est survenue lors de l'ajout du budget",
       })
     }
   }
@@ -114,7 +107,10 @@ export default function BudgetForm({
               <FormItem>
                 <FormLabel>Nom du budget</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex : Budget alimentation, voyage..." {...field} />
+                  <Input
+                    placeholder="Ex : Budget alimentation, voyage..."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -122,7 +118,12 @@ export default function BudgetForm({
           />
 
           <MoneyInput form={form} name="threshold" label="Plafond" />
-          <CategorySelect form={form} name="category" label="Catégorie" className="flex-1" />
+          <CategorySelect
+            form={form}
+            name="category"
+            label="Catégorie"
+            className="flex-1"
+          />
 
           <FormField
             control={form.control}

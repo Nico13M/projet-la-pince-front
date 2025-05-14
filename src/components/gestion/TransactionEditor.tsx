@@ -45,7 +45,6 @@ import { CalendarIcon, Pencil } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import BudgetSelector from './BudgetSelector'
 
 const editFormSchema = z.object({
   name: z.string().min(1, { message: 'Le nom est requis' }),
@@ -268,44 +267,6 @@ export function TransactionEditor({
 
               <FormField
                 control={form.control}
-                name="budget"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Budget</FormLabel>
-                    <BudgetSelector
-                      budgetId={field.value.id}
-                      setBudgetId={(id: string) => {
-                        const selectedBudget = {
-                          id,
-                          name: field.value.name,
-                        }
-                        field.onChange(selectedBudget)
-                      }}
-                      onBudgetChange={(budget: {
-                        id: string
-                        name: string
-                        category?: {
-                          id: string
-                          name: string
-                          transactionType?: string
-                        }
-                      }) => {
-                        field.onChange({
-                          id: budget.id,
-                          name: budget.name,
-                        })
-                        if (budget.category) {
-                          setSelectedBudget(budget as SavedBudget)
-                        }
-                      }}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
@@ -352,6 +313,7 @@ export function TransactionEditor({
                     <div className="relative">
                       <FormControl>
                         <Input
+                          className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           type="number"
                           step="0.01"
                           placeholder="0.00"

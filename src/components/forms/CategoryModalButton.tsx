@@ -1,46 +1,53 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog'
-import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Plus } from 'lucide-react'
+import { useState } from 'react'
 
 interface CategoryModalButtonProps {
-    onAddCategory: (category: string) => void
+  onAddCategory: (category: { name: string; transactionType: string }) => void
 }
 
 const CategoryModalButton = ({ onAddCategory }: CategoryModalButtonProps) => {
-    const [isOpen, setIsOpen] = useState(false)
-    const [newCategory, setNewCategory] = useState('')
-    const [transactionType, setTransactionType] = useState<string | undefined>()
+  const [isOpen, setIsOpen] = useState(false)
+  const [newCategory, setNewCategory] = useState('')
+  const [transactionType, setTransactionType] = useState<string | undefined>()
 
-    const handleAddCategory = () => {
-        if (!newCategory.trim() || !transactionType) return;
+  const handleAddCategory = () => {
+    if (!newCategory.trim() || !transactionType) return
 
-        const payload = {
-            name: newCategory.trim(),
-            transactionType,     
-        };
-        onAddCategory(payload); 
-        setNewCategory('');
-        setTransactionType(undefined);
-        setIsOpen(false);
+    const payload = {
+      name: newCategory.trim(),
+      transactionType,
     }
-     return (
+    onAddCategory(payload)
+    setNewCategory('')
+    setTransactionType(undefined)
+    setIsOpen(false)
+  }
+  return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="border border-slate-400 hover:border-slate-400 hover:bg-white rounded-md p-0 flex items-center justify-center"
+          className="flex items-center justify-center rounded-md border border-slate-400 p-0 hover:border-slate-400 hover:bg-white"
           title="Ajouter une catégorie"
         >
-          <Plus className="w-2 h-2 text-slate-600" />
+          <Plus className="h-2 w-2 text-slate-600" />
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -57,12 +64,14 @@ const CategoryModalButton = ({ onAddCategory }: CategoryModalButtonProps) => {
             type="text"
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
-            className="w-full mt-2 p-2 border border-slate-300 rounded-md"
+            className="mt-2 w-full rounded-md border border-slate-300 p-2"
           />
         </div>
 
         <div className="mt-4">
-          <label className="block text-sm font-medium mb-2">Type de transaction</label>
+          <label className="mb-2 block text-sm font-medium">
+            Type de transaction
+          </label>
           <Select
             value={transactionType}
             onValueChange={(value) => setTransactionType(value)}

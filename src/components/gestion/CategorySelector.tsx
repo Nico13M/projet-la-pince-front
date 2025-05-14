@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -8,11 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { Trash2, Pencil, Search } from 'lucide-react'
-import { Input } from '@/components/ui/input'
 import { SavedBudget } from '@/types/budget'
-import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 function BudgetSelector({
   budgetId,
@@ -21,7 +20,7 @@ function BudgetSelector({
 }: {
   budgetId: string
   setBudgetId: (budgetId: string) => void
-  onBudgetChange?: (budget: { id: string, name: string }) => void
+  onBudgetChange?: (budget: { id: string; name: string }) => void
 }) {
   const [budgets, setBudgets] = useState<SavedBudget[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -49,9 +48,10 @@ function BudgetSelector({
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = budgets.filter(budget => 
-        budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        budget.category.name.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = budgets.filter(
+        (budget) =>
+          budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          budget.category.name.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredBudgets(filtered)
     } else {
@@ -62,7 +62,7 @@ function BudgetSelector({
   const handleBudgetChange = (value: string) => {
     setBudgetId(value)
     if (onBudgetChange) {
-      const selectedBudget = budgets.find(b => b.id === value)
+      const selectedBudget = budgets.find((b) => b.id === value)
       if (selectedBudget) {
         onBudgetChange({ id: selectedBudget.id, name: selectedBudget.name })
       }
@@ -71,7 +71,10 @@ function BudgetSelector({
 
   return (
     <div>
-      <label htmlFor="budget" className="mb-1.5 block text-sm font-medium text-slate-700">
+      <label
+        htmlFor="budget"
+        className="mb-1.5 block text-sm font-medium text-slate-700"
+      >
         Budget
       </label>
       <div className="flex flex-col space-y-2">
@@ -80,9 +83,9 @@ function BudgetSelector({
             <SelectValue placeholder="Sélectionner un budget" />
           </SelectTrigger>
           <SelectContent>
-            <div className="py-2 px-2 sticky top-0 bg-white z-10">
+            <div className="sticky top-0 z-10 bg-white px-2 py-2">
               <div className="relative">
-                <Search className="absolute left-2 top-3 h-4 w-4 text-slate-400" />
+                <Search className="absolute top-3 left-2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Rechercher un budget..."
                   value={searchTerm}
@@ -92,12 +95,16 @@ function BudgetSelector({
               </div>
             </div>
             {isLoading ? (
-              <div className="px-2 py-1.5 text-sm text-muted-foreground">
+              <div className="text-muted-foreground px-2 py-1.5 text-sm">
                 Chargement des budgets...
               </div>
             ) : filteredBudgets.length > 0 ? (
               filteredBudgets.map((budget) => (
-                <SelectItem key={budget.id} value={budget.id} className="flex-1">
+                <SelectItem
+                  key={budget.id}
+                  value={budget.id}
+                  className="flex-1"
+                >
                   <div className="flex flex-col">
                     <span>{budget.name}</span>
                     <span className="text-xs text-slate-500">
@@ -107,7 +114,7 @@ function BudgetSelector({
                 </SelectItem>
               ))
             ) : (
-              <div className="px-2 py-1.5 text-sm text-muted-foreground">
+              <div className="text-muted-foreground px-2 py-1.5 text-sm">
                 Aucun budget disponible
               </div>
             )}

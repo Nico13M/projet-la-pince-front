@@ -41,8 +41,6 @@ export function StatCards() {
             fetchUserCompareMonthlyBudget(),
           ])
 
-        console.log(compareMonthlyBudget)
-
         setBudgetSummary(budgetData)
         setUserData(userData)
 
