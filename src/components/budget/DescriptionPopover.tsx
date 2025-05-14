@@ -13,7 +13,7 @@ interface DescriptionPopoverProps {
 
 export function DescriptionPopover({
   description,
-  maxLength = 30,
+  maxLength = 40,
 }: DescriptionPopoverProps) {
   if (!description) {
     return <span>Aucune description</span>
@@ -27,7 +27,7 @@ export function DescriptionPopover({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="line-clamp-1">{description}</span>
+      <span className="line-clamp-1">{description.slice(0, maxLength)}…</span>
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="icon" className="h-6 w-6">
