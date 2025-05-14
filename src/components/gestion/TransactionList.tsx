@@ -14,14 +14,19 @@ import {
   fetchDeleteTransactions,
   fetchGetTransactions,
 } from '@/app/_actions/transactions/fetchTransactions'
-import { BadgeDollarSign, BadgeEuro, Banknote, Coins, MoveDown, MoveUp, Trash2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Banknote, Coins, MoveDown, MoveUp, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Pagination } from '../Pagination'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { TransactionEditor } from './TransactionEditor'
-import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const formatTransactionType = (type?: string): string => {
   if (!type) return ''
@@ -149,8 +154,6 @@ export default function TransactionList({
     return <TableSkeleton />
   }
 
-  console.log(transactions, "tran")
-
   return (
     <>
       <div className="overflow-x-auto rounded-md border shadow-sm">
@@ -161,18 +164,30 @@ export default function TransactionList({
               <TableHead className="font-semibold">Type</TableHead>
               <TableHead className="font-semibold">Date</TableHead>
               <TableHead className="font-semibold">Budget</TableHead>
-              <TableHead className="font-semibold text-right">Montant</TableHead>
-              <TableHead className="font-semibold text-right">Actions</TableHead>
+              <TableHead className="text-right font-semibold">
+                Montant
+              </TableHead>
+              <TableHead className="text-right font-semibold">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transactions.length > 0 ? (
               transactions.map((transaction: Transaction) => (
-                <TableRow key={transaction.id} className="group hover:bg-slate-50">
-                  <TableCell className="font-medium">{transaction.name}</TableCell>
+                <TableRow
+                  key={transaction.id}
+                  className="group hover:bg-slate-50"
+                >
+                  <TableCell className="font-medium">
+                    {transaction.name}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5">
-                      <Badge variant="outline" className={`flex items-center gap-1 px-2 py-0.5 ${getTransactionTypeColor(transaction.transactionType)}`}>
+                      <Badge
+                        variant="outline"
+                        className={`flex items-center gap-1 px-2 py-0.5 ${getTransactionTypeColor(transaction.transactionType)}`}
+                      >
                         {getTransactionIcon(transaction.transactionType)}
                         {formatTransactionType(transaction.transactionType)}
                       </Badge>
@@ -181,9 +196,9 @@ export default function TransactionList({
                   <TableCell className="text-slate-600">
                     {transaction.dateOfExpense
                       ? new Date(transaction.dateOfExpense).toLocaleDateString(
-                        'fr-FR',
-                        { day: '2-digit', month: '2-digit', year: 'numeric' }
-                      )
+                          'fr-FR',
+                          { day: '2-digit', month: '2-digit', year: 'numeric' },
+                        )
                       : '-'}
                   </TableCell>
                   <TableCell>
@@ -204,12 +219,16 @@ export default function TransactionList({
                       <span className="text-slate-400">-</span>
                     )}
                   </TableCell>
-                  <TableCell className={`text-right font-medium ${transaction.transactionType?.toLowerCase() === 'income'
-                    ? 'text-emerald-700'
-                    : transaction.transactionType?.toLowerCase() === 'expense'
-                      ? 'text-red-600'
-                      : 'text-blue-600'
-                    }`}>
+                  <TableCell
+                    className={`text-right font-medium ${
+                      transaction.transactionType?.toLowerCase() === 'income'
+                        ? 'text-emerald-700'
+                        : transaction.transactionType?.toLowerCase() ===
+                            'expense'
+                          ? 'text-red-600'
+                          : 'text-blue-600'
+                    }`}
+                  >
                     {typeof transaction.amount === 'number'
                       ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
                       : transaction.amount || '-'}
@@ -223,7 +242,7 @@ export default function TransactionList({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-slate-600 opacity-70 hover:bg-red-50 hover:text-red-600 transition-opacity"
+                        className="h-8 w-8 text-slate-600 opacity-70 transition-opacity hover:bg-red-50 hover:text-red-600"
                         onClick={() => handleDeleteClick(transaction.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -235,7 +254,10 @@ export default function TransactionList({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                <TableCell
+                  colSpan={6}
+                  className="h-24 text-center text-slate-500"
+                >
                   Aucune transaction disponible
                 </TableCell>
               </TableRow>
@@ -243,7 +265,7 @@ export default function TransactionList({
           </TableBody>
         </Table>
 
-        <div className="bg-slate-50 border-t p-2">
+        <div className="border-t bg-slate-50 p-2">
           <Pagination
             page={page}
             totalPages={totalPages}

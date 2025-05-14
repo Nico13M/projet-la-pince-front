@@ -10,7 +10,6 @@ export const signup = async (values: any) => {
     credentials: 'include',
     body: JSON.stringify(values),
   })
-  console.log(response, "response")
   const data = await response.json()
   return data
 }

@@ -1,10 +1,16 @@
 'use client'
 
-import * as React from 'react'
-import { ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ChevronDownIcon } from "lucide-react"
-import { DayPicker } from 'react-day-picker'
-import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { endOfMonth, startOfMonth } from 'date-fns'
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+} from 'lucide-react'
+import * as React from 'react'
+import { DayPicker } from 'react-day-picker'
 
 function Calendar({
   className,
@@ -15,7 +21,16 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn('p-3 flex', className)}
+      hidden={{
+        before: startOfMonth(new Date()),
+        after: endOfMonth(new Date()),
+      }}
+      hideNavigation={true}
+      className={cn('flex p-3', className)}
+      modifiersClassNames={{
+        outside: 'hover:bg-transparent hover:cursor-default',
+        disabled: 'hover:bg-transparent hover:cursor-default',
+      }}
       classNames={{
         months: 'flex flex-col space-y-4 sm:space-x-4 sm:space-y-0',
         month: 'space-y-4',
@@ -34,7 +49,7 @@ function Calendar({
         head_cell:
           'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
         row: 'flex w-full mt-2',
-        cell: 'text-cent²er text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+        cell: 'text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
         day: cn(
           buttonVariants({ variant: 'ghost' }),
           'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
@@ -48,6 +63,7 @@ function Calendar({
         day_range_middle:
           'aria-selected:bg-accent aria-selected:text-accent-foreground',
         day_hidden: 'invisible',
+        day_button: 'w-full h-full block m-0 p-0 rounded-md',
         ...classNames,
       }}
       components={{
@@ -57,22 +73,21 @@ function Calendar({
     />
   )
 }
-Calendar.displayName = "Calendar"
+Calendar.displayName = 'Calendar'
 
 export { Calendar }
 
-
-function Chevron({ orientation = "left", ...props }) {
+function Chevron({ orientation = 'left', ...props }) {
   switch (orientation) {
-    case "left":
-      return <ChevronLeftIcon className="h-4 w-4" />;
-    case "right":
-      return <ChevronRightIcon className="h-4 w-4" />;
-    case "up":
-      return <ChevronUpIcon className="h-4 w-4" />;
-    case "down":
-      return <ChevronDownIcon className="h-4 w-4" />;
+    case 'left':
+      return <ChevronLeftIcon className="h-4 w-4" />
+    case 'right':
+      return <ChevronRightIcon className="h-4 w-4" />
+    case 'up':
+      return <ChevronUpIcon className="h-4 w-4" />
+    case 'down':
+      return <ChevronDownIcon className="h-4 w-4" />
     default:
-      return null;
+      return null
   }
 }

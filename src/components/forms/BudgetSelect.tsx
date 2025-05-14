@@ -65,10 +65,10 @@ export function BudgetSelect<T extends Record<string, any>>({
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = budgets.filter(budget =>
-        budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        budget.category.name.toLowerCase().includes(searchTerm.toLowerCase())
-
+      const filtered = budgets.filter(
+        (budget) =>
+          budget.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          budget.category.name.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredBudgets(filtered)
     } else {
@@ -84,7 +84,7 @@ export function BudgetSelect<T extends Record<string, any>>({
         <FormItem className={className}>
           {label && <FormLabel>{label}</FormLabel>}
 
-          <div className="flex w-full">
+          <div className="flex w-full justify-start">
             <Select
               onValueChange={(value) => {
                 const selectedBudget = budgets.find((b) => b.id === value)
@@ -102,11 +102,11 @@ export function BudgetSelect<T extends Record<string, any>>({
               value={field.value.id}
             >
               <FormControl>
-                <SelectTrigger className="text-muted-foreground w-full">
+                <SelectTrigger className="text-muted-foreground w-full text-left">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent align="start" className="w-full">
+              <SelectContent align="start" className="flex w-full">
                 <div className="bg-background sticky top-0 z-10 px-2 py-2">
                   <div className="relative">
                     <Search className="text-muted-foreground absolute top-3 left-2 h-4 w-4 opacity-50" />
@@ -127,13 +127,11 @@ export function BudgetSelect<T extends Record<string, any>>({
                     <SelectItem key={budget.id} value={budget.id}>
                       <div className="flex flex-col">
                         <span>{budget.name}</span>
-                        <span className="text-xs text-slate-500 group-hover:text-white group-data-[highlighted]:text-white group-data-[state=checked]:text-white">
+                        <span className="text-xs">
                           {budget.category.name} - {budget.threshold}€
                         </span>
                       </div>
                     </SelectItem>
-
-
                   ))
                 ) : (
                   <div className="text-muted-foreground px-2 py-1.5 text-left text-sm">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -10,18 +10,34 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { BadgeDollarSign, FileText, MoveDown, MoveUp, Coins, Tag, Trash2 } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
+import {
+  BadgeDollarSign,
+  Coins,
+  MoveDown,
+  MoveUp,
+  Tag,
+  Trash2,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Pagination } from '../Pagination'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetEditor } from './BudgetEditor'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { DescriptionPopover } from './DescriptionPopover'
-import { Pagination } from '../Pagination'
-import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { SavedBudget, BudgetFormValues } from '@/types/budget'
-import { deleteBudget, fetchUserBudget, updateBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import {
+  deleteBudget,
+  fetchUserBudget,
+  updateBudget,
+} from '@/app/_actions/dashboard/fetchUserBudget'
+import { SavedBudget } from '@/types/budget'
 import { formatEuro } from '@/utils/format'
 
 function capitalize(str: string) {
@@ -31,32 +47,44 @@ function capitalize(str: string) {
 
 // Simplified transaction types for demonstration
 // In a real implementation, you might want to fetch the actual transaction types associated with each budget
-const getTransactionTypeForBudget = (budgetName?: string, categoryName?: string): string => {
-  if (!budgetName && !categoryName) return 'expense';
+const getTransactionTypeForBudget = (
+  budgetName?: string,
+  categoryName?: string,
+): string => {
+  if (!budgetName && !categoryName) return 'expense'
 
   // Vérifier le nom du budget en premier (prioritaire)
   if (budgetName) {
-    const name = budgetName.toLowerCase();
-    if (name === 'free' || name.includes('revenu') || name.includes('income') || name.includes('salaire')) {
-      return 'income';
+    const name = budgetName.toLowerCase()
+    if (
+      name === 'free' ||
+      name.includes('revenu') ||
+      name.includes('income') ||
+      name.includes('salaire')
+    ) {
+      return 'income'
     }
     if (name.includes('invest') || name.includes('placement')) {
-      return 'investment';
+      return 'investment'
     }
   }
 
   // Ensuite vérifier le nom de la catégorie
   if (categoryName) {
-    const catName = categoryName.toLowerCase();
-    if (catName.includes('revenu') || catName.includes('salaire') || catName.includes('income')) {
-      return 'income';
+    const catName = categoryName.toLowerCase()
+    if (
+      catName.includes('revenu') ||
+      catName.includes('salaire') ||
+      catName.includes('income')
+    ) {
+      return 'income'
     }
     if (catName.includes('invest') || catName.includes('placement')) {
-      return 'investment';
+      return 'investment'
     }
   }
 
-  return 'expense';
+  return 'expense'
 }
 
 const getTransactionTypeBadge = (type: string) => {
@@ -65,20 +93,20 @@ const getTransactionTypeBadge = (type: string) => {
       return {
         icon: <MoveUp className="h-4 w-4 text-emerald-500" />,
         label: 'Revenu',
-        style: 'bg-emerald-50 text-emerald-700 border-emerald-200'
-      };
+        style: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      }
     case 'investment':
       return {
         icon: <Coins className="h-4 w-4 text-blue-500" />,
         label: 'Investissement',
-        style: 'bg-blue-50 text-blue-700 border-blue-200'
-      };
+        style: 'bg-blue-50 text-blue-700 border-blue-200',
+      }
     default:
       return {
         icon: <MoveDown className="h-4 w-4 text-red-500" />,
         label: 'Dépense',
-        style: 'bg-red-50 text-red-700'
-      };
+        style: 'bg-red-50 text-red-700',
+      }
   }
 }
 
@@ -97,7 +125,6 @@ export default function BudgetList({
   const [totalPages, setTotalPages] = useState(1)
 
   const formatBudget = (budget: any): SavedBudget => {
-    console.log('Budget to format:', budget)
     return {
       id: budget.id,
       name: capitalize(budget.name),
@@ -105,13 +132,11 @@ export default function BudgetList({
       category: {
         id: budget.category?.id || '',
         name: capitalize(budget.category?.name || 'Inconnu'),
-        transactionType: budget.category?.transactionType || 'expense'
+        transactionType: budget.category?.transactionType || 'expense',
       },
-      threshold: typeof budget.threshold === 'number'
-        ? budget.threshold : null
+      threshold: typeof budget.threshold === 'number' ? budget.threshold : null,
     }
   }
-
 
   const getAndSetBudgets = async (pageNumber = 1) => {
     try {
@@ -140,7 +165,6 @@ export default function BudgetList({
     }
   }
 
-
   useEffect(() => {
     getAndSetBudgets(page)
   }, [page])
@@ -160,14 +184,14 @@ export default function BudgetList({
     return () => {
       window.removeEventListener(
         'budget-added',
-        handleNewBudget as EventListener
+        handleNewBudget as EventListener,
       )
     }
   }, [])
 
   const handleSaveBudget = async (
     id: string,
-    updatedBudget: Partial<SavedBudget>
+    updatedBudget: Partial<SavedBudget>,
   ) => {
     try {
       const result = await updateBudget(id, updatedBudget)
@@ -175,7 +199,7 @@ export default function BudgetList({
       if (!result) throw new Error('La mise à jour a échoué')
 
       const updatedBudgets = budgets.map((b) =>
-        b.id === id ? { ...b, ...updatedBudget } : b
+        b.id === id ? { ...b, ...updatedBudget } : b,
       )
       setBudgets(updatedBudgets)
 
@@ -187,7 +211,7 @@ export default function BudgetList({
       console.error('Erreur handleSaveBudget:', error)
       showToast({
         title: 'Erreur',
-        description: "La mise à jour du budget a échoué.",
+        description: 'La mise à jour du budget a échoué.',
       })
     }
   }
@@ -197,24 +221,24 @@ export default function BudgetList({
     setDeleteDialogOpen(true)
   }
   const handleConfirmDelete = async () => {
-    if (!budgetToDelete) return;
+    if (!budgetToDelete) return
 
     try {
-      await deleteBudget(budgetToDelete);
-      setBudgets((prev) => prev.filter((b) => b.id !== budgetToDelete));
-      setDeleteDialogOpen(false);
+      await deleteBudget(budgetToDelete)
+      setBudgets((prev) => prev.filter((b) => b.id !== budgetToDelete))
+      setDeleteDialogOpen(false)
 
       showToast({
         title: 'Budget supprimé',
         description: 'Le budget a été supprimé avec succès.',
-      });
+      })
     } catch (error) {
       showToast({
         title: 'Erreur',
-        description: "La suppression du budget a échoué.",
-      });
+        description: 'La suppression du budget a échoué.',
+      })
     }
-  };
+  }
 
   const handlePageChange = (newPage: number) => {
     if (newPage !== page && newPage >= 1 && newPage <= totalPages) {
@@ -225,7 +249,6 @@ export default function BudgetList({
   if (isLoading) {
     return <TableSkeleton />
   }
-  console.log(budgets, "BUD")
   return (
     <>
       <div className="overflow-x-auto rounded-md border shadow-sm">
@@ -237,7 +260,9 @@ export default function BudgetList({
               <TableHead className="font-semibold">Type</TableHead>
               <TableHead className="font-semibold">Catégorie</TableHead>
               <TableHead className="font-semibold">Seuil</TableHead>
-              <TableHead className="w-[120px] font-semibold text-right">Actions</TableHead>
+              <TableHead className="w-[120px] text-right font-semibold">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -245,16 +270,16 @@ export default function BudgetList({
               budgets.map((budget) => {
                 return (
                   <TableRow key={budget.id} className="group hover:bg-slate-50">
-                    <TableCell className="font-medium">
-                      {budget.name}
-                    </TableCell>
+                    <TableCell className="font-medium">{budget.name}</TableCell>
                     <TableCell className="max-w-[200px]">
                       {budget.description ? (
                         <div className="flex items-center gap-1.5">
                           <DescriptionPopover
                             description={budget.description}
                           />
-                          <span className="text-xs text-slate-500 hidden">{budget.description}</span>
+                          <span className="hidden text-xs text-slate-500">
+                            {budget.description}
+                          </span>
                         </div>
                       ) : (
                         <span className="text-slate-400">—</span>
@@ -263,9 +288,10 @@ export default function BudgetList({
                     <TableCell>
                       {budget.category ? (
                         (() => {
-                          const { icon, label, style } = getTransactionTypeBadge(
-                            budget.category.transactionType
-                          )
+                          const { icon, label, style } =
+                            getTransactionTypeBadge(
+                              budget.category.transactionType,
+                            )
                           return (
                             <Badge
                               variant="outline"
@@ -285,7 +311,10 @@ export default function BudgetList({
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger>
-                              <Badge variant="secondary" className="flex items-center gap-1.5 px-2 py-1">
+                              <Badge
+                                variant="secondary"
+                                className="flex items-center gap-1.5 px-2 py-1"
+                              >
                                 <Tag className="h-3 w-3 text-slate-500" />
                                 {budget.category.name}
                               </Badge>
@@ -302,7 +331,7 @@ export default function BudgetList({
                     <TableCell>
                       {budget.threshold !== null ? (
                         <div className="flex items-center gap-1.5">
-                          <Badge className="bg-blue-50 text-blue-700 border-blue-200 border flex items-center gap-1">
+                          <Badge className="flex items-center gap-1 border border-blue-200 bg-blue-50 text-blue-700">
                             <BadgeDollarSign className="h-3.5 w-3.5" />
                             {formatEuro(budget.threshold)}
                           </Badge>
@@ -313,11 +342,14 @@ export default function BudgetList({
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <BudgetEditor budget={budget} onSave={handleSaveBudget} />
+                        <BudgetEditor
+                          budget={budget}
+                          onSave={handleSaveBudget}
+                        />
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-slate-600 opacity-70 hover:bg-red-50 hover:text-red-400 transition-opacity"
+                          className="h-8 w-8 text-slate-600 opacity-70 transition-opacity hover:bg-red-50 hover:text-red-400"
                           onClick={() => handleDeleteClick(budget.id)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -326,11 +358,14 @@ export default function BudgetList({
                       </div>
                     </TableCell>
                   </TableRow>
-                );
+                )
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                <TableCell
+                  colSpan={6}
+                  className="h-24 text-center text-slate-500"
+                >
                   Aucun budget disponible
                 </TableCell>
               </TableRow>
@@ -338,7 +373,7 @@ export default function BudgetList({
           </TableBody>
         </Table>
 
-        <div className="bg-slate-50 border-t p-2">
+        <div className="border-t bg-slate-50 p-2">
           <Pagination
             page={page}
             totalPages={totalPages}
