@@ -14,50 +14,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { filterDataByTimeframe } from '@/utils/chartUtils'
+import { monthsLabels, timeframeOptions } from '@/constants/analytics'
+import {
+  ExpenseSummaryItem,
+  ExpenseTrendPoint,
+  Timeframe,
+} from '@/types/analytics'
+import {
+  calculateTotalOfArray,
+  createEmptyMonthsData,
+  filterDataByTimeframe,
+} from '@/utils/chartUtils'
 import { formatEuro } from '@/utils/format'
 import { ChartLine } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
 
-interface BudgetItem {
-  threshold: number
-  availableAmount: number
-  updatedAt: string
-  totalExpense: number
-  totalInvestment: number
-  remainingBalance: number
-}
-
-interface ChartDataItem {
-  month: string
-  income: number
-  expense: number
-}
-
-const monthsConfig: Record<
-  string,
-  {
-    shortLabel: string
-    data: { income: number[]; expense: number[] }
-  }
-> = {
-  January: { shortLabel: 'Jan', data: { income: [], expense: [] } },
-  February: { shortLabel: 'Fév', data: { income: [], expense: [] } },
-  March: { shortLabel: 'Mar', data: { income: [], expense: [] } },
-  April: { shortLabel: 'Avr', data: { income: [], expense: [] } },
-  May: { shortLabel: 'Mai', data: { income: [], expense: [] } },
-  June: { shortLabel: 'Juin', data: { income: [], expense: [] } },
-  July: { shortLabel: 'Juil', data: { income: [], expense: [] } },
-  August: { shortLabel: 'Aoû', data: { income: [], expense: [] } },
-  September: { shortLabel: 'Sep', data: { income: [], expense: [] } },
-  October: { shortLabel: 'Oct', data: { income: [], expense: [] } },
-  November: { shortLabel: 'Nov', data: { income: [], expense: [] } },
-  December: { shortLabel: 'Déc', data: { income: [], expense: [] } },
-}
-
-const chartConfig = {
+const expenseChartConfig = {
   expense: {
     label: 'Dépenses',
     color: 'hsl(var(--chart-1))',
@@ -70,48 +44,48 @@ const chartConfig = {
 
 export function ExpenseTrend() {
   const [isLoading, setIsLoading] = useState(true)
-  const [displayData, setDisplayData] = useState<ChartDataItem[]>([])
-  const [timeframe, setTimeframe] = useState<'year' | '6months' | '3months'>(
-    'year',
-  )
-  const [fullData, setFullData] = useState<ChartDataItem[]>([])
+  const [displayData, setDisplayData] = useState<ExpenseTrendPoint[]>([])
+  const [timeframe, setTimeframe] = useState<Timeframe>('year')
+  const [fullData, setFullData] = useState<ExpenseTrendPoint[]>([])
 
-  const filterData = (data: ChartDataItem[] = fullData) => {
-    setDisplayData(filterDataByTimeframe(data, timeframe, monthsConfig))
+  const filterData = (data: ExpenseTrendPoint[] = fullData) => {
+    setDisplayData(filterDataByTimeframe(data, timeframe, monthsLabels))
   }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const budgetData: BudgetItem[] = await fetchAllBudgetSummaries()
+        const budgetData: ExpenseSummaryItem[] = await fetchAllBudgetSummaries()
+
+        const monthsConfig = createEmptyMonthsData(['income', 'expense'])
 
         if (Array.isArray(budgetData)) {
-          budgetData.forEach((element: BudgetItem) => {
-            const monthIndex = new Date(element.updatedAt).getUTCMonth()
-            const monthKey = Object.keys(monthsConfig)[monthIndex]
+          budgetData.forEach((element: ExpenseSummaryItem) => {
+            if (element.updatedAt) {
+              const monthIndex = new Date(element.updatedAt).getUTCMonth()
+              const monthKey = Object.keys(monthsConfig)[monthIndex]
 
-            if (monthsConfig[monthKey]) {
-              monthsConfig[monthKey].data.expense.push(
-                element.totalExpense + element.totalInvestment,
-              )
+              if (monthsConfig[monthKey]) {
+                monthsConfig[monthKey].data.expense.push(
+                  element.totalExpense + element.totalInvestment,
+                )
 
-              monthsConfig[monthKey].data.income.push(
-                element.remainingBalance +
-                  element.totalExpense +
-                  element.totalInvestment,
-              )
+                monthsConfig[monthKey].data.income.push(
+                  element.remainingBalance +
+                    element.totalExpense +
+                    element.totalInvestment,
+                )
+              }
             }
           })
         }
 
         const processedData = Object.entries(monthsConfig).map(
           ([_, config]) => {
-            const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0)
-
             return {
               month: config.shortLabel,
-              income: sum(config.data.income),
-              expense: sum(config.data.expense),
+              income: calculateTotalOfArray(config.data.income),
+              expense: calculateTotalOfArray(config.data.expense),
             }
           },
         )
@@ -145,23 +119,26 @@ export function ExpenseTrend() {
         </div>
         <Select
           value={timeframe}
-          onValueChange={(value) =>
-            setTimeframe(value as 'year' | '6months' | '3months')
-          }
+          onValueChange={(value) => setTimeframe(value as Timeframe)}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sélectionner une période" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="year">Année en cours</SelectItem>
-            <SelectItem value="6months">6 derniers mois</SelectItem>
-            <SelectItem value="3months">3 derniers mois</SelectItem>
+            {timeframeOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </CardHeader>
       <CardContent>
         {displayData.length > 0 ? (
-          <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+          <ChartContainer
+            config={expenseChartConfig}
+            className="min-h-[300px] w-full"
+          >
             <LineChart data={displayData}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
@@ -197,7 +174,9 @@ export function ExpenseTrend() {
                   <ChartTooltipContent
                     formatter={(value, name) => {
                       const label =
-                        chartConfig[name as keyof typeof chartConfig]?.label
+                        expenseChartConfig[
+                          name as keyof typeof expenseChartConfig
+                        ]?.label
                       return `${label} : ${formatEuro(value as number)}`
                     }}
                     className="w-full"

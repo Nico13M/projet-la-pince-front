@@ -1,3 +1,5 @@
+import { monthsLabels } from '@/constants/analytics'
+
 export function filterDataByTimeframe<T extends { month: string }>(
   data: T[],
   timeframe: 'year' | '6months' | '3months',
@@ -39,3 +41,55 @@ export function filterDataByTimeframe<T extends { month: string }>(
 
   return filtered
 }
+
+export const createEmptyMonthsData = (dataKeys: string[]) => {
+  const emptyMonthsConfig: Record<
+    string,
+    {
+      shortLabel: string
+      data: Record<string, number[]>
+    }
+  > = {}
+
+  Object.entries(monthsLabels).forEach(([month, { shortLabel }]) => {
+    const dataObject: Record<string, number[]> = {}
+    dataKeys.forEach((key) => {
+      dataObject[key] = []
+    })
+
+    emptyMonthsConfig[month] = {
+      shortLabel,
+      data: dataObject,
+    }
+  })
+
+  return emptyMonthsConfig
+}
+
+export const generateColors = (count: number): string[] => {
+  const baseHues = [
+    0, // rouge clair
+    210, // gris froid (désaturé)
+    220, // bleu lavande
+    340, // rose doux
+    200, // bleu doux
+    20, // saumon
+    210, // azur
+    120, //vert pastel
+    0, // gris chaud (désaturé)
+    230, // bleu pastel
+    265, //bleu violet
+  ]
+
+  return Array.from({ length: count }, (_, i) => {
+    const hue = baseHues[i % baseHues.length] // cyclique si + de 9
+    const saturation = 60 // saturation moyenne
+    const lightness = 50 // luminosité douce
+
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`
+  })
+}
+
+// Fonction utilitaire pour calculer la somme d'un tableau
+export const calculateTotalOfArray = (array: number[]) =>
+  array.reduce((sum, value) => sum + value, 0)
