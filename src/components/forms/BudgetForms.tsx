@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast'
 import { BudgetFormValues, SavedBudget } from '@/types/budget'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { CategorySelect } from './CategorySelect'
@@ -43,6 +43,7 @@ export default function BudgetForm({
 }) {
   const { showToast } = useToast()
   const [date, setDate] = useState<Date | null>(null)
+  const [isFormValid, setIsFormValid] = useState(false)
 
   const form = useForm<BudgetFormValues>({
     resolver: zodResolver(formSchema),
@@ -54,10 +55,39 @@ export default function BudgetForm({
     },
   })
 
+  useEffect(() => {
+    const checkFormValidity = async () => {
+      const name = form.getValues('name')
+      const category = form.getValues('category')
+      const threshold = form.getValues('threshold')
+
+      const valid =
+        name &&
+        name.length >= 2 &&
+        category &&
+        category.id &&
+        threshold !== undefined &&
+        threshold > 0
+
+      setIsFormValid(!!valid)
+    }
+
+    checkFormValidity()
+
+    const subscription = form.watch(() => {
+      checkFormValidity()
+    })
+
+    return () => subscription.unsubscribe()
+  }, [form])
+
   async function onSubmit(values: BudgetFormValues) {
     const newBudget: Partial<SavedBudget> = {
       name: values.name,
-      category: values.category,
+      category: {
+        ...values.category,
+        transactionType: 'expense', // Par défaut, les budgets sont considérés comme des dépenses
+      },
       threshold: values.threshold,
       description: values.description,
     }
@@ -110,6 +140,12 @@ export default function BudgetForm({
                   <Input
                     placeholder="Ex : Budget alimentation, voyage..."
                     {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      setTimeout(() => {
+                        form.trigger()
+                      }, 0)
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -143,7 +179,7 @@ export default function BudgetForm({
           />
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={!isFormValid}>
           <span className="flex items-center justify-center">
             <Plus className="mr-2 h-4 w-4" />
             Ajouter le budget

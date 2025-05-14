@@ -35,9 +35,7 @@ const formSchema = z.object({
   description: z.string().min(1, { message: 'La description est requise' }),
   amount: z
     .number({ invalid_type_error: 'Le montant doit être un nombre' })
-    .positive({ message: 'Le montant doit être supérieur à 0' })
-    .optional()
-    .transform((v) => (v === undefined ? 0 : v)),
+    .positive({ message: 'Le montant doit être supérieur à 0' }),
   date: z.date(),
   budget: z.object({
     id: z.string().min(1, { message: 'Le budget est requis' }),
@@ -184,7 +182,7 @@ export default function TransactionForm({
       if (onAddTransaction) onAddTransaction(created)
       form.reset({
         description: '',
-        amount: undefined,
+        amount: 0,
         date: new Date(),
         budget: { id: '', name: '' },
         type: '',

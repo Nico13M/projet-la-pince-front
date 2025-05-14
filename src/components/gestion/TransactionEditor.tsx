@@ -84,12 +84,7 @@ export function TransactionEditor({
 
     return {
       name: transaction.name || '',
-      amount:
-        typeof transaction.amount === 'number'
-          ? transaction.amount
-          : typeof transaction.amount === 'string'
-            ? parseFloat(transaction.amount.replace(',', '.'))
-            : 0,
+      amount: transaction.amount || 0,
       date,
       transactionType:
         (transaction.transactionType?.toLowerCase() as TransactionType) ||
@@ -264,13 +259,16 @@ export function TransactionEditor({
                         <Input
                           className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           type="number"
-                          step="0.01"
+                          min={undefined}
                           placeholder="0.00"
                           {...field}
-                          onChange={(e) => {
-                            const value = e.target.value
-                            field.onChange(parseFloat(value) || 0)
-                          }}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ''
+                                ? ''
+                                : Number(e.target.value),
+                            )
+                          }
                         />
                       </FormControl>
                       <div className="absolute top-1/2 right-3 -translate-y-1/2">

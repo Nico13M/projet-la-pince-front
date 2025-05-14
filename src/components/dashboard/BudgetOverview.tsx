@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetItem } from './BudgetItem'
 
-type CategoryType = { id: string; name: string }
+type CategoryType = { id: string; name: string; transactionType: string }
 interface AddBudgetValues {
   name: string
   category: CategoryType
@@ -123,6 +123,7 @@ export function BudgetOverview() {
                 <BudgetItem
                   key={budget.id}
                   name={budget.name}
+                  type={budget.category.transactionType}
                   currentAmount={budget.availableAmount}
                   totalAmount={budget.threshold}
                   color={budgetColors[index % budgetColors.length]}

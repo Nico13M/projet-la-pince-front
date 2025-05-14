@@ -35,19 +35,12 @@ export function MoneyInput<T extends Record<string, any>>({
           <FormControl>
             <div className="relative">
               <Input
+                className="[appearance:textfield] pr-8 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 type="number"
                 placeholder={placeholder}
-                step="0.01"
-                min="0"
+                min={undefined}
                 value={field.value || ''}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === ''
-                      ? undefined
-                      : parseFloat(e.target.value)
-                  field.onChange(value)
-                }}
-                className="pr-8"
+                onChange={(e) => field.onChange(Number(e.target.value))}
               />
               <div className="text-muted-foreground absolute inset-y-0 right-3 flex items-center">
                 {currency}

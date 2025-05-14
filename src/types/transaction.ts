@@ -3,7 +3,7 @@ export interface Transaction {
   name?: string
   transactionType?: string
   dateOfExpense?: string | Date
-  amount?: number | string
+  amount?: number | undefined
   category?: Category
   categoryId?: string
   budget?: Budget
