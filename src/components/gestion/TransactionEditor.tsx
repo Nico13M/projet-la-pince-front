@@ -1,9 +1,7 @@
 'use client'
 
-import {
-  fetchUpdateTransaction,
-} from '@/app/_actions/transactions/fetchTransactions'
 import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
+import { fetchUpdateTransaction } from '@/app/_actions/transactions/fetchTransactions'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -28,25 +26,26 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  DEFAULT_TRANSACTION_TYPE,
+  TransactionType,
+} from '@/constants/transactions'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
+import { SavedBudget } from '@/types/budget'
+import { Transaction } from '@/types/transaction'
+import { transactionTypeIcons } from '@/utils/categoryIcons'
+import {
+  determineTransactionTypeFromCategory,
+  getTransactionTypeLabel,
+} from '@/utils/transactionUtils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale/fr'
-import { CalendarIcon, Edit, Pencil, Save, X } from 'lucide-react'
+import { CalendarIcon, Pencil } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import BudgetSelector from './BudgetSelector'
-import { Transaction } from '@/types/transaction'
-import { SavedBudget } from '@/types/budget'
-import { transactionTypeIcons } from '@/utils/categoryIcons'
 
 const editFormSchema = z.object({
   name: z.string().min(1, { message: 'Le nom est requis' }),
@@ -55,17 +54,17 @@ const editFormSchema = z.object({
     .positive({ message: 'Le montant doit être supérieur à 0' }),
   date: z.date(),
   budget: z.object({
-    id: z.string(),
+    id: z.string().min(1, { message: 'Le budget est requis' }),
     name: z.string(),
   }),
-  transactionType: z.string(),
+  transactionType: z.enum(['expense', 'income', 'investment'] as const),
 })
 
 type EditFormValues = z.infer<typeof editFormSchema>
 
 interface TransactionEditorProps {
-  transaction: Transaction;
-  onSave: (id: string, updatedTransaction: Partial<Transaction>) => void;
+  transaction: Transaction
+  onSave: (id: string, updatedTransaction: Partial<Transaction>) => void
 }
 
 export function TransactionEditor({
@@ -109,7 +108,9 @@ export function TransactionEditor({
             : 0,
       date,
       budget: defaultBudget,
-      transactionType: transaction.transactionType || 'expense',
+      transactionType:
+        (transaction.transactionType?.toLowerCase() as TransactionType) ||
+        DEFAULT_TRANSACTION_TYPE,
     }
   }
 
@@ -124,139 +125,97 @@ export function TransactionEditor({
     }
   }, [open, form, transaction])
 
-  // Détermine le type de transaction par défaut en fonction de la catégorie
-  const determineDefaultType = (categoryName: string): string => {
-    // Mapping des catégories vers des types par défaut
-    const categoryToTypeMap: Record<string, string> = {
-      'Logement': 'expense',
-      'Alimentation': 'expense',
-      'Transport': 'expense',
-      'Loisirs': 'expense',
-      'Santé': 'expense',
-      'Études': 'expense',
-      'Salaire': 'income',
-      'Investissement': 'investment',
-      // Ajouter d'autres mappings si nécessaire
-    };
-
-    return categoryToTypeMap[categoryName] || 'expense'; // Par défaut expense
-  }
-
-  // Set transaction type based on category's transactionType
   useEffect(() => {
     if (selectedBudget?.category) {
-      let transactionType = selectedBudget.category.transactionType;
+      let transactionType: TransactionType = DEFAULT_TRANSACTION_TYPE
 
-      if (!transactionType && selectedBudget.category.name) {
-        // Si pas de transactionType, utiliser le nom de catégorie
-        transactionType = determineDefaultType(selectedBudget.category.name);
+      if (selectedBudget.category.transactionType as TransactionType) {
+        transactionType = selectedBudget.category
+          .transactionType as TransactionType
+      } else if (selectedBudget.category.name) {
+        transactionType = determineTransactionTypeFromCategory(
+          selectedBudget.category.name,
+        )
       }
 
-      if (transactionType) {
-        console.log('Setting transaction type to:', transactionType);
-        form.setValue('transactionType', transactionType.toLowerCase(), {
-          shouldValidate: true,
-          shouldDirty: true,
-          shouldTouch: true
-        });
-      }
+      form.setValue('transactionType', transactionType, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      })
     }
-  }, [selectedBudget, form]);
-
-  const getTransactionTypeLabel = (type: string) => {
-    if (!type) return 'Dépense';
-
-    // Normaliser le type en minuscules
-    const normalizedType = type.toLowerCase();
-    const typeInfo = transactionTypeIcons[normalizedType];
-
-    console.log('Getting label for type:', type, 'normalized:', normalizedType, 'result:', typeInfo?.label);
-
-    return typeInfo ? typeInfo.label : type;
-  };
+  }, [selectedBudget, form])
 
   const onSubmit = async (values: EditFormValues) => {
     setLoading(true)
     try {
-      // Ensure we have a valid budget and category
-      if (!values.budget.id) {
-        showToast({
-          title: 'Erreur',
-          description: 'Veuillez sélectionner un budget',
-        });
-        setLoading(false);
-        return;
-      }
-
-      // If we don't have a selectedBudget with category info, try to fetch it
       if (!selectedBudget && values.budget.id) {
-        const response = await fetchUserBudget();
+        const response = await fetchUserBudget()
         if (response && response.data) {
-          const foundBudget = response.data.find(b => b.id === values.budget.id);
+          const foundBudget = response.data.find(
+            (b) => b.id === values.budget.id,
+          )
           if (foundBudget) {
-            setSelectedBudget(foundBudget);
+            setSelectedBudget(foundBudget)
           }
         }
       }
 
-      // Get categoryId from selectedBudget
-      const categoryId = selectedBudget?.category?.id;
+      const categoryId = selectedBudget?.category?.id
 
-      // If we still don't have a categoryId, show error and return
       if (!categoryId) {
         showToast({
           title: 'Erreur',
-          description: 'Impossible de déterminer la catégorie du budget. Veuillez réessayer.',
-        });
-        setLoading(false);
-        return;
+          description:
+            'Impossible de déterminer la catégorie du budget. Veuillez réessayer.',
+        })
+        setLoading(false)
+        return
       }
 
-      // Prepare update data with all required fields
       const updateData = {
         name: values.name,
-        transactionType: values.transactionType.toLowerCase(),
+        transactionType: values.transactionType,
         budgetId: values.budget.id,
         categoryId: categoryId,
         dateOfExpense: values.date.toISOString(),
         amount: values.amount,
       }
-      console.log('updateDataaaaa', updateData)
 
-      // Call the update API
-      const result = await fetchUpdateTransaction(transaction.id, updateData as any);
+      await fetchUpdateTransaction(transaction.id, updateData as any)
 
-      // if (!result.success) {
-      //   throw new Error(result.message || 'Erreur lors de la mise à jour');
-      // }
-
-      // Update the UI
       onSave(transaction.id, {
         ...updateData,
         budget: { id: values.budget.id, name: values.budget.name },
-      });
+      })
 
       showToast({
         title: 'Succès',
         description: 'Transaction mise à jour',
-      });
+      })
 
-      setOpen(false);
+      setOpen(false)
     } catch (error) {
-      console.error('Erreur lors de la mise à jour:', error);
+      console.error('Erreur lors de la mise à jour:', error)
       showToast({
         title: 'Erreur',
-        description: error instanceof Error ? error.message : 'Impossible de mettre à jour la transaction',
-      });
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Impossible de mettre à jour la transaction',
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
-  const transactionType = form.watch('transactionType') || 'expense';
-  const normalizedType = transactionType.toLowerCase();
-  const typeInfo = transactionTypeIcons[normalizedType] || { label: 'Dépense', icon: null };
-  const TypeIcon = typeInfo?.icon;
+  const transactionType =
+    form.watch('transactionType') || DEFAULT_TRANSACTION_TYPE
+  const typeInfo = transactionTypeIcons[transactionType] || {
+    label: 'Dépense',
+    icon: null,
+  }
+  const TypeIcon = typeInfo?.icon
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -297,9 +256,9 @@ export function TransactionEditor({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <div className="h-10 flex items-center border border-slate-200 rounded-md px-3 py-1.5 bg-slate-50">
-                      {TypeIcon && <TypeIcon className="h-4 w-4 mr-2" />}
-                      {getTransactionTypeLabel(field.value || 'expense')}
+                    <div className="flex h-10 items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5">
+                      {TypeIcon && <TypeIcon className="mr-2 h-4 w-4" />}
+                      {getTransactionTypeLabel(field.value)}
                       <input type="hidden" {...field} />
                     </div>
                     <FormMessage />
@@ -318,17 +277,25 @@ export function TransactionEditor({
                       setBudgetId={(id: string) => {
                         const selectedBudget = {
                           id,
-                          name: field.value.name
+                          name: field.value.name,
                         }
                         field.onChange(selectedBudget)
                       }}
-                      onBudgetChange={(budget: { id: string, name: string, category?: { id: string, name: string, transactionType?: string } }) => {
+                      onBudgetChange={(budget: {
+                        id: string
+                        name: string
+                        category?: {
+                          id: string
+                          name: string
+                          transactionType?: string
+                        }
+                      }) => {
                         field.onChange({
                           id: budget.id,
-                          name: budget.name
-                        });
+                          name: budget.name,
+                        })
                         if (budget.category) {
-                          setSelectedBudget(budget as SavedBudget);
+                          setSelectedBudget(budget as SavedBudget)
                         }
                       }}
                     />
