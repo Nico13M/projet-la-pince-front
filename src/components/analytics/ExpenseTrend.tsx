@@ -72,8 +72,8 @@ export function ExpenseTrend() {
 
                 monthsConfig[monthKey].data.income.push(
                   element.remainingBalance +
-                  element.totalExpense +
-                  element.totalInvestment,
+                    element.totalExpense +
+                    element.totalInvestment,
                 )
               }
             }
