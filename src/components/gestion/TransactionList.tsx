@@ -187,16 +187,16 @@ export default function TransactionList({
                       : '-'}
                   </TableCell>
                   <TableCell>
-                    {transaction.budgetId ? (
+                    {transaction.budgetName ? (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
                             <Badge variant="secondary" className="px-2 py-1">
-                              {transaction.budgetId}
+                              {transaction.budgetName}
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Budget: {transaction.budgetId}</p>
+                            <p>Budget: {transaction.budgetName}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>

@@ -8,6 +8,7 @@ export interface Transaction {
   categoryId?: string
   budget?: Budget
   budgetId?: string
+  budgetName?: string
 }
 
 export interface Category {
