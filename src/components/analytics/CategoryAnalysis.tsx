@@ -88,7 +88,7 @@ export function CategoryAnalysis() {
     return <AnalyticsSkeleton />
   }
   return (
-    <Card>
+    <Card className="border-accent/20 bg-white shadow-md">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex gap-2">
           <ChartColumnBig className="text-primary/80 h-5 w-5 shrink-0" />
