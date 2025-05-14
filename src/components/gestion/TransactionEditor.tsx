@@ -1,6 +1,5 @@
 'use client'
 
-import { fetchUserBudget } from '@/app/_actions/dashboard/fetchUserBudget'
 import { fetchUpdateTransaction } from '@/app/_actions/transactions/fetchTransactions'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -31,13 +30,9 @@ import {
 } from '@/constants/transactions'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import { SavedBudget } from '@/types/budget'
 import { Transaction } from '@/types/transaction'
 import { transactionTypeIcons } from '@/utils/categoryIcons'
-import {
-  determineTransactionTypeFromCategory,
-  getTransactionTypeLabel,
-} from '@/utils/transactionUtils'
+import { getTransactionTypeLabel } from '@/utils/transactionUtils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale/fr'
@@ -52,10 +47,6 @@ const editFormSchema = z.object({
     .number({ invalid_type_error: 'Le montant doit être un nombre' })
     .positive({ message: 'Le montant doit être supérieur à 0' }),
   date: z.date(),
-  budget: z.object({
-    id: z.string().min(1, { message: 'Le budget est requis' }),
-    name: z.string(),
-  }),
   transactionType: z.enum(['expense', 'income', 'investment'] as const),
 })
 
@@ -72,7 +63,6 @@ export function TransactionEditor({
 }: TransactionEditorProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [selectedBudget, setSelectedBudget] = useState<SavedBudget | null>(null)
   const { showToast } = useToast()
 
   const getDefaultValues = (): EditFormValues => {
@@ -92,11 +82,6 @@ export function TransactionEditor({
       date = new Date()
     }
 
-    const defaultBudget = {
-      id: transaction.budgetId || '',
-      name: transaction.budget?.name || '',
-    }
-
     return {
       name: transaction.name || '',
       amount:
@@ -106,7 +91,6 @@ export function TransactionEditor({
             ? parseFloat(transaction.amount.replace(',', '.'))
             : 0,
       date,
-      budget: defaultBudget,
       transactionType:
         (transaction.transactionType?.toLowerCase() as TransactionType) ||
         DEFAULT_TRANSACTION_TYPE,
@@ -124,49 +108,14 @@ export function TransactionEditor({
     }
   }, [open, form, transaction])
 
-  useEffect(() => {
-    if (selectedBudget?.category) {
-      let transactionType: TransactionType = DEFAULT_TRANSACTION_TYPE
-
-      if (selectedBudget.category.transactionType as TransactionType) {
-        transactionType = selectedBudget.category
-          .transactionType as TransactionType
-      } else if (selectedBudget.category.name) {
-        transactionType = determineTransactionTypeFromCategory(
-          selectedBudget.category.name,
-        )
-      }
-
-      form.setValue('transactionType', transactionType, {
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true,
-      })
-    }
-  }, [selectedBudget, form])
-
   const onSubmit = async (values: EditFormValues) => {
     setLoading(true)
     try {
-      if (!selectedBudget && values.budget.id) {
-        const response = await fetchUserBudget()
-        if (response && response.data) {
-          const foundBudget = response.data.find(
-            (b) => b.id === values.budget.id,
-          )
-          if (foundBudget) {
-            setSelectedBudget(foundBudget)
-          }
-        }
-      }
-
-      const categoryId = selectedBudget?.category?.id
-
-      if (!categoryId) {
+      if (!transaction.budgetId || !transaction.categoryId) {
         showToast({
           title: 'Erreur',
           description:
-            'Impossible de déterminer la catégorie du budget. Veuillez réessayer.',
+            'Impossible de déterminer le budget ou la catégorie. Veuillez réessayer.',
         })
         setLoading(false)
         return
@@ -175,8 +124,8 @@ export function TransactionEditor({
       const updateData = {
         name: values.name,
         transactionType: values.transactionType,
-        budgetId: values.budget.id,
-        categoryId: categoryId,
+        budgetId: transaction.budgetId,
+        categoryId: transaction.categoryId,
         dateOfExpense: values.date.toISOString(),
         amount: values.amount,
       }
@@ -185,7 +134,7 @@ export function TransactionEditor({
 
       onSave(transaction.id, {
         ...updateData,
-        budget: { id: values.budget.id, name: values.budget.name },
+        budget: transaction.budget,
       })
 
       showToast({
