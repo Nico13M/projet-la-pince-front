@@ -36,45 +36,51 @@ export function CategoryAnalysis() {
       try {
         setIsLoading(true)
         const response = await fetchUserCompareMonthlyBudget()
+  
+        const currentItems = response.currentBudgetSummary.filter(
+          (item: CategoryExpenseItem) =>
+            item.category.transactionType !== 'income' &&
+            item.category.transactionType !== 'investment'
+        )
+        const lastItems = response.lastMonthBudgetSummary.filter(
+          (item: CategoryExpenseItem) =>
+            item.category.transactionType !== 'income' &&
+            item.category.transactionType !== 'investment'
+        )
+  
         const categories: Record<string, CategoryComparisonPoint> = {}
-
-        response.currentBudgetSummary.forEach((item: CategoryExpenseItem) => {
-          const categoryName = item.category.name
-          if (!categories[categoryName]) {
-            categories[categoryName] = {
-              categorie: categoryName,
-              currentMonthExpense: item.availableAmount,
+  
+        currentItems.forEach((item: CategoryExpenseItem) => {
+          const spent = item.threshold - item.availableAmount
+          const name = item.category.name
+  
+          if (!categories[name]) {
+            categories[name] = {
+              categorie: name,
+              currentMonthExpense: spent,
               lastMonthExpense: 0,
             }
           } else {
-            categories[categoryName] = {
-              ...categories[categoryName],
-              currentMonthExpense:
-                categories[categoryName].currentMonthExpense +
-                item.availableAmount,
-            }
+            categories[name].currentMonthExpense += spent
           }
         })
-
-        response.lastMonthBudgetSummary.forEach((item: CategoryExpenseItem) => {
-          const categoryName = item.category.name
-          if (!categories[categoryName]) {
-            categories[categoryName] = {
-              categorie: categoryName,
-              lastMonthExpense: item.availableAmount,
+  
+        lastItems.forEach((item: CategoryExpenseItem) => {
+          const spent = item.threshold - item.availableAmount
+          const name = item.category.name
+  
+          if (!categories[name]) {
+            categories[name] = {
+              categorie: name,
               currentMonthExpense: 0,
+              lastMonthExpense: spent,
             }
           } else {
-            categories[categoryName] = {
-              ...categories[categoryName],
-              lastMonthExpense:
-                categories[categoryName].lastMonthExpense +
-                item.availableAmount,
-            }
+            categories[name].lastMonthExpense += spent
           }
         })
-        const formattedData = Object.values(categories)
-        setCategoryData(formattedData)
+  
+        setCategoryData(Object.values(categories))
       } catch (error) {
         console.error('Erreur lors de la récupération des données:', error)
       } finally {
