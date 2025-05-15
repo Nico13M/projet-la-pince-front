@@ -5,7 +5,6 @@ import { RecentTransactions } from '@/components/dashboard/RecentTransactions'
 import { StatCards } from '@/components/dashboard/StatCards'
 
 export default async function HomePage() {
-
   let notifications: Notification[] = []
   try {
     notifications = await getUserNotifications()
@@ -14,7 +13,7 @@ export default async function HomePage() {
   }
   return (
     <>
-      <DashboardHeader title="Dashboard" initialNotifications={notifications}/>
+      <DashboardHeader title="Dashboard" />
       <div className="p-4 md:p-6">
         <div className="grid gap-6">
           <StatCards />

@@ -135,6 +135,7 @@ export default function BudgetList({
         transactionType: budget.category?.transactionType || 'expense',
       },
       threshold: typeof budget.threshold === 'number' ? budget.threshold : null,
+      availableAmount: budget.availableAmount || 0,
     }
   }
 
