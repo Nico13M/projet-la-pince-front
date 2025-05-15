@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @plugin "tailwindcss-animate";
 
@@ -43,6 +46,11 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --chart-1: hsl(var(--chart-1));
+  --chart-2: hsl(var(--chart-2));
+  --chart-3: hsl(var(--chart-3));
+  --chart-4: hsl(var(--chart-4));
+  --chart-5: hsl(var(--chart-5));
 }
 
 :root {
@@ -60,7 +68,7 @@
   --muted-foreground: #343a40;
   --accent: #5e60ce;
   --accent-foreground: #f8f9fa;
-  --destructive: #e9ecef;
+  --destructive: #b60d2c;
   --destructive-foreground: #343a40;
   --border: #e9ecef;
   --input: #e9ecef;
@@ -79,6 +87,11 @@
   --sidebar-accent-foreground: #343a40;
   --sidebar-border: #e9ecef;
   --sidebar-ring: #5e60ce;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
 }
 
 .dark {
@@ -114,6 +127,11 @@
   --sidebar-accent-foreground: #f8f9fa;
   --sidebar-border: #343a40;
   --sidebar-ring: #5e60ce;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
 }
 
 @layer base {
@@ -135,4 +153,87 @@
     @apply text-base font-normal; /* 16px, Regular */
     font-family: var(--font-roboto);
   }
+}
+
+@layer utilities {
+  .animate-delay-100 {
+    animation-delay: 100ms;
+    transition-delay: 100ms;
+  }
+  .animate-delay-200 {
+    animation-delay: 200ms;
+    transition-delay: 200ms;
+  }
+  .animate-delay-300 {
+    animation-delay: 300ms;
+    transition-delay: 300ms;
+  }
+  .animate-delay-400 {
+    animation-delay: 400ms;
+    transition-delay: 400ms;
+  }
+  .animate-delay-500 {
+    animation-delay: 500ms;
+    transition-delay: 500ms;
+  }
+  .animate-delay-600 {
+    animation-delay: 600ms;
+    transition-delay: 600ms;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .animate-float-delay {
+    animation: float 7s ease-in-out 1s infinite;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes slideUp {
+  0%,
+  25% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  33%,
+  100% {
+    transform: translateY(-70px);
+    opacity: 0;
+  }
+}
+
+@keyframes floatParticle {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: var(--particle-opacity, 0.3);
+  }
+  80% {
+    opacity: var(--particle-opacity, 0.3);
+  }
+  100% {
+    transform: translate(var(--random-x, 100px), var(--random-y, 100px));
+    opacity: 0;
+  }
+}
+
+button {
+  cursor: pointer;
 }
