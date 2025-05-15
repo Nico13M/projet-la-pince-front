@@ -2,13 +2,13 @@
 
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import TransactionForm from '@/components/forms/TransactionForm'
-import TransactionList from '@/components/gestion/TransactionList'
+import TransactionList from '@/components/transactions/TransactionList'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FileTextIcon, PlusCircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Transaction } from '../../../types/transaction'
 
-export default function GestionPage() {
+export default function TransactionsPage() {
   const [localTransactions, setLocalTransactions] = useState<Transaction[]>([])
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
@@ -19,7 +19,7 @@ export default function GestionPage() {
 
   return (
     <>
-      <DashboardHeader title="Gestion" />
+      <DashboardHeader title="Transactions" />
       <div className="p-4 md:p-6">
         <div className="grid gap-6">
           <div className="grid gap-4 md:grid-cols-4">

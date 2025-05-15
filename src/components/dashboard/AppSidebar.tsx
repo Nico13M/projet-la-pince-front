@@ -52,11 +52,11 @@ export function AppSidebar() {
           <SidebarMenuItem className="mx-3">
             <SidebarMenuButton
               asChild
-              isActive={pathname?.includes('/dashboard/gestion')}
+              isActive={pathname?.includes('/dashboard/transactions')}
             >
-              <Link href="/dashboard/gestion">
+              <Link href="/dashboard/transactions">
                 <CreditCard className="size-5" />
-                <span>Gestion</span>
+                <span>Transactions</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -13,27 +13,23 @@ export function BudgetItem({
   color?: string
   type: string
 }) {
-  // Calculs différents selon le type
-  const isIncome = type === 'income'
+  const isPositiveFlow = type === 'income' || type === 'investment'
 
-  // Pour les dépenses: le montant restant est important (currentAmount)
-  // Pour les revenus: le montant accumulé est important (currentAmount)
-  const spentAmount = isIncome ? currentAmount : totalAmount - currentAmount
+  const spentAmount = isPositiveFlow
+    ? currentAmount
+    : totalAmount - currentAmount
 
-  // Calcul du pourcentage selon le type
   const percentage =
     totalAmount > 0
-      ? isIncome
+      ? isPositiveFlow
         ? (currentAmount / totalAmount) * 100
         : (spentAmount / totalAmount) * 100
       : 0
 
-  // Cas spéciaux selon le type
-  const isOverBudget = isIncome ? percentage > 100 : currentAmount < 0
+  const isOverBudget = isPositiveFlow ? percentage > 100 : currentAmount < 0
   const isNegative = totalAmount <= 0
 
-  // Calcul du montant de dépassement
-  const overageAmount = isIncome
+  const overageAmount = isPositiveFlow
     ? currentAmount > totalAmount
       ? currentAmount - totalAmount
       : 0
@@ -66,12 +62,12 @@ export function BudgetItem({
           </h3>
           {(isOverBudget || isNegative) && (
             <span
-              className={`flex items-center rounded-full ${isIncome && isOverBudget ? 'bg-green-100/90 text-green-900' : 'bg-red-100/90 text-red-900'} px-2.5 py-1 text-xs font-medium shadow-sm backdrop-blur-sm`}
+              className={`flex items-center rounded-full ${isPositiveFlow && isOverBudget ? 'bg-green-100/90 text-green-900' : 'bg-red-100/90 text-red-900'} px-2.5 py-1 text-xs font-medium shadow-sm backdrop-blur-sm`}
             >
               <span
-                className={`mr-2 h-1.5 w-1.5 animate-pulse rounded-full ${isIncome && isOverBudget ? 'bg-green-600' : 'bg-red-600'}`}
+                className={`mr-2 h-1.5 w-1.5 animate-pulse rounded-full ${isPositiveFlow && isOverBudget ? 'bg-green-600' : 'bg-red-600'}`}
               />
-              {isIncome
+              {isPositiveFlow
                 ? isOverBudget
                   ? 'Objectif atteint'
                   : 'Objectif non atteint'
@@ -82,12 +78,12 @@ export function BudgetItem({
 
         <div className="flex items-center justify-between">
           <p className="text-foreground/70 text-xs font-medium">
-            {isIncome ? 'Objectif' : 'Budget alloué'}
+            {isPositiveFlow ? 'Objectif' : 'Budget alloué'}
           </p>
           <p className="text-sm font-semibold tabular-nums">
             <span
               className={`text-lg ${
-                isIncome
+                isPositiveFlow
                   ? isOverBudget
                     ? 'text-green-600'
                     : isNegative
@@ -128,7 +124,7 @@ export function BudgetItem({
 
         <div className="flex items-center justify-between pt-1 text-xs">
           <p className="text-foreground/70">
-            {isIncome ? (
+            {isPositiveFlow ? (
               <>
                 <span>Revenus:</span>{' '}
                 <span
@@ -158,7 +154,7 @@ export function BudgetItem({
               </span>
             )}
           </p>
-          {isIncome
+          {isPositiveFlow
             ? isOverBudget && (
                 <p className="rounded-full bg-green-50/90 px-2.5 py-1 text-[10px] font-medium text-green-600 tabular-nums shadow-sm">
                   +{(percentage - 100).toFixed(1)}%

@@ -34,7 +34,10 @@ import { MoneyInput } from './MoneyInput'
 const formSchema = z.object({
   description: z.string().min(1, { message: 'La description est requise' }),
   amount: z
-    .number({ invalid_type_error: 'Le montant doit être un nombre' })
+    .number({
+      invalid_type_error: 'Le montant doit être un nombre',
+      required_error: 'Le montant est requis',
+    })
     .positive({ message: 'Le montant doit être supérieur à 0' }),
   date: z.date(),
   budget: z.object({

@@ -63,7 +63,7 @@ export function RecentTransactions() {
             <Button
               variant="link"
               className="text-primary hover:text-primary/80 flex h-9 cursor-pointer items-center gap-1 p-0 text-sm font-medium transition-colors"
-              onClick={() => router.push('/dashboard/gestion')}
+              onClick={() => router.push('/dashboard/transactions')}
             >
               Voir tout
               <ArrowRight className="h-3.5 w-3.5" />

@@ -21,7 +21,7 @@ export function BudgetCard({
       <CardHeader className="flex flex-row items-center justify-between pt-6">
         <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
           <PieChart className="text-primary h-4 w-4" />
-          <span className="font-medium tracking-wide">État du budget</span>
+          <span className="font-medium tracking-wide">État des budgets</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
