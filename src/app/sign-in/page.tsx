@@ -50,12 +50,6 @@ export default function SignIn() {
                 S'inscrire
               </Link>
             </p>
-            <p className="text-center">
-              Mot de passe oublié ?{' '}
-              <Link href="#" className="text-primary font-medium hover:underline transition-all">
-                Réinitialiser
-              </Link>
-            </p>
           </div>
         </div>
       </div>
