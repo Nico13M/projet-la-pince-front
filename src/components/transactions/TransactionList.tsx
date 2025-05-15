@@ -196,9 +196,9 @@ export default function TransactionList({
                   <TableCell className="text-slate-600">
                     {transaction.dateOfExpense
                       ? new Date(transaction.dateOfExpense).toLocaleDateString(
-                          'fr-FR',
-                          { day: '2-digit', month: '2-digit', year: 'numeric' },
-                        )
+                        'fr-FR',
+                        { day: '2-digit', month: '2-digit', year: 'numeric' },
+                      )
                       : '-'}
                   </TableCell>
                   <TableCell>
@@ -206,7 +206,7 @@ export default function TransactionList({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
-                            <Badge variant="secondary" className="px-2 py-1">
+                            <Badge variant="secondary" className="px-2 py-1 text-white bg-primary/80 border border-transparent hover:bg-transparent hover:border-primary hover:text-primary/80">
                               {transaction.budgetName}
                             </Badge>
                           </TooltipTrigger>
@@ -220,14 +220,13 @@ export default function TransactionList({
                     )}
                   </TableCell>
                   <TableCell
-                    className={`text-right font-medium ${
-                      transaction.transactionType?.toLowerCase() === 'income'
-                        ? 'text-emerald-700'
-                        : transaction.transactionType?.toLowerCase() ===
-                            'expense'
-                          ? 'text-red-600'
-                          : 'text-blue-600'
-                    }`}
+                    className={`text-right font-medium ${transaction.transactionType?.toLowerCase() === 'income'
+                      ? 'text-emerald-700'
+                      : transaction.transactionType?.toLowerCase() ===
+                        'expense'
+                        ? 'text-red-600'
+                        : 'text-blue-600'
+                      }`}
                   >
                     {typeof transaction.amount === 'number'
                       ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
