@@ -1,20 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { BellIcon } from 'lucide-react';
-import { getUserNotifications, userNotification } from '@/app/_actions/user/notification';
 import {
-  ClockIcon,
-  TriangleAlert ,
+  getUserNotifications,
+  userNotification,
+} from '@/app/_actions/user/notification'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
   AlertCircleIcon,
+  BellIcon,
   CheckCircleIcon,
+  TriangleAlert,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export interface Notification {
   id: string
   message: string
   type: 'THRESHOLD_80' | 'THRESHOLD_100' | 'OVERFLOW'
+  createdAt: string
+  isRead: boolean
+}
+
+// Interface pour le type retourné par getUserNotifications
+interface NotificationResponse {
+  id: string
+  type: 'THRESHOLD_80' | 'THRESHOLD_100' | 'OVERFLOW'
+  data?: {
+    budgetName?: string
+    usedPercentage?: number
+    thresholdAmount?: number
+  }
   createdAt: string
   isRead: boolean
 }
@@ -25,124 +47,120 @@ interface NotificationBellProps {
 }
 
 export function NotificationBell() {
-
-const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     async function loadHistory() {
       try {
-        const raw = await getUserNotifications()
-         const data = raw.map(evt => {
-       
-        let message = 'Notification budget'
-        if (evt.type === 'THRESHOLD_80')
-          message = `Budget ${evt.data?.budgetName} à 80% utilisé (${evt.data.usedPercentage}%).`
-        else if (evt.type === 'THRESHOLD_100')
-          message = `Budget ${evt.data?.budgetName} atteint 100% (${evt.data.thresholdAmount} €).`
-        else if (evt.type === 'OVERFLOW')
-          message = `Budget ${evt.data?.budgetName} dépassé de ${evt.data.usedPercentage - 100}%.`
+        const raw =
+          (await getUserNotifications()) as unknown as NotificationResponse[]
+        const data = raw.map((evt) => {
+          let message = 'Notification budget'
+          if (evt.type === 'THRESHOLD_80')
+            message = `Budget ${evt.data?.budgetName} à 80% utilisé (${evt.data?.usedPercentage}%).`
+          else if (evt.type === 'THRESHOLD_100')
+            message = `Budget ${evt.data?.budgetName} atteint 100% (${evt.data?.thresholdAmount} €).`
+          else if (evt.type === 'OVERFLOW')
+            message = `Budget ${evt.data?.budgetName} dépassé de ${(evt.data?.usedPercentage || 0) - 100}%.`
 
-        return {
-          id: evt.id,
-          type: evt.type,
-          message,
-          createdAt: evt.createdAt,
-          isRead: evt.isRead,
-        } as Notification
-      })
+          return {
+            id: evt.id,
+            type: evt.type,
+            message,
+            createdAt: evt.createdAt,
+            isRead: evt.isRead,
+          } as Notification
+        })
 
-      setNotifications(data)
-      setUnreadCount(data.filter(n => !n.isRead).length)
-    } catch (err) {
-      console.error('Impossible de charger les notifications :', err)
+        setNotifications(data)
+        setUnreadCount(data.filter((n) => !n.isRead).length)
+      } catch (err) {
+        console.error('Impossible de charger les notifications :', err)
+      }
     }
-}
     loadHistory()
 
-    const userId = window.localStorage.getItem('userId');
-   
-    
+    const userId = window.localStorage.getItem('userId')
+
     if (!userId) {
-      console.error('Aucun userId trouvé dans localStorage');
-      return;
+      console.error('Aucun userId trouvé dans localStorage')
+      return
     }
-    
-    
-    const apiUrl = process.env.NEXT_PUBLIC_API_LINK;
-    const sseUrl = `${apiUrl}/budgets/stream/${userId}`;
 
-    const evtSource = new EventSource(sseUrl, { withCredentials: true });
-    
-    function handleEventData(data) {
-      
+    const apiUrl = process.env.NEXT_PUBLIC_API_LINK
+    const sseUrl = `${apiUrl}/budgets/stream/${userId}`
+
+    const evtSource = new EventSource(sseUrl, { withCredentials: true })
+
+    function handleEventData(data: any) {
       try {
-        const evt = typeof data === 'string' ? JSON.parse(data) : data;
-        console.log('Événement parsé:', evt);
+        const evt = typeof data === 'string' ? JSON.parse(data) : data
 
-        let message = 'Notification budget';
-        
+        let message = 'Notification budget'
+
         if (evt.type === 'THRESHOLD_80') {
-          message = `Budget ${evt.data?.budgetName} à 80% utilisé (${evt.data?.usedPercentage || 0}%).`;
+          message = `Budget ${evt.data?.budgetName} à 80% utilisé (${evt.data?.usedPercentage || 0}%).`
         } else if (evt.type === 'THRESHOLD_100') {
-          message = `Budget ${evt.data?.budgetName} atteint 100% (${evt.data?.thresholdAmount || 0} €).`;
+          message = `Budget ${evt.data?.budgetName} atteint 100% (${evt.data?.thresholdAmount || 0} €).`
         } else if (evt.type === 'OVERFLOW') {
-          message = `Budget ${evt.data?.budgetName} dépassé de ${(evt.data?.usedPercentage || 0) - 100}%.`;
+          message = `Budget ${evt.data?.budgetName} dépassé de ${(evt.data?.usedPercentage || 0) - 100}%.`
         }
 
-      
         const notification = {
           id: `${evt.budgetId}-${Date.now()}`,
           type: evt.type,
           message,
           createdAt: new Date().toISOString(),
-          isRead: false,     
-        };
-
-        console.log('Notification créée:', notification);
+          isRead: false,
+        }
 
         // Mettre à jour l'état
-        setNotifications(prev => [notification, ...prev]);
-        setUnreadCount(count => count + 1);
+        setNotifications((prev) => [notification, ...prev])
+        setUnreadCount((count) => count + 1)
       } catch (err) {
-        console.error('Erreur lors du traitement de l\'événement:', err, 'Données reçues:', typeof data === 'string' ? data : JSON.stringify(data));
+        console.error(
+          "Erreur lors du traitement de l'événement:",
+          err,
+          'Données reçues:',
+          typeof data === 'string' ? data : JSON.stringify(data),
+        )
       }
     }
 
     evtSource.onmessage = (e) => {
-      console.log('Event SSE brut reçu:', e);
-      console.log('Données brutes du message:', e.data);
-      
       try {
-        handleEventData(e.data);
+        handleEventData(e.data)
       } catch (err) {
-        console.error('Erreur de parsing du message générique:', err, 'Données reçues:', e.data);
+        console.error(
+          'Erreur de parsing du message générique:',
+          err,
+          'Données reçues:',
+          e.data,
+        )
       }
-    };
-
-    ['THRESHOLD_80', 'THRESHOLD_100', 'OVERFLOW'].forEach((evtType) => {
+    }
+    ;['THRESHOLD_80', 'THRESHOLD_100', 'OVERFLOW'].forEach((evtType) => {
       evtSource.addEventListener(evtType, (e) => {
-        console.log(`Événement spécifique ${evtType} reçu:`, e);
-        console.log(`Données de l'événement ${evtType}:`, e.data);
-        handleEventData(e.data);
-      });
-    });
+        handleEventData(e.data)
+      })
+    })
 
     evtSource.onopen = () => {
-      console.log('Connexion SSE établie avec succès');
-    };
-    
+      console.log('Connexion SSE établie avec succès')
+    }
+
     // evtSource.onerror = (err) => {
     //   console.error('Erreur de connexion SSE:', err);
     // };
 
     return () => {
-      console.log('Fermeture de la connexion SSE');
-      evtSource.close();
-    };
-  }, []);
+      console.log('Fermeture de la connexion SSE')
+      evtSource.close()
+    }
+  }, [])
 
-   function handleMenuOpen(open: boolean) {
+  function handleMenuOpen(open: boolean) {
     if (!open) return
     markAllAsRead()
   }
@@ -150,16 +168,16 @@ const [notifications, setNotifications] = useState<Notification[]>([])
   async function markAllAsRead() {
     try {
       await userNotification()
-      setNotifications(notifs => notifs.map(n => ({ ...n, isRead: true })))
+      setNotifications((notifs) => notifs.map((n) => ({ ...n, isRead: true })))
       setUnreadCount(0)
     } catch (err) {
       console.error(err)
     }
   }
 
-
   function IconFor(n: Notification) {
-    if (n.type === 'THRESHOLD_80') return <TriangleAlert  className="h-4 w-4 text-yellow-500" />
+    if (n.type === 'THRESHOLD_80')
+      return <TriangleAlert className="h-4 w-4 text-yellow-500" />
     if (n.type === 'THRESHOLD_100')
       return <CheckCircleIcon className="h-4 w-4 text-green-500" />
     return <AlertCircleIcon className="h-4 w-4 text-red-500" />
@@ -168,14 +186,13 @@ const [notifications, setNotifications] = useState<Notification[]>([])
   return (
     <DropdownMenu onOpenChange={handleMenuOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-        >
-          <BellIcon  className="h-5 w-5" />
+        <Button variant="ghost" size="icon" className="relative">
+          <BellIcon className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="absolute -top-1 -right-1 flex items-center justify-center h-4 w-4 text-xs leading-none text-white">
+            <Badge
+              variant="destructive"
+              className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center text-xs leading-none text-white"
+            >
               {unreadCount}
             </Badge>
           )}
@@ -186,20 +203,20 @@ const [notifications, setNotifications] = useState<Notification[]>([])
           {notifications.length === 0 && (
             <DropdownMenuItem disabled>Pas de notifications</DropdownMenuItem>
           )}
-          {notifications.map(n => (
+          {notifications.map((n) => (
             <DropdownMenuItem
               key={n.id}
-              className={`flex items-start space-x-2 p-2 rounded-md hover:bg-muted/30 ${
+              className={`hover:bg-muted/30 flex items-start space-x-2 rounded-md p-2 ${
                 !n.isRead ? 'bg-muted/50 font-medium' : ''
               }`}
             >
               {IconFor(n)}
               <div className="flex-1">
                 <p>{n.message}</p>
-                <time className="text-xs text-muted-foreground">
-                  {new Date(n.createdAt).toLocaleString('fr-FR',{
-                    dateStyle: 'medium',   
-                    timeStyle: 'medium'    
+                <time className="text-muted-foreground text-xs">
+                  {new Date(n.createdAt).toLocaleString('fr-FR', {
+                    dateStyle: 'medium',
+                    timeStyle: 'medium',
                   })}
                 </time>
               </div>
@@ -207,7 +224,9 @@ const [notifications, setNotifications] = useState<Notification[]>([])
           ))}
         </DropdownMenuGroup>
         {notifications.length > 0 && <DropdownMenuSeparator />}
-        <DropdownMenuItem className="justify-center text-sm">Voir tout</DropdownMenuItem>
+        <DropdownMenuItem className="justify-center text-sm">
+          Voir tout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

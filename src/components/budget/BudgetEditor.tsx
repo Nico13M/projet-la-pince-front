@@ -33,6 +33,7 @@ const formSchema = z.object({
   category: z.object({
     id: z.string(),
     name: z.string(),
+    transactionType: z.enum(['income', 'investment', 'expense']),
   }),
   threshold: z.number({
     required_error: 'Le montant est requis',
@@ -104,7 +105,12 @@ export function BudgetEditor({
               />
 
               <MoneyInput form={form} name="threshold" label="Plafond" />
-              <CategorySelect form={form} name="category" label="Catégorie" className="flex-1" />
+              <CategorySelect
+                form={form}
+                name="category"
+                label="Catégorie"
+                className="flex-1"
+              />
 
               <FormField
                 control={form.control}

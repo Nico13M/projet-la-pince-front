@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react'
+import { addCategories } from '@/app/_actions/dashboard/addCategories'
+import { deleteCategory } from '@/app/_actions/dashboard/deteleteCategory'
+import { fetchCategories } from '@/app/_actions/dashboard/fetchCategories'
+import { updateCategory } from '@/app/_actions/dashboard/updateCategory'
 import {
   FormControl,
   FormField,
@@ -13,27 +16,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Path, PathValue, UseFormReturn } from 'react-hook-form'
+import { Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Path, UseFormReturn } from 'react-hook-form'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip'
-import { Button } from '../ui/button'
-import { Trash2, Pencil } from 'lucide-react'
 import CategoryModalButton from './CategoryModalButton'
-import { Input } from '../ui/input'
-import { fetchCategories } from '@/app/_actions/dashboard/fetchCategories'
-import { addCategories } from '@/app/_actions/dashboard/addCategories'
-import { TransactionContextType } from '@/types/transaction'
-import { updateCategory } from '@/app/_actions/dashboard/updateCategory'
-import { deleteCategory } from '@/app/_actions/dashboard/deteleteCategory'
 
 interface Category {
-  id: string | number;
-  name: string;
-  transactionType: 'income' | 'investment' | 'expense';
+  id: string | number
+  name: string
+  transactionType: 'income' | 'investment' | 'expense'
 }
 
 interface CategorySelectProps<T extends Record<string, any>> {
@@ -66,32 +65,36 @@ export function CategorySelect<T extends Record<string, any>>({
   }, [])
 
   const handleDeleteCategory = async (
-  categoryId: string | number,
-  e: React.MouseEvent
-) => {
-  e.stopPropagation()
-  try {
-    await deleteCategory(categoryId)
-    setCategories((cats) => cats.filter(c => c.id !== categoryId))
-    const current = form.getValues(name)
-    if (current?.id === categoryId) {
-      form.setValue(name, { id: '', name: '', transactionType: undefined } as any, {
-        shouldValidate: true,
-      })
+    categoryId: string | number,
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation()
+    try {
+      await deleteCategory(String(categoryId))
+      setCategories((cats) => cats.filter((c) => c.id !== categoryId))
+      const current = form.getValues(name)
+      if (current?.id === categoryId) {
+        form.setValue(
+          name,
+          { id: '', name: '', transactionType: undefined } as any,
+          {
+            shouldValidate: true,
+          },
+        )
+      }
+    } catch (err) {
+      console.error(err)
     }
-  } catch (err) {
-    console.error(err)
   }
-}
 
   const handleAddCategory = async (payload: {
-  name: string;
-  transactionType: TransactionContextType;
-}) => {
-  const created = await addCategories(payload);
-  setCategories((cats) => [...cats, created]);
-  form.setValue(name, created, { shouldValidate: true });
-}
+    name: string
+    transactionType: string
+  }) => {
+    const created = await addCategories(payload)
+    setCategories((cats) => [...cats, created])
+    form.setValue(name, created, { shouldValidate: true })
+  }
 
   const handleEditCategory = (categoryName: string) => {
     setEditingCategory(categoryName)
@@ -99,29 +102,31 @@ export function CategorySelect<T extends Record<string, any>>({
   }
 
   const handleSaveEdit = async () => {
-  if (
-    editingCategory &&
-    newCategoryName.trim() !== '' &&
-    !categories.some(c => c.name === newCategoryName)
-  ) {
-    const current = categories.find(c => c.name === editingCategory)!
-    const payload = {
-      ...current,
-      name: newCategoryName,
-      transactionType: current.transactionType, 
-    }
-    try {
-      const updated = await updateCategory(payload)
-      setCategories(categories.map(c => c.id === updated.id ? updated : c))
-      if (form.getValues(name)?.id === updated.id) {
-        form.setValue(name, updated as any, { shouldValidate: true })
+    if (
+      editingCategory &&
+      newCategoryName.trim() !== '' &&
+      !categories.some((c) => c.name === newCategoryName)
+    ) {
+      const current = categories.find((c) => c.name === editingCategory)!
+      const payload = {
+        ...current,
+        name: newCategoryName,
+        transactionType: current.transactionType,
       }
-      setEditingCategory(null)
-    } catch (err) {
-      console.error(err)
+      try {
+        const updated = await updateCategory(payload)
+        setCategories(
+          categories.map((c) => (c.id === updated.id ? updated : c)),
+        )
+        if (form.getValues(name)?.id === updated.id) {
+          form.setValue(name, updated as any, { shouldValidate: true })
+        }
+        setEditingCategory(null)
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
-}
 
   return (
     <FormField
@@ -131,39 +136,55 @@ export function CategorySelect<T extends Record<string, any>>({
         <FormItem className={className}>
           {label && <FormLabel>{label}</FormLabel>}
 
-          <div className="flex justify-between w-full">
-            <Select onValueChange={(value) => {
-              const selected = categories.find(c => c.name === value)
-              field.onChange(selected ? { id: selected.id, name: selected.name } : { id: '', name: '' })
-            }} value={field.value?.name}>
+          <div className="flex w-full justify-between">
+            <Select
+              onValueChange={(value) => {
+                const selected = categories.find((c) => c.name === value)
+                field.onChange(
+                  selected
+                    ? { id: selected.id, name: selected.name }
+                    : { id: '', name: '' },
+                )
+              }}
+              value={field.value?.name}
+            >
               <FormControl>
-                <SelectTrigger className="w-full text-slate-500 me-4">
+                <SelectTrigger className="me-4 w-full text-slate-500">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 {categories.length > 0 ? (
                   categories.map((category) => (
-
-                    <div key={category.id} className="flex items-center justify-between px-2 py-1">
+                    <div
+                      key={category.id}
+                      className="flex items-center justify-between px-2 py-1"
+                    >
                       {editingCategory === category.name ? (
-                         <div className="flex flex-1 items-center">
+                        <div className="flex flex-1 items-center">
                           <Input
                             value={newCategoryName}
                             onChange={(e) => setNewCategoryName(e.target.value)}
                             autoFocus
-                            className="flex-1 mr-2"
+                            className="mr-2 flex-1"
                           />
                           <Button
                             size="sm"
                             onClick={handleSaveEdit}
-                            disabled={newCategoryName.trim() === '' || categories.some(c => c.name === newCategoryName)}
+                            disabled={
+                              newCategoryName.trim() === '' ||
+                              categories.some((c) => c.name === newCategoryName)
+                            }
                           >
                             Sauvegarder
                           </Button>
                         </div>
                       ) : (
-                        <SelectItem value={category.name} key={category.id} className="flex-1">
+                        <SelectItem
+                          value={category.name}
+                          key={category.id}
+                          className="flex-1"
+                        >
                           {category.name}
                         </SelectItem>
                       )}
@@ -173,7 +194,7 @@ export function CategorySelect<T extends Record<string, any>>({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7 mr-1"
+                              className="mr-1 h-7 w-7"
                               onClick={() => handleEditCategory(category.name)}
                             >
                               <Pencil className="h-3.5 w-3.5" />
@@ -189,7 +210,9 @@ export function CategorySelect<T extends Record<string, any>>({
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7"
-                              onClick={(e) => handleDeleteCategory(category.id, e)}
+                              onClick={(e) =>
+                                handleDeleteCategory(category.id, e)
+                              }
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
