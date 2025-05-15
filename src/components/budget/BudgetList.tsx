@@ -316,7 +316,7 @@ export default function BudgetList({
                                 variant="secondary"
                                 className="flex items-center gap-1.5 px-2 py-1"
                               >
-                                <Tag className="h-3 w-3 text-slate-500" />
+                                <Tag className="h-3 w-3" />
                                 {budget.category.name}
                               </Badge>
                             </TooltipTrigger>
@@ -332,7 +332,7 @@ export default function BudgetList({
                     <TableCell>
                       {budget.threshold !== null ? (
                         <div className="flex items-center gap-1.5">
-                          <Badge className="flex items-center gap-1 border border-blue-200 bg-blue-50 text-blue-700">
+                          <Badge className="flex items-center gap-1 border hover:bg-primary/80 hover:text-white border-blue-200 bg-blue-50 text-blue-700">
                             <BadgeDollarSign className="h-3.5 w-3.5" />
                             {formatEuro(budget.threshold)}
                           </Badge>
