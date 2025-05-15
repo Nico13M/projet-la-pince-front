@@ -314,9 +314,9 @@ export default function BudgetList({
                             <TooltipTrigger>
                               <Badge
                                 variant="secondary"
-                                className="flex items-center gap-1.5 px-2 py-1"
+                                className="flex items-center text-white bg-primary/80 border border-transparent hover:bg-transparent hover:border-primary hover:text-primary/80 gap-1.5 px-2 py-1"
                               >
-                                <Tag className="h-3 w-3" />
+                                <Tag className="h-3 w-3 hover:text-primary/80" />
                                 {budget.category.name}
                               </Badge>
                             </TooltipTrigger>
