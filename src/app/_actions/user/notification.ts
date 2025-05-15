@@ -5,14 +5,14 @@ const API_LINK = process.env.API_LINK
 
 export async function userNotification() {
   try {
-     const cookieStore = await cookies();
-        const csrfSecret = cookieStore.get('x-csrf-token')?.value;
-        const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
-        const accessToken = cookieStore.get('access_token')?.value;
+    const cookieStore = await cookies()
+    const csrfSecret = cookieStore.get('x-csrf-token')?.value
+    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value
+    const accessToken = cookieStore.get('access_token')?.value
 
-    const cookieHeader = `x-csrf-token=${csrfSecret}; access_token=${accessToken}`;
+    const cookieHeader = `x-csrf-token=${csrfSecret}; access_token=${accessToken}`
     if (!csrfToken) {
-      throw new Error("CSRF Token non trouvé");
+      throw new Error('CSRF Token non trouvé')
     }
 
     const response = await fetch(API_LINK + '/budgets/mark-all-read', {
@@ -20,16 +20,15 @@ export async function userNotification() {
       headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,
-        'Cookie': cookieHeader
+        Cookie: cookieHeader,
       },
     })
 
-     if (!response) {
-    const text = await response.text()
-    throw new Error(`Échec du mark-all-read : ${response} – ${text}`)
-  }
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(`Échec du mark-all-read : ${response.status} – ${text}`)
+    }
     return true
-    
   } catch (error) {
     console.error('Erreur lors du fetch:', error)
     throw error
@@ -37,23 +36,23 @@ export async function userNotification() {
 }
 
 export async function getUserNotifications() {
-  const cookieStore = await cookies();
-        const csrfSecret = cookieStore.get('x-csrf-token')?.value;
-        const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
-        const accessToken = cookieStore.get('access_token')?.value;
+  const cookieStore = await cookies()
+  const csrfSecret = cookieStore.get('x-csrf-token')?.value
+  const csrfToken = cookieStore.get('XSRF-TOKEN')?.value
+  const accessToken = cookieStore.get('access_token')?.value
 
-    const cookieHeader = `x-csrf-token=${csrfSecret}; access_token=${accessToken}`;
-    if (!csrfToken) {
-      throw new Error("CSRF Token non trouvé");
-    }
+  const cookieHeader = `x-csrf-token=${csrfSecret}; access_token=${accessToken}`
+  if (!csrfToken) {
+    throw new Error('CSRF Token non trouvé')
+  }
 
   const res = await fetch(`${API_LINK}/budgets/user/notifications`, {
     method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': csrfToken,
-        'Cookie': cookieHeader
-      },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-csrf-token': csrfToken,
+      Cookie: cookieHeader,
+    },
   })
 
   if (!res.ok) {
