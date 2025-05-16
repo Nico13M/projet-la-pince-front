@@ -58,6 +58,12 @@ export function SavingsProgress() {
           ])
 
           response.data.forEach((element) => {
+            if (
+              element.category.transactionType === 'income' ||
+              element.category.transactionType === 'investment'
+            ) {
+              return
+            }
             if (element.createdAt) {
               const monthIndex = new Date(element.createdAt).getUTCMonth()
               const monthKey = Object.keys(monthsConfig)[monthIndex]

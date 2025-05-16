@@ -24,6 +24,7 @@ import {
 import { Banknote, Coins, MoveDown, MoveUp, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Pagination } from '../Pagination'
+import { ItemCard } from '../ui/item-card'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { TransactionEditor } from './TransactionEditor'
@@ -156,7 +157,86 @@ export default function TransactionList({
 
   return (
     <>
-      <div className="overflow-x-auto rounded-md border shadow-sm">
+      <div className="space-y-4 md:hidden">
+        {transactions.length > 0 ? (
+          transactions.map((transaction: Transaction) => (
+            <ItemCard
+              key={transaction.id}
+              id={transaction.id}
+              title={transaction.name || 'Sans titre'}
+              badge={{
+                icon: getTransactionIcon(transaction.transactionType) || <></>,
+                label: formatTransactionType(transaction.transactionType),
+                className: getTransactionTypeColor(transaction.transactionType),
+              }}
+              details={[
+                {
+                  id: 'date-amount',
+                  content: (
+                    <div className="flex w-full items-center justify-between text-sm">
+                      <span className="text-slate-600">
+                        {transaction.dateOfExpense
+                          ? new Date(
+                              transaction.dateOfExpense,
+                            ).toLocaleDateString('fr-FR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
+                          : '-'}
+                      </span>
+                      <span
+                        className={`font-medium ${
+                          transaction.transactionType?.toLowerCase() ===
+                          'income'
+                            ? 'text-emerald-700'
+                            : transaction.transactionType?.toLowerCase() ===
+                                'expense'
+                              ? 'text-red-600'
+                              : 'text-blue-600'
+                        }`}
+                      >
+                        {typeof transaction.amount === 'number'
+                          ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
+                          : transaction.amount || '-'}
+                      </span>
+                    </div>
+                  ),
+                },
+                ...(transaction.budgetName
+                  ? [
+                      {
+                        id: 'budget',
+                        label: 'Budget',
+                        content: (
+                          <Badge
+                            variant="secondary"
+                            className="bg-primary/80 border border-transparent px-2 py-1 text-xs text-white"
+                          >
+                            {transaction.budgetName}
+                          </Badge>
+                        ),
+                      },
+                    ]
+                  : []),
+              ]}
+              onDelete={handleDeleteClick}
+              editButton={
+                <TransactionEditor
+                  transaction={transaction}
+                  onSave={handleSaveTransaction}
+                />
+              }
+            />
+          ))
+        ) : (
+          <div className="py-8 text-center text-slate-500">
+            Aucune transaction disponible
+          </div>
+        )}
+      </div>
+
+      <div className="hidden overflow-x-auto rounded-md border shadow-sm md:block">
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
@@ -196,9 +276,9 @@ export default function TransactionList({
                   <TableCell className="text-slate-600">
                     {transaction.dateOfExpense
                       ? new Date(transaction.dateOfExpense).toLocaleDateString(
-                        'fr-FR',
-                        { day: '2-digit', month: '2-digit', year: 'numeric' },
-                      )
+                          'fr-FR',
+                          { day: '2-digit', month: '2-digit', year: 'numeric' },
+                        )
                       : '-'}
                   </TableCell>
                   <TableCell>
@@ -206,7 +286,10 @@ export default function TransactionList({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
-                            <Badge variant="secondary" className="px-2 py-1 text-white bg-primary/80 border border-transparent hover:bg-transparent hover:border-primary hover:text-primary/80">
+                            <Badge
+                              variant="secondary"
+                              className="bg-primary/80 hover:border-primary hover:text-primary/80 border border-transparent px-2 py-1 text-white hover:bg-transparent"
+                            >
                               {transaction.budgetName}
                             </Badge>
                           </TooltipTrigger>
@@ -220,13 +303,14 @@ export default function TransactionList({
                     )}
                   </TableCell>
                   <TableCell
-                    className={`text-right font-medium ${transaction.transactionType?.toLowerCase() === 'income'
-                      ? 'text-emerald-700'
-                      : transaction.transactionType?.toLowerCase() ===
-                        'expense'
-                        ? 'text-red-600'
-                        : 'text-blue-600'
-                      }`}
+                    className={`text-right font-medium ${
+                      transaction.transactionType?.toLowerCase() === 'income'
+                        ? 'text-emerald-700'
+                        : transaction.transactionType?.toLowerCase() ===
+                            'expense'
+                          ? 'text-red-600'
+                          : 'text-blue-600'
+                    }`}
                   >
                     {typeof transaction.amount === 'number'
                       ? `${transaction.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
@@ -263,14 +347,14 @@ export default function TransactionList({
             )}
           </TableBody>
         </Table>
+      </div>
 
-        <div className="border-t bg-slate-50 p-2">
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
+      <div className="border-t bg-slate-50 p-2">
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       <ConfirmDeleteDialog

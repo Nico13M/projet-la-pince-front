@@ -22,35 +22,33 @@ export default function TransactionsPage() {
       <DashboardHeader title="Transactions" />
       <div className="p-4 md:p-6">
         <div className="grid gap-6">
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card className="border-accent/20 col-span-4 bg-white shadow-md">
-              <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
-                <div className="flex items-center gap-2">
-                  <PlusCircleIcon className="text-primary/80 h-5 w-5" />
-                  <CardTitle>Ajouter une transaction</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <TransactionForm onAddTransaction={addTransaction} />
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="border-accent/20 bg-white shadow-md">
+            <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
+              <div className="flex items-center gap-2">
+                <PlusCircleIcon className="text-primary/80 h-5 w-5" />
+                <CardTitle className="text-base md:text-lg">
+                  Ajouter une transaction
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="overflow-x-auto pt-4">
+              <TransactionForm onAddTransaction={addTransaction} />
+            </CardContent>
+          </Card>
 
-          <div className="grid gap-6">
-            <Card className="border-accent/20 bg-white shadow-md">
-              <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
-                <div className="flex items-center gap-2">
-                  <FileTextIcon className="text-primary/80 h-5 w-5" />
-                  <CardTitle>Tableau des Transactions</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="rounded-md">
-                  <TransactionList refreshTrigger={refreshTrigger} />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="border-accent/20 bg-white shadow-md">
+            <CardHeader className="border-accent/10 flex flex-row items-center justify-between border-b pb-2">
+              <div className="flex items-center gap-2">
+                <FileTextIcon className="text-primary/80 h-5 w-5" />
+                <CardTitle className="text-base md:text-lg">
+                  Tableau des Transactions
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0 sm:p-4">
+              <TransactionList refreshTrigger={refreshTrigger} />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </>
