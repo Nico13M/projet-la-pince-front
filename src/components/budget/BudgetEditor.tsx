@@ -83,13 +83,13 @@ export function BudgetEditor({
           <span className="sr-only">Modifier</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-[600px] p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Modifier le budget</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -104,13 +104,15 @@ export function BudgetEditor({
                 )}
               />
 
-              <MoneyInput form={form} name="threshold" label="Plafond" />
-              <CategorySelect
-                form={form}
-                name="category"
-                label="Catégorie"
-                className="flex-1"
-              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <MoneyInput form={form} name="threshold" label="Plafond" />
+                <CategorySelect
+                  form={form}
+                  name="category"
+                  label="Catégorie"
+                  className="flex-1"
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -130,15 +132,18 @@ export function BudgetEditor({
               />
             </div>
 
-            <div className="flex justify-end space-x-4">
+            <div className="mt-4 flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end sm:gap-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
+                className="w-full sm:w-auto"
               >
                 Annuler
               </Button>
-              <Button type="submit">Enregistrer</Button>
+              <Button type="submit" className="w-full sm:w-auto">
+                Enregistrer
+              </Button>
             </div>
           </form>
         </Form>
