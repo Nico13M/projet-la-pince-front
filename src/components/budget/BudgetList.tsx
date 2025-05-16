@@ -26,7 +26,6 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Pagination } from '../Pagination'
 import { TableSkeleton } from '../ui/skeleton/skeleton-table'
 import { BudgetEditor } from './BudgetEditor'
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
@@ -39,6 +38,8 @@ import {
 } from '@/app/_actions/dashboard/fetchUserBudget'
 import { SavedBudget } from '@/types/budget'
 import { formatEuro } from '@/utils/format'
+import { Pagination } from '../Pagination'
+import { ItemCard } from '../ui/item-card'
 
 function capitalize(str: string) {
   if (!str) return ''
@@ -252,7 +253,84 @@ export default function BudgetList({
   }
   return (
     <>
-      <div className="overflow-x-auto rounded-md border shadow-sm">
+      <div className="space-y-4 md:hidden">
+        {budgets.length > 0 ? (
+          budgets.map((budget) => {
+            const { icon, label, style } = getTransactionTypeBadge(
+              budget.category?.transactionType || 'expense',
+            )
+
+            return (
+              <ItemCard
+                key={budget.id}
+                id={budget.id}
+                title={budget.name || 'Sans titre'}
+                badge={{
+                  icon: icon || <></>,
+                  label: label,
+                  className: style,
+                }}
+                details={[
+                  ...(budget.threshold !== null
+                    ? [
+                        {
+                          id: 'threshold',
+                          label: 'Seuil',
+                          content: (
+                            <Badge className="hover:bg-primary/80 flex items-center gap-1 border border-blue-200 bg-blue-50 text-blue-700 hover:text-white">
+                              <BadgeDollarSign className="h-3.5 w-3.5" />
+                              {formatEuro(budget.threshold)}
+                            </Badge>
+                          ),
+                        },
+                      ]
+                    : []),
+                  ...(budget.category && budget.category.name
+                    ? [
+                        {
+                          id: 'category',
+                          label: 'Catégorie',
+                          content: (
+                            <Badge
+                              variant="secondary"
+                              className="bg-primary/80 flex items-center border border-transparent px-2 py-1 text-xs text-white"
+                            >
+                              <Tag className="mr-1 h-3 w-3" />
+                              {budget.category.name}
+                            </Badge>
+                          ),
+                        },
+                      ]
+                    : []),
+                  ...(budget.description
+                    ? [
+                        {
+                          id: 'description',
+                          label: 'Description',
+                          content: (
+                            <p className="line-clamp-2 text-sm text-slate-700">
+                              {budget.description}
+                            </p>
+                          ),
+                        },
+                      ]
+                    : []),
+                ]}
+                onDelete={handleDeleteClick}
+                editButton={
+                  <BudgetEditor budget={budget} onSave={handleSaveBudget} />
+                }
+              />
+            )
+          })
+        ) : (
+          <div className="py-8 text-center text-slate-500">
+            Aucun budget disponible
+          </div>
+        )}
+      </div>
+
+      <div className="hidden overflow-x-auto rounded-md border shadow-sm md:block">
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
@@ -314,9 +392,9 @@ export default function BudgetList({
                             <TooltipTrigger>
                               <Badge
                                 variant="secondary"
-                                className="flex items-center text-white bg-primary/80 border border-transparent hover:bg-transparent hover:border-primary hover:text-primary/80 gap-1.5 px-2 py-1"
+                                className="bg-primary/80 hover:border-primary hover:text-primary/80 flex items-center gap-1.5 border border-transparent px-2 py-1 text-white hover:bg-transparent"
                               >
-                                <Tag className="h-3 w-3 hover:text-primary/80" />
+                                <Tag className="hover:text-primary/80 h-3 w-3" />
                                 {budget.category.name}
                               </Badge>
                             </TooltipTrigger>
@@ -332,7 +410,7 @@ export default function BudgetList({
                     <TableCell>
                       {budget.threshold !== null ? (
                         <div className="flex items-center gap-1.5">
-                          <Badge className="flex items-center gap-1 border hover:bg-primary/80 hover:text-white border-blue-200 bg-blue-50 text-blue-700">
+                          <Badge className="hover:bg-primary/80 flex items-center gap-1 border border-blue-200 bg-blue-50 text-blue-700 hover:text-white">
                             <BadgeDollarSign className="h-3.5 w-3.5" />
                             {formatEuro(budget.threshold)}
                           </Badge>
@@ -373,14 +451,14 @@ export default function BudgetList({
             )}
           </TableBody>
         </Table>
+      </div>
 
-        <div className="border-t bg-slate-50 p-2">
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
+      <div className="border-t bg-slate-50 p-2">
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       <ConfirmDeleteDialog
