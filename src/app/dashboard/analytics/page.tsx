@@ -9,15 +9,11 @@ export default function AnalyticsPage() {
     <>
       <DashboardHeader title="Analyse Financière" />
       <div className="p-4 md:p-6">
-        <div className="grid gap-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <ExpenseTrend />
-            <BudgetDistribution />
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            <CategoryAnalysis />
-            <SavingsProgress />
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+          <ExpenseTrend />
+          <BudgetDistribution />
+          <CategoryAnalysis />
+          <SavingsProgress />
         </div>
       </div>
     </>
