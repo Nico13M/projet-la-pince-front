@@ -126,7 +126,7 @@ export function BudgetItem({
           <p className="text-foreground/70">
             {isPositiveFlow ? (
               <>
-                <span>Revenus:</span>{' '}
+                <span>{type === 'investment' ? 'Investis:' : 'Revenus:'}</span>{' '}
                 <span
                   className={`ml-1 font-semibold ${isOverBudget ? 'text-green-600' : ''}`}
                 >
