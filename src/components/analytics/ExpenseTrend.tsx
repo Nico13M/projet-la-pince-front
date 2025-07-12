@@ -28,7 +28,14 @@ import {
 import { formatEuro } from '@/utils/format'
 import { ChartLine } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import AnalyticsSkeleton from '../ui/skeleton/skeleton-analytics'
 
 const expenseChartConfig = {
@@ -112,16 +119,18 @@ export function ExpenseTrend() {
 
   return (
     <Card className="border-accent/20 bg-white shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div className="flex gap-2">
+      <CardHeader className="flex flex-col space-y-3 pb-2 md:flex-row md:items-center md:justify-between md:space-y-0">
+        <div className="flex items-center gap-2">
           <ChartLine className="text-primary/80 h-5 w-5 shrink-0" />
-          <CardTitle>Tendances des dépenses</CardTitle>
+          <CardTitle className="text-sm font-medium sm:text-base md:text-lg">
+            Tendances des dépenses
+          </CardTitle>
         </div>
         <Select
           value={timeframe}
           onValueChange={(value) => setTimeframe(value as Timeframe)}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="h-8 w-full text-xs sm:h-9 sm:text-sm md:w-[180px]">
             <SelectValue placeholder="Sélectionner une période" />
           </SelectTrigger>
           <SelectContent>
@@ -135,63 +144,77 @@ export function ExpenseTrend() {
       </CardHeader>
       <CardContent>
         {displayData.length > 0 ? (
-          <ChartContainer
-            config={expenseChartConfig}
-            className="min-h-[300px] w-full"
-          >
-            <LineChart data={displayData}>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={10}
-                tick={{ fill: 'var(--muted-foreground)' }}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: 'var(--muted-foreground)' }}
-                tickMargin={15}
-                tickFormatter={(value) => formatEuro(value, true)}
-              />
-              <Line
-                type="monotone"
-                dataKey="expense"
-                stroke="var(--color-expense)"
-                strokeWidth={2}
-                dot={{ r: 4, fill: 'var(--color-expense)' }}
-              />
-              <Line
-                type="monotone"
-                dataKey="income"
-                stroke="var(--color-income)"
-                strokeWidth={2}
-                dot={{ r: 4, fill: 'var(--color-income)' }}
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    formatter={(value, name) => {
-                      const label =
-                        expenseChartConfig[
-                          name as keyof typeof expenseChartConfig
-                        ]?.label
-                      return `${label} : ${formatEuro(value as number)}`
-                    }}
-                    className="w-full"
+          <div className="h-[220px] w-full sm:h-[250px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ChartContainer
+                config={expenseChartConfig}
+                className="h-full w-full"
+              >
+                <LineChart data={displayData}>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{ fill: 'var(--muted-foreground)' }}
+                    fontSize={10}
+                    dy={5}
+                    height={35}
+                    interval="preserveStartEnd"
                   />
-                }
-              />
-            </LineChart>
-          </ChartContainer>
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: 'var(--muted-foreground)' }}
+                    tickMargin={5}
+                    tickFormatter={(value) => formatEuro(value, true)}
+                    fontSize={10}
+                    width={45}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="expense"
+                    stroke="var(--color-expense)"
+                    strokeWidth={2}
+                    dot={{ r: 2, fill: 'var(--color-expense)' }}
+                    activeDot={{ r: 4 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="income"
+                    stroke="var(--color-income)"
+                    strokeWidth={2}
+                    dot={{ r: 2, fill: 'var(--color-income)' }}
+                    activeDot={{ r: 4 }}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value, name) => {
+                          const label =
+                            expenseChartConfig[
+                              name as keyof typeof expenseChartConfig
+                            ]?.label
+                          return `${label} : ${formatEuro(value as number)}`
+                        }}
+                        className="w-full"
+                      />
+                    }
+                  />
+                </LineChart>
+              </ChartContainer>
+            </ResponsiveContainer>
+          </div>
         ) : (
-          <div className="flex flex-col items-center justify-center p-8 text-center">
-            <div className="bg-primary/10 mb-4 rounded-full p-3">
-              <ChartLine className="text-primary h-6 w-6" />
+          <div className="flex flex-col items-center justify-center p-6 text-center">
+            <div className="bg-primary/10 mb-3 rounded-full p-3">
+              <ChartLine className="text-primary h-5 w-5" />
             </div>
-            <h3 className="mb-2 text-base font-medium">Aucune dépense</h3>
-            <p className="text-foreground/60 mb-4 max-w-md text-sm">
+            <h3 className="mb-1 text-sm font-medium sm:text-base">
+              Aucune dépense
+            </h3>
+            <p className="text-foreground/60 mb-2 max-w-md text-xs sm:text-sm">
               Dépensez de l'argent pour visualiser les tendances.
             </p>
           </div>
