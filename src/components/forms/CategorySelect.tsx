@@ -140,16 +140,16 @@ export function CategorySelect<T extends Record<string, any>>({
             <Select
               onValueChange={(value) => {
                 const selected = categories.find((c) => c.name === value)
-                field.onChange(
-                  selected
-                    ? { id: selected.id, name: selected.name }
-                    : { id: '', name: '' },
-                )
+                field.onChange({
+                  id: selected?.id,
+                  name: selected?.name,
+                  transactionType: selected?.transactionType,
+                })
               }}
               value={field.value?.name}
             >
               <FormControl>
-                <SelectTrigger className="me-4 w-full text-slate-500">
+                <SelectTrigger className="me-4 w-full">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>
@@ -164,7 +164,9 @@ export function CategorySelect<T extends Record<string, any>>({
                         <div className="flex flex-1 items-center">
                           <Input
                             value={newCategoryName}
-                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            onChange={(e) => {
+                              setNewCategoryName(e.target.value)
+                            }}
                             autoFocus
                             className="mr-2 flex-1"
                           />

@@ -16,7 +16,11 @@ export interface Transaction {
 export interface SavedBudget {
   id: string
   name: string
-  category: { id: string, name: string, transactionType: 'income' | 'investment' | 'expense'},
+  category: {
+    id: string
+    name: string
+    transactionType: 'income' | 'investment' | 'expense'
+  }
   description?: string
   threshold: number
   availableAmount: number
