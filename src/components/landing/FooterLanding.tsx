@@ -47,9 +47,9 @@ const footerData = {
     {
       title: 'Légal',
       links: [
-        { label: 'Mentions légales', href: '/legal-mentions' },
-        { label: 'Politique de confidentialité', href: '/legal-privacy' },
-        { label: 'CGU', href: '/legal-conditions' },
+        { label: 'Mentions légales', href: '/legal/legal-mentions' },
+        { label: 'Politique de confidentialité', href: '/legal/legal-privacy' },
+        { label: 'CGU', href: '/legal/legal-conditions' },
       ],
     },
   ],
@@ -91,7 +91,7 @@ export default function FooterLanding() {
               aria-label="LaPince"
             >
               <Image
-                src="/logo-white.webp"
+                src="/logo.webp"
                 alt="Logo La Pince"
                 width={32}
                 height={32}
