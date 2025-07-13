@@ -8,10 +8,10 @@ export async function addCategories(data:any) {
 
      const cookieStore = await cookies();
         const csrfSecret = cookieStore.get('x-csrf-token')?.value;
-        const csrfToken = cookieStore.get('x-csrf-token')?.value;
+        const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
         const accessToken = cookieStore.get('access_token')?.value;
 
-    const cookieHeader = `x-csrf-token=${csrfToken}; access_token=${accessToken}`;
+    const cookieHeader = `x-csrf-token=${csrfSecret}; access_token=${accessToken}`;
     if (!csrfToken) {
       throw new Error("CSRF Token non trouvé");
     }
