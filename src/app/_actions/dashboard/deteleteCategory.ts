@@ -17,6 +17,7 @@ export async function deleteCategory(categoryId:string) {
 
     const response = await fetch(API_LINK + `/categories/delete/${categoryId}`, {
       method: 'DELETE',
+      credentials: 'include',
       headers: {
         'x-csrf-token': csrfToken,
       },

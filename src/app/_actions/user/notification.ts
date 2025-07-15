@@ -15,6 +15,7 @@ export async function userNotification() {
       const csrfToken = cookies['XSRF-TOKEN'];
     const response = await fetch(API_LINK + '/budgets/mark-all-read', {
       method: 'PUT',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,
@@ -44,6 +45,7 @@ export async function getUserNotifications() {
 
   const res = await fetch(`${API_LINK}/budgets/user/notifications`, {
     method: 'GET',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       'x-csrf-token': csrfToken,

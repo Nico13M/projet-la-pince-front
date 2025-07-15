@@ -43,6 +43,7 @@ export async function createBudget(budget: Partial<SavedBudget>, params: CreateB
 
         const response = await fetch(`${API_LINK}/budget/create/${params.categoryId}`, {
             method: 'POST',
+             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'x-csrf-token': csrfToken,
@@ -74,6 +75,7 @@ export async function updateBudget(id: string, budget: Partial<SavedBudget>): Pr
 
         const response = await fetch(`${API_LINK}/budget/${id}`, {
             method: 'PATCH',
+             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'x-csrf-token': csrfToken,
@@ -101,6 +103,7 @@ export async function deleteBudget(id: string) {
 
         const response = await fetch(`${API_LINK}/budget/${id}`, {
             method: 'DELETE',
+             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'x-csrf-token': csrfToken
