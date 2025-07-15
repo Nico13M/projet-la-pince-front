@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers'
 
 export async function addCategories(data:any) {
-  const API_LINK = process.env.API_LINK
+  const API_LINK = process.env.NEXT_PUBLIC_API_LINK
   try {
 
      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
