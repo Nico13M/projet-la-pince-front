@@ -1,26 +1,24 @@
-'use server'
+
 
 import { cookies } from 'next/headers'
-const API_LINK = process.env.API_LINK
+const API_LINK = process.env.NEXT_PUBLIC_API_LINK
 
 export async function userNotification() {
   try {
-    const cookieStore = await cookies()
-    const csrfSecret = cookieStore.get('x-csrf-token')?.value
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value
-    const accessToken = cookieStore.get('access_token')?.value
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, val] = cookie.trim().split('=');
+        acc[key] = val;
+        return acc;
+      }, {} as Record<string, string>);
+      if (!cookies) throw new Error('CSRF Token absent')
 
-    const cookieHeader = `x-csrf-token=${csrfSecret}; access_token=${accessToken}`
-    if (!csrfToken) {
-      throw new Error('CSRF Token non trouvé')
-    }
-
+      const csrfToken = cookies['XSRF-TOKEN'];
     const response = await fetch(API_LINK + '/budgets/mark-all-read', {
       method: 'PUT',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,
-        Cookie: cookieHeader,
       },
     })
 
@@ -36,22 +34,21 @@ export async function userNotification() {
 }
 
 export async function getUserNotifications() {
-  const cookieStore = await cookies()
-  const csrfSecret = cookieStore.get('x-csrf-token')?.value
-  const csrfToken = cookieStore.get('XSRF-TOKEN')?.value
-  const accessToken = cookieStore.get('access_token')?.value
+  const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, val] = cookie.trim().split('=');
+        acc[key] = val;
+        return acc;
+      }, {} as Record<string, string>);
+      if (!cookies) throw new Error('CSRF Token absent')
 
-  const cookieHeader = `x-csrf-token=${csrfSecret}; access_token=${accessToken}`
-  if (!csrfToken) {
-    throw new Error('CSRF Token non trouvé')
-  }
+      const csrfToken = cookies['XSRF-TOKEN'];
 
   const res = await fetch(`${API_LINK}/budgets/user/notifications`, {
     method: 'GET',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       'x-csrf-token': csrfToken,
-      Cookie: cookieHeader,
     },
   })
 
