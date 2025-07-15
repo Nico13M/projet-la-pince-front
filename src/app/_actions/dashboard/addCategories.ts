@@ -17,6 +17,7 @@ export async function addCategories(data:any) {
 
     const response = await fetch(API_LINK + '/categories/create', {
       method: 'POST',
+       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,

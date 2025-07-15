@@ -16,6 +16,7 @@ export async function fetchCategories() {
 
     const response = await fetch(API_LINK + '/categories', {
       method: 'GET',
+       credentials: 'include',
       headers: {
         'x-csrf-token': csrfToken,
       },

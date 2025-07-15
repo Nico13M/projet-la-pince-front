@@ -15,6 +15,7 @@ export async function fetchUserBudget() {
       const csrfToken = cookies['XSRF-TOKEN'];
     const response = await fetch(API_LINK + '/budget/list', {
       method: 'GET',
+       credentials: 'include',
       headers: {
         'x-csrf-token': csrfToken,
       },

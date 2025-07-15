@@ -17,6 +17,7 @@ export async function updateCategory(data:any) {
 
     const response = await fetch(API_LINK + `/categories/update/${data.id}`, {
       method: 'PATCH',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,

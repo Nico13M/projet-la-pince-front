@@ -1,27 +1,25 @@
-'use server'
+
 
 import { cookies } from "next/headers";
 
 export async function fetchAllBudgetSummaries() {
     try {
-        const API_LINK = process.env.API_LINK;
-        const cookieStore = await cookies();
+        const API_LINK = process.env.NEXT_PUBLIC_API_LINK;
+        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, val] = cookie.trim().split('=');
+        acc[key] = val;
+        return acc;
+      }, {} as Record<string, string>);
+      if (!cookies) throw new Error('CSRF Token absent')
 
-        const csrfToken = cookieStore.get('x-csrf-token')?.value;
-        const accessToken = cookieStore.get('access_token')?.value;
-
-        if (!csrfToken || !accessToken) {
-            throw new Error("Token CSRF ou Access Token non trouvé");
-        }
-
-        const cookieHeader = `x-csrf-token=${csrfToken}; access_token=${accessToken}`;
+      const csrfToken = cookies['XSRF-TOKEN'];
 
         const response = await fetch(`${API_LINK}/budget-summaries`, {
             method: 'GET',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'x-csrf-token': csrfToken,
-                'Cookie': cookieHeader
             }
         });
 
