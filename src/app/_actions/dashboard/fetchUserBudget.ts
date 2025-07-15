@@ -10,7 +10,7 @@ export async function fetchUserBudget(pageNumber = 1): Promise<Data<SavedBudget>
         acc[key] = val;
         return acc;
       }, {} as Record<string, string>);
-      if (!cookies) throw new Error('CSRF Token absent')
+      if (!cookies) throw new Error('CSRF Token absent fetch budget')
 
         const csrfToken = cookies['XSRF-TOKEN'];
         const response = await fetch(`${API_LINK}/budget/list?page=${pageNumber}`, {
@@ -37,7 +37,7 @@ export async function createBudget(budget: Partial<SavedBudget>, params: CreateB
         acc[key] = val;
         return acc;
       }, {} as Record<string, string>);
-      if (!cookies) throw new Error('CSRF Token absent')
+      if (!cookies) throw new Error('CSRF Token absent create budget')
 
         const csrfToken = cookies['XSRF-TOKEN'];
 
@@ -66,7 +66,7 @@ export async function updateBudget(id: string, budget: Partial<SavedBudget>): Pr
         acc[key] = val;
         return acc;
       }, {} as Record<string, string>);
-      if (!cookies) throw new Error('CSRF Token absent')
+      if (!cookies) throw new Error('CSRF Token absent update budget')
 
         const csrfToken = cookies['XSRF-TOKEN'];
 
@@ -95,7 +95,7 @@ export async function deleteBudget(id: string) {
         acc[key] = val;
         return acc;
       }, {} as Record<string, string>);
-      if (!cookies) throw new Error('CSRF Token absent')
+      if (!cookies) throw new Error('CSRF Token absent delete budget')
 
       const csrfToken = cookies['XSRF-TOKEN'];
 
