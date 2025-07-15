@@ -1,25 +1,23 @@
-'use server'
+
 
 import { cookies } from "next/headers";
 import { Data, SavedBudget } from '@/types/budget'
-const API_LINK = process.env.API_LINK
+const API_LINK = process.env.NEXT_PUBLIC_API_LINK
 export async function fetchUserBudget(pageNumber = 1, limit = 12): Promise<Data<SavedBudget> | undefined> {
     try {
-        const cookieStore = await cookies();
-        const csrfToken = cookieStore.get('x-csrf-token')?.value;
-        const accessToken = cookieStore.get('access_token')?.value;
-        const cookieHeader = `x-csrf-token=${csrfToken}; access_token=${accessToken}`;
+        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, val] = cookie.trim().split('=');
+        acc[key] = val;
+        return acc;
+      }, {} as Record<string, string>);
+      if (!cookies) throw new Error('CSRF Token absent')
 
-        if (!csrfToken) {
-            throw new Error("CSRF Token non trouvé");
-        }
+      const csrfToken = cookies['XSRF-TOKEN'];
 
         const response = await fetch(`${API_LINK}/budget/list?page=${pageNumber}&limit=${limit}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 'x-csrf-token': csrfToken,
-                'Cookie': cookieHeader
             }
         })
         const data = await response.json()
