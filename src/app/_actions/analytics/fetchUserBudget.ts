@@ -16,6 +16,7 @@ export async function fetchUserBudget(pageNumber = 1, limit = 12): Promise<Data<
 
         const response = await fetch(`${API_LINK}/budget/list?page=${pageNumber}&limit=${limit}`, {
             method: 'GET',
+            credentials: 'include',
             headers: {
                 'x-csrf-token': csrfToken,
             }
